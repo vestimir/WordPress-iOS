@@ -20,7 +20,9 @@
 #import "UIImageView+Gravatar.h"
 #import "UILabel+SuggestSize.h"
 
-@interface ReaderPostDetailView()<DTAttributedTextContentViewDelegate>
+@interface ReaderPostDetailView()<DTAttributedTextContentViewDelegate> {
+	BOOL _relayoutTextFlag;
+}
 
 @property (nonatomic, strong) ReaderPost *post;
 @property (nonatomic, strong) UIView *authorView;
@@ -162,7 +164,6 @@
 		_textContentView.edgeInsets = UIEdgeInsetsMake(0.0f, padding, 0.0f, padding);
 		_textContentView.shouldDrawImages = NO;
 		_textContentView.shouldDrawLinks = NO;
-		_textContentView.clipsToBounds = YES;
 		[self addSubview:_textContentView];
 		
 		dispatch_async(dispatch_get_main_queue(), ^{
@@ -216,7 +217,15 @@
 	frame.origin.x = _blogLabel.frame.origin.x + _blogLabel.frame.size.width + 5.0f;
 	frame.size.width = sz.width;
 	_followButton.frame = frame;
-
+	
+	// The first time layoutSubviews is called our text control will build all its custom attachments. We're
+	// rejecting the attachment frame desired by the text control and substituting our own. Because expected
+	// and actual frames differ, DTCoreText can end up redrawing text on top of the DTLinkButtons. A work
+	// around is to call updateLayout once after all custom attachments are created.
+	if (!_relayoutTextFlag) {
+		_relayoutTextFlag = YES;
+		[self performSelector:@selector(updateLayout) withObject:self afterDelay:.1];
+	}
 }
 
 
@@ -519,7 +528,7 @@
 								   [self handleMediaViewLoaded:readerImageView];
 							   }];
 		}
-		[self handleMediaViewLoaded:imageView];
+
 		return imageView;
 		
 	} else {
@@ -537,22 +546,23 @@
 		}
 	
 		// make sure we have a reasonable size.
-		if (frame.size.width > _textContentView.frame.size.width) {
-			frame.size.width = width;
+		if (frame.size.width > width) {
 			frame.size.height = frame.size.height * (width / frame.size.width);
+			frame.size.width = width;
 		}
 		
 		// extra 10px to offset the top edge inset keeping the image from bumping the text above it.
 		frame.size.height += edgeInsets.top;
 
 		ReaderVideoView *videoView = [[ReaderVideoView alloc] initWithFrame:frame];
-		videoView.contentMode = UIViewContentModeScaleAspectFit;
+		videoView.contentMode = UIViewContentModeCenter;
+		videoView.backgroundColor = [UIColor colorWithRed:192.0f/255.0f green:192.0f/255.0f blue:192.0f/255.0f alpha:1.0];
 		videoView.edgeInsets = edgeInsets;
 
 		[_mediaArray addObject:videoView];
 		[videoView setContentURL:attachment.contentURL ofType:videoType success:^(id readerVideoView) {
+			[(ReaderVideoView *)readerVideoView setContentMode:UIViewContentModeScaleAspectFit];
 			[self handleMediaViewLoaded:readerVideoView];
-			
 		} failure:^(id readerVideoView, NSError *error) {
 			[self handleMediaViewLoaded:readerVideoView];
 			
@@ -560,7 +570,7 @@
 		
 		[videoView addTarget:self action:@selector(handleVideoTapped:) forControlEvents:UIControlEventTouchUpInside];
 		
-		[self handleMediaViewLoaded:videoView];
+
 		return videoView;
 	}
 	

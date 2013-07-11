@@ -30,6 +30,7 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 - (NSString *)createSummary:(NSString *)str makePlainText:(BOOL)makePlainText;
 - (NSString *)makePlainText:(NSString *)string;
 - (NSString *)normalizeParagraphs:(NSString *)string;
+- (NSString *)parseImageSrcFromHTML:(NSString *)html;
 
 @end
 
@@ -65,6 +66,10 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 
 
 + (void)handleLogoutNotification:(NSNotification *)notification {
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderLastSyncDateKey];
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderCurrentTopicKey];
+	[NSUserDefaults resetStandardUserDefaults];
+	
 	NSManagedObjectContext *context = [[WordPressAppDelegate sharedWordPressApplicationDelegate] managedObjectContext];
 	NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"ReaderPost"];
     request.includesPropertyValues = NO;
@@ -301,7 +306,7 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	
 	self.likeCount = [dict numberForKey:@"like_count"];
 	self.permaLink = [dict stringForKey:@"URL"];
-	self.postTitle = [[dict stringForKey:@"title"] stringByDecodingXMLCharacters];
+	self.postTitle = [[[dict stringForKey:@"title"] stringByDecodingXMLCharacters] trim];
 	
 	self.isLiked = [dict numberForKey:@"i_like"];
 	
@@ -349,7 +354,7 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	self.sortDate = date;
 	self.likeCount = [dict numberForKey:@"post_like_count"];
 	self.permaLink = [dict stringForKey:@"post_permalink"];
-	self.postTitle = [[dict stringForKey:@"post_title"] stringByDecodingXMLCharacters];
+	self.postTitle = [[[dict stringForKey:@"post_title"] stringByDecodingXMLCharacters] trim];
 	
 	self.isLiked = [dict numberForKey:@"is_liked"];
 	
@@ -362,42 +367,33 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	self.summary = summary;
 	
 	NSString *img = [dict stringForKey:@"post_featured_thumbnail"];
+	if (![img length]) {
+		img = [dict stringForKey:@"post_featured_media"];
+	}
 	if([img length]) {
-		// TODO: Regex this madness
-		NSRange rng = [img rangeOfString:@"://"];
-		rng.location += 3;
-		NSRange endRng = [img rangeOfString:@"?" options:NSBackwardsSearch];
-		if(endRng.location == NSNotFound) {
-			NSRange tmpRng;
-			tmpRng.location = rng.location;
-			tmpRng.length = [img length] - rng.location;
-			endRng = [img rangeOfString:@"\"" options:nil range:tmpRng];
+		if (NSNotFound != [img rangeOfString:@"<img "].location) {
+			self.featuredImage = [self parseImageSrcFromHTML:img];
 		}
-		
-		rng.length = endRng.location - rng.location;
-		
-		self.featuredImage = [img substringWithRange:rng];
 	}
 	
 	img = [dict stringForKey:@"post_avatar"];
 	if ([img length]) {
-		NSError *error;
 		img = [img stringByDecodingXMLCharacters];
-		NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"src=\"\\S+\"" options:NSRegularExpressionCaseInsensitive error:&error];
-		NSRange rng = [regex rangeOfFirstMatchInString:img options:NSRegularExpressionCaseInsensitive range:NSMakeRange(0, [img length])];
-		
-		if (NSNotFound != rng.location) {
-			rng = NSMakeRange(rng.location+5, rng.length-6);
-			self.postAvatar = [img substringWithRange:rng];
-		}
+		self.postAvatar = [self parseImageSrcFromHTML:img];
 	}
+}
+
+
+- (NSString *)parseImageSrcFromHTML:(NSString *)html {
+	NSError *error;
+	NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"src=\"\\S+\"" options:NSRegularExpressionCaseInsensitive error:&error];
+	NSRange rng = [regex rangeOfFirstMatchInString:html options:NSRegularExpressionCaseInsensitive range:NSMakeRange(0, [html length])];
 	
-//  Can sometimes cause "doubled" images at the top of a post.
-//	NSString *media = [dict stringForKey:@"post_featured_media"];
-//	if(media) {
-//		self.content = [NSString stringWithFormat:@"%@%@", media, self.content];
-//	}
-	
+	if (NSNotFound != rng.location) {
+		rng = NSMakeRange(rng.location+5, rng.length-6);
+		return [html substringWithRange:rng];
+	}
+	return nil;
 }
 
 
