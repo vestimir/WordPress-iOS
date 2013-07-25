@@ -52,6 +52,7 @@ extern NSString * const DTDefaultHeadIndent;
 extern NSString * const DTDefaultStyleSheet;
 extern NSString * const DTUseiOS6Attributes;
 extern NSString * const DTWillFlushBlockCallBack;
+extern NSString * const DTProcessCustomHTMLAttributes;
 
 // attributed string attribute constants
 
@@ -68,6 +69,7 @@ extern NSString * const DTShadowsAttribute;
 extern NSString * const DTHorizontalRuleStyleAttribute;
 extern NSString * const DTTextBlocksAttribute;
 extern NSString * const DTFieldAttribute;
+extern NSString * const DTCustomAttributesAttribute;
 
 // field constants
 
@@ -105,3 +107,8 @@ typedef enum
 	DTHTMLElementFontVariantSmallCaps
 } DTHTMLElementFontVariant;
 
+typedef enum
+{
+	DTCoreTextLayoutFrameLinePositioningOptionAlgorithmWebKit = 1,
+	DTCoreTextLayoutFrameLinePositioningOptionAlgorithmLegacy = 2
+} DTCoreTextLayoutFrameLinePositioningOptions;

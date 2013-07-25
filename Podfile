@@ -1,6 +1,6 @@
 xcodeproj 'WordPress/WordPress.xcodeproj'
 
-platform :ios, '5.0'
+platform :ios, '6.0'
 pod 'AFNetworking',	'1.2'
 pod 'Reachability',	'~> 3.0.0'
 pod 'JSONKit',		  '~> 1.4'
@@ -16,10 +16,11 @@ pod 'WordPressApi', :podspec => 'https://raw.github.com/koke/WordPressApi/master
 pod 'NSObject-SafeExpectations', :podspec => 'https://raw.github.com/koke/NSObject-SafeExpectations/master/NSObject-SafeExpectations.podspec'
 pod 'Mixpanel'
 pod 'MGImageUtilities', :git => 'git://github.com/wordpress-mobile/MGImageUtilities.git'
+pod 'PocketAPI', '~> 1.0.2'
 
-target :WordPressTest, :exclusive => true do
-  pod 'OHHTTPStubs', '~> 1.1'
-end
+#target :WordPressTest, :exclusive => true do
+#  pod 'OHHTTPStubs', '~> 1.1'
+#end
 
 # The post install hook add certain compiler flags for JSONKit files so that
 # they won't generate warnings. This had been done in the podspec before, but
