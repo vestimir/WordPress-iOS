@@ -1,7 +1,6 @@
 #import <Crashlytics/Crashlytics.h>
 #import "WordPressAppDelegate.h"
 #import "SidebarViewController.h"
-#import "PanelNavigationController.h"
 #import "WordPressComApi.h"
 #import "WordPressComApiCredentials.h"
 #import "WPMobileStats.h"
@@ -223,9 +222,7 @@
     [[NSNotificationCenter defaultCenter] postNotificationName:@"ApplicationDidBecomeActive" object:nil];
     
     if ([WPMobileStats hasRecordedAppLaunched]) {
-        NSDictionary *properties = @{@"connected_to_dotcom": @([[WordPressComApi sharedApi] hasCredentials]),
-                                     @"number_of_blogs" : @([Blog countWithContext:[WordPressDataModel sharedDataModel].managedObjectContext])};
-        [WPMobileStats trackEventForSelfHostedAndWPCom:StatsEventAppOpened properties:properties];
+        [WPMobileStats trackEventForSelfHostedAndWPCom:StatsEventAppOpened];
     }
     
     // Clear notifications badge and update server
@@ -478,7 +475,7 @@
     [[Crashlytics sharedInstance] setDelegate:self];
     
     BOOL hasCredentials = [[WordPressComApi sharedApi] hasCredentials];
-    [Crashlytics setObjectValue:[NSNumber numberWithBool:hasCredentials] forKey:@"logged_in"];
+    [self setCommonCrashlyticsParameters];
     
     if (hasCredentials && [WordPressComApi sharedApi].username != nil) {
         [Crashlytics setUserName:[WordPressComApi sharedApi].username];
@@ -486,14 +483,21 @@
     
     void (^wpcomLoggedInBlock)(NSNotification *) = ^(NSNotification *note) {
         [Crashlytics setUserName:[WordPressComApi sharedApi].username];
-        [Crashlytics setObjectValue:[NSNumber numberWithBool:[[WordPressComApi sharedApi] hasCredentials]] forKey:@"logged_in"];
+        [self setCommonCrashlyticsParameters];
     };
     void (^wpcomLoggedOutBlock)(NSNotification *) = ^(NSNotification *note) {
         [Crashlytics setUserName:nil];
-        [Crashlytics setObjectValue:[NSNumber numberWithBool:[[WordPressComApi sharedApi] hasCredentials]] forKey:@"logged_in"];
+        [self setCommonCrashlyticsParameters];
     };
     [[NSNotificationCenter defaultCenter] addObserverForName:WordPressComApiDidLoginNotification object:nil queue:nil usingBlock:wpcomLoggedInBlock];
     [[NSNotificationCenter defaultCenter] addObserverForName:WordPressComApiDidLogoutNotification object:nil queue:nil usingBlock:wpcomLoggedOutBlock];
+}
+
+- (void)setCommonCrashlyticsParameters
+{
+    [Crashlytics setObjectValue:[NSNumber numberWithBool:[[WordPressComApi sharedApi] hasCredentials]] forKey:@"logged_in"];
+    [Crashlytics setObjectValue:@([[WordPressComApi sharedApi] hasCredentials]) forKey:@"connected_to_dotcom"];
+    [Crashlytics setObjectValue:@([Blog countWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]]) forKey:@"number_of_blogs"];
 }
 
 - (void)crashlytics:(Crashlytics *)crashlytics didDetectCrashDuringPreviousExecution:(id<CLSCrashReport>)crash

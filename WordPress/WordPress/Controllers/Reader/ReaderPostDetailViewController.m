@@ -11,17 +11,16 @@
 #import <QuartzCore/QuartzCore.h>
 #import <MessageUI/MFMailComposeViewController.h>
 #import "UIImageView+Gravatar.h"
-#import "WPActivities.h"
+#import "WPActivityDefaults.h"
 #import "WPWebViewController.h"
 #import "PanelNavigationConstants.h"
-//#import "WordPressAppDelegate.h"
 #import "WordPressComApi.h"
 #import "ReaderComment.h"
 #import "ReaderCommentTableViewCell.h"
 #import "ReaderPostDetailView.h"
 #import "ReaderCommentFormView.h"
 #import "ReaderReblogFormView.h"
-#import "PanelNavigationController.h"
+#import "ReachabilityUtils.h"
 #import "WordPressDataModel.h"
 
 NSInteger const ReaderCommentsToSync = 100;
@@ -181,8 +180,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 - (void)viewDidAppear:(BOOL)animated {
 	[super viewDidAppear:animated];
 	
-	WordPressAppDelegate *appDelegate = [WordPressAppDelegate sharedWordPressApplicationDelegate];
-//    if( appDelegate.connectionAvailable == NO ) return; //do not start auto-sync if connection is down
+    if( [ReachabilityUtils sharedInstance].connectionAvailable == NO ) return; //do not start auto-sync if connection is down
 	
     NSDate *lastSynced = [self lastSyncDate];
     if (lastSynced == nil || ABS([lastSynced timeIntervalSinceNow]) > ReaderPostDetailViewControllerRefreshTimeout) {
@@ -489,17 +487,22 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
     	
     if (NSClassFromString(@"UIActivity") != nil) {
         NSString *title = self.post.postTitle;
-        SafariActivity *safariActivity = [[SafariActivity alloc] init];
-        InstapaperActivity *instapaperActivity = [[InstapaperActivity alloc] init];
-        PocketActivity *pocketActivity = [[PocketActivity alloc] init];
-		
+
         NSMutableArray *activityItems = [NSMutableArray array];
         if (title) {
             [activityItems addObject:title];
         }
 		
         [activityItems addObject:[NSURL URLWithString:permaLink]];
-        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:@[safariActivity, instapaperActivity, pocketActivity]];
+        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:[WPActivityDefaults defaultActivities]];
+        if (title) {
+            [activityViewController setValue:title forKey:@"subject"];
+        }
+        activityViewController.completionHandler = ^(NSString *activityType, BOOL completed) {
+            if (!completed)
+                return;
+            [WPActivityDefaults trackActivityType:activityType withPrefix:@"ReaderDetail"];
+        };
         [self presentViewController:activityViewController animated:YES completion:nil];
         return;
     }

@@ -2,7 +2,6 @@
 //  GeneralWalkthroughView.m
 //  WordPress
 //
-//  Created by DX074 on 13-06-25.
 //  Copyright (c) 2013 WordPress. All rights reserved.
 //
 
@@ -401,11 +400,6 @@ CGFloat const GeneralWalkthroughSignInButtonHeight = 41.0;
     y = CGRectGetMaxY(self.passwordText.frame) + 0.5*GeneralWalkthroughStandardOffset;
     self.siteUrlText.frame = CGRectIntegral(CGRectMake(x, y, GeneralWalkthroughTextFieldWidth, GeneralWalkthroughTextFieldHeight));
     [scrollView addSubview:self.siteUrlText];
-    
-    //TODO: Remove debug creds
-    self.usernameText.text = @"xtremeroland";
-    self.passwordText.text = @"Xtremelabs1";
-    self.siteUrlText.text = @"xtremeroland.wordpress.com";
     
     // Add Sign In Button
     bigSignInButton = [[WPNUXMainButton alloc] init];

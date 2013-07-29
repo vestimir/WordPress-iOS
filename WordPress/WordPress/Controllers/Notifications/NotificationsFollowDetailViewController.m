@@ -14,6 +14,8 @@
 #import "NotificationsFollowTableViewCell.h"
 #import "WPWebViewController.h"
 #import <QuartzCore/QuartzCore.h>
+#import "NSURL+Util.h"
+#import "PanelNavigationController.h"
 
 @interface NotificationsFollowDetailViewController ()
 
@@ -283,7 +285,7 @@
     if (webViewURL) {
         WPWebViewController *webViewController = [[WPWebViewController alloc] init];
         [webViewController setUrl:webViewURL];
-//        [self.panelNavigationController pushViewController:webViewController fromViewController:self animated:YES];
+        [self.panelNavigationController pushViewController:webViewController fromViewController:self animated:YES];
     }
     
 }
@@ -308,20 +310,26 @@
         if (likeDetails) {
             NSString *blogURLString = [likeDetails objectForKey:@"blog_url"];
             NSURL *blogURL = [NSURL URLWithString:blogURLString];
-            if (!blogURL)
+            
+            if (!blogURL) {
                 return;
+            }
+            
             WPWebViewController *webViewController = [[WPWebViewController alloc] init];
-            [webViewController setUsername:[WordPressComApi sharedApi].username];
-            [webViewController setPassword:[WordPressComApi sharedApi].password];
-            [webViewController setUrl:blogURL];
-//            [self.panelNavigationController pushViewController:webViewController fromViewController:self animated:YES];
+            if ([blogURL isWordPressComURL]) {
+                [webViewController setUsername:[WordPressComApi sharedApi].username];
+                [webViewController setPassword:[WordPressComApi sharedApi].password];
+                [webViewController setUrl:[blogURL ensureSecureURL]];
+            } else {
+                [webViewController setUrl:blogURL];
+            }
+            [self.panelNavigationController pushViewController:webViewController fromViewController:self animated:YES];
         } else {
             [self.tableView deselectRowAtIndexPath:indexPath animated:NO];
         }
     } else {
         [self loadWebViewWithURL:[[[_note getNoteData] objectForKey:@"body"] objectForKey:@"footer_link"]];
     }
-    
 }
 
 @end

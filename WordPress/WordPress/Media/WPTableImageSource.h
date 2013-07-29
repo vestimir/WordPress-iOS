@@ -68,7 +68,8 @@
  @param size what size you are planning to display the image.
  @param indexPath the indexPath for the cell that wants this image.
 */
-- (void)fetchImageForURL:(NSURL *)url withSize:(CGSize)size indexPath:(NSIndexPath *)indexPath;
+- (void)fetchImageForURL:(NSURL *)url withSize:(CGSize)size indexPath:(NSIndexPath *)indexPath isPrivate:(BOOL)isPrivate;
+
 
 /**
  Invalidates stored index paths.

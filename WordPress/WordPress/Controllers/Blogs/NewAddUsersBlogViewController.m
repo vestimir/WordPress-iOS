@@ -110,7 +110,7 @@ CGFloat const AddUsersBlogBottomBackgroundHeight = 64;
     }
 
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
-    cell.isWPCom = self.isWPCom;
+    cell.isWPCom = self.account.isWpcom;
     
     NSDictionary *blogData = [_usersBlogs objectAtIndex:indexPath.row];
     cell.showTopSeparator = indexPath.row == 0;
@@ -264,21 +264,14 @@ CGFloat const AddUsersBlogBottomBackgroundHeight = 64;
 
 - (void)refreshBlogs
 {
-    NSURL *xmlrpc;
-    NSString *username = self.username;
-    NSString *password = self.password;
-    if (self.isWPCom) {
-        xmlrpc = [NSURL URLWithString:@"https://wordpress.com/xmlrpc.php"];
-    } else {
-        xmlrpc = [NSURL URLWithString:self.xmlRPCUrl];
-    }
+    NSURL *xmlrpc = [NSURL URLWithString:self.account.xmlrpc];
     
     [self.tableView reloadData];
     [SVProgressHUD showWithStatus:NSLocalizedString(@"Loading sites...", nil) maskType:SVProgressHUDMaskTypeBlack];
     
     WPXMLRPCClient *api = [WPXMLRPCClient clientWithXMLRPCEndpoint:xmlrpc];
     [api callMethod:@"wp.getUsersBlogs"
-         parameters:[NSArray arrayWithObjects:username, password, nil]
+         parameters:[NSArray arrayWithObjects:self.account.username, self.account.password, nil]
             success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [SVProgressHUD dismiss];
                 [self storeUsersVisibleBlogs:responseObject];
@@ -369,15 +362,9 @@ CGFloat const AddUsersBlogBottomBackgroundHeight = 64;
     
     _addSelectedButton.enabled = NO;
     
-    WPAccount *account;
-    if (_isWPCom) {
-        account = [WPAccount createOrUpdateWordPressComAccountWithUsername:self.username andPassword:self.password];
-    } else {
-        account = [WPAccount createOrUpdateSelfHostedAccountWithXmlrpc:self.xmlRPCUrl username:self.username andPassword:self.password];
-    }
     for (NSDictionary *blog in _usersBlogs) {
 		if([_selectedBlogs containsObject:[blog valueForKey:@"blogid"]]) {
-			[self createBlog:blog withAccount:account];
+			[self createBlog:blog withAccount:self.account];
 		}
 	}
     

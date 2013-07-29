@@ -20,6 +20,8 @@ NSInteger const ReaderPostSummaryLength = 150;
 NSInteger const ReaderPostsToSync = 20;
 NSString *const ReaderLastSyncDateKey = @"ReaderLastSyncDate";
 NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
+NSString *const ReaderTopicsArrayKey = @"ReaderTopicsArrayKey";
+NSString *const ReaderExtrasArrayKey = @"ReaderExtrasArrayKey";
 
 @interface ReaderPost()
 
@@ -49,6 +51,7 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 @dynamic dateCommentsSynced;
 @dynamic endpoint;
 @dynamic featuredImage;
+@dynamic isBlogPrivate;
 @dynamic isFollowing;
 @dynamic isLiked;
 @dynamic isReblogged;
@@ -68,6 +71,8 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 + (void)handleLogoutNotification:(NSNotification *)notification {
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderLastSyncDateKey];
 	[[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderCurrentTopicKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderTopicsArrayKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderExtrasArrayKey];
 	[NSUserDefaults resetStandardUserDefaults];
 	
 	NSManagedObjectContext *context = [[WordPressDataModel sharedDataModel] managedObjectContext];
@@ -94,7 +99,7 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 		NSDictionary *likes = @{@"title": NSLocalizedString(@"Posts I Like", @""), @"endpoint":@"reader/liked", @"default":@YES};
 		NSDictionary *topic = @{@"title": NSLocalizedString(@"Topics", @""), @"endpoint":@"reader/topics/%@", @"default":@NO};
 		
-		endpoints = @[fpDict, follows, likes, topic];
+		endpoints = @[follows, fpDict, likes, topic];
 		
 	});
 	return endpoints;
@@ -195,9 +200,34 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 
 
 + (void)createOrUpdateWithDictionary:(NSDictionary *)dict forEndpoint:(NSString *)endpoint withContext:(NSManagedObjectContext *)context {
+	NSNumber *blogSiteID = [dict numberForKey:@"site_id"];
+	NSNumber *siteID = [dict numberForKey:@"blog_id"];
+	NSNumber *postID = [dict numberForKey:@"ID"];
+
+	// following, likes and topics endpoints
+	if ([dict valueForKey:@"blog_site_id"] != nil) {
+		blogSiteID = [dict numberForKey:@"blog_site_id"];
+	}
 	
+	// freshly pressed
+	if ([dict valueForKey:@"editorial"]) {
+		NSDictionary *ed = [dict objectForKey:@"editorial"];
+		blogSiteID = [ed numberForKey:@"site_id"];
+		siteID = [ed numberForKey:@"blog_id"];
+	}
+	
+	// If the post is from the feedbag it won't have a siteID or postID (wtf!).
+	// Substitute the feed_id and feed_item_id for these. Since should be unique values for the feedback
+	// and we should avoid collisons with non-feedbag posts by checking the blogSiteID.
+	// Feedbag posts will never be .com posts and should never show comments, likes or reblogs options in the reader.
+	// Possible in following, likes and topics endpoints
+	if ([dict valueForKey:@"feed_item_id"]) {
+		postID = [dict numberForKey:@"feed_item_id"];
+		siteID = [dict numberForKey:@"feed_id"];
+	}
+
 	NSFetchRequest *request = [NSFetchRequest fetchRequestWithEntityName:@"ReaderPost"];
-    request.predicate = [NSPredicate predicateWithFormat:@"(postID = %@) AND (endpoint = %@)", [dict objectForKey:@"ID"], endpoint];
+    request.predicate = [NSPredicate predicateWithFormat:@"(postID = %@) AND (siteID = %@) AND (blogSiteID = %@) AND (endpoint = %@)", postID, siteID, blogSiteID, endpoint];
     request.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date_created_gmt" ascending:YES]];
     request.fetchLimit = 1;
     
@@ -215,7 +245,9 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
     } else {
 		post = (ReaderPost *)[NSEntityDescription insertNewObjectForEntityForName:@"ReaderPost"
 														   inManagedObjectContext:context];
-		post.postID = [dict numberForKey:@"ID"];
+		post.postID = postID;
+		post.siteID = siteID;
+		post.blogSiteID = blogSiteID;
 		post.endpoint = endpoint;
     }
     
@@ -252,8 +284,6 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	NSDictionary *editorial = [dict objectForKey:@"editorial"];
 	if (editorial) {
 		self.blogName = [[editorial stringForKey:@"blog_name"] stringByDecodingXMLCharacters];
-		self.blogSiteID = [editorial numberForKey:@"site_id"];
-		self.siteID = [editorial numberForKey:@"blog_id"];
 		self.sortDate = [DateUtils dateFromISOString:[editorial objectForKey:@"displayed_on"]];
 		
 		NSString *img = [editorial stringForKey:@"image"];
@@ -284,8 +314,6 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 		
 	} else {
 		self.blogName = [[dict stringForKey:@"blog_name"] stringByDecodingXMLCharacters];
-		self.blogSiteID = [dict numberForKey:@"site_id"];
-		self.siteID = [dict numberForKey:@"blog_id"];
 		self.sortDate = [DateUtils dateFromISOString:[dict objectForKey:@"date"]];
 	}
 	
@@ -337,7 +365,6 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	
 	self.blogURL = [dict stringForKey:@"blog_url"];
 	self.blogName = [[dict stringForKey:@"blog_name"] stringByDecodingXMLCharacters];
-	self.blogSiteID = [dict numberForKey:@"blog_site_id"];
 	
 	self.content = [self normalizeParagraphs:[dict objectForKey:@"post_content_full"]];
 	self.commentsOpen = [NSNumber numberWithBool:[@"open" isEqualToString:[dict stringForKey:@"comment_status"]]];
@@ -356,9 +383,11 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 	self.permaLink = [dict stringForKey:@"post_permalink"];
 	self.postTitle = [[[dict stringForKey:@"post_title"] stringByDecodingXMLCharacters] trim];
 	
+    // blog_public is either a 1 or a -1.
+    NSInteger isPublic = [[dict numberForKey:@"blog_public"] integerValue];
+    self.isBlogPrivate = [NSNumber numberWithBool:(1 > isPublic)];
+    
 	self.isLiked = [dict numberForKey:@"is_liked"];
-	
-	self.siteID = [dict numberForKey:@"blog_id"];
 	
 	NSString *summary = [self makePlainText:[dict stringForKey:@"post_content"]];
 	if ([summary length] > ReaderPostSummaryLength) {
@@ -551,70 +580,17 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 
 - (NSString *)prettyDateString {
 	NSDate *date = [self isFreshlyPressed] ? self.sortDate : self.date_created_gmt;
-	NSString *str;
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
 	NSTimeInterval diff = [[NSDate date] timeIntervalSinceDate:date];
-	
-	if(diff < 60) {
-		NSString *fmt = NSLocalizedString(@"%i second ago", @"second ago");
-		if(diff == 1) {
-			fmt = NSLocalizedString(@"%i seconds ago", @"seconds ago");
-		}
-		
-		str = [NSString stringWithFormat:fmt, (NSInteger)diff];
-
-	} else if(diff < 3600) {
-		
-		NSInteger min = (NSInteger)floor(diff / 60);
-		NSInteger sec = (NSInteger)floor(fmod(diff, 60));
-		NSString *minFmt = NSLocalizedString(@"%i minutes ago", @"minutes ago");
-		NSString *secFmt = NSLocalizedString(@"%i seconds ago", @"seconds ago");
-		if (min == 1) {
-			minFmt = NSLocalizedString(@"%i minute ago", @"minute ago");
-		}
-		if (sec == 1) {
-			secFmt = NSLocalizedString(@"%i second ago", @"second ago");
-		}
-
-		NSString *fmt = [NSString stringWithFormat:@"%@, %@", minFmt, secFmt];
-		str = [NSString stringWithFormat:fmt, min, sec];
-		
-	} else if (diff < 86400) {
-		
-		NSInteger hr = (NSInteger)floor(diff / 3600);
-		NSInteger min = (NSInteger)floor(fmod(diff, 3600) / 60);
-		
-		NSString *hrFmt = NSLocalizedString(@"%i hours ago", @"hours ago");
-		NSString *minFmt = NSLocalizedString(@"%i minutes ago", @"minutes ago");
-		if (hr == 1) {
-			hrFmt = NSLocalizedString(@"%i hour ago", @"hour ago");
-		}
-		if (min == 1) {
-			minFmt = NSLocalizedString(@"%i minute ago", @"minute ago");
-		}
-		
-		NSString *fmt = [NSString stringWithFormat:@"%@, %@", hrFmt, minFmt];
-		str = [NSString stringWithFormat:fmt, hr, min];
-		
-	} else {
-
-		NSInteger day = (NSInteger)floor(diff / 86400);
-		NSInteger hr = (NSInteger)floor(fmod(diff, 86400) / 3600);
-
-		NSString *dayFmt = NSLocalizedString(@"%i days ago", @"days ago");
-		NSString *hrFmt = NSLocalizedString(@"%i hours ago", @"hours ago");
-		if (day == 1) {
-			dayFmt = NSLocalizedString(@"%i day ago", @"day ago");
-		}
-		if (hr == 1) {
-			hrFmt = NSLocalizedString(@"%i hour ago", @"hour ago");
-		}
-		
-		NSString *fmt = [NSString stringWithFormat:@"%@, %@", dayFmt, hrFmt];
-		str = [NSString stringWithFormat:fmt, day, hr];
-		
-	}
-	
-	return str;
+    if (diff < 86400) {
+        formatter.dateStyle = NSDateFormatterNoStyle;
+        formatter.timeStyle = NSDateFormatterShortStyle;
+    } else {
+        formatter.dateStyle = NSDateFormatterShortStyle;
+        formatter.timeStyle = NSDateFormatterNoStyle;
+    }
+    formatter.doesRelativeDateFormatting = YES;
+    return [formatter stringFromDate:date];
 }
 
 
@@ -625,6 +601,11 @@ NSString *const ReaderCurrentTopicKey = @"ReaderCurrentTopicKey";
 
 - (BOOL)isBlogsIFollow {
 	return ([self.endpoint rangeOfString:@"reader/following"].location != NSNotFound)? true : false;
+}
+
+
+- (BOOL)isPrivate {
+    return [self.isBlogPrivate boolValue];
 }
 
 

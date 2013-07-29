@@ -1,5 +1,7 @@
 
-@class AutosaveManager, PanelNavigationController;
+#import "PanelNavigationController.h"
+
+@class AutosaveManager;
 
 @interface WordPressAppDelegate : NSObject <UIApplicationDelegate, UIAlertViewDelegate>
 

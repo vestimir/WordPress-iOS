@@ -251,7 +251,7 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 		navController.modalPresentationStyle = UIModalPresentationFormSheet;
     }
 	
-    [self presentModalViewController:navController animated:YES];
+    [self presentViewController:navController animated:YES completion:nil];
 }
 
 
@@ -393,7 +393,8 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
             if (image) {
                 [cell setFeaturedImage:image];
             } else {
-                [_featuredImageSource fetchImageForURL:imageURL withSize:imageSize indexPath:indexPath];
+                [_featuredImageSource fetchImageForURL:imageURL withSize:imageSize
+                                             indexPath:indexPath isPrivate:post.isPrivate];
             }
         }
     }
@@ -564,7 +565,8 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
         if (image) {
             [cell setFeaturedImage:image];
         } else if (!self.tableView.isDragging && !self.tableView.isDecelerating) {
-            [_featuredImageSource fetchImageForURL:imageURL withSize:imageSize indexPath:indexPath];
+            [_featuredImageSource fetchImageForURL:imageURL withSize:imageSize
+                                         indexPath:indexPath isPrivate:post.isPrivate];
         }
     }
 	

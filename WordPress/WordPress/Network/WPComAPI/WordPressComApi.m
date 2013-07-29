@@ -228,7 +228,7 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
     // Remove all notes
     [Note removeAllNotesWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]];
 
-    [self clearReaderCookies];
+    [self clearWpComCookies];
 
     // Notify the world
     [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
@@ -384,16 +384,16 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
     self.password = [SFHFKeychainUtils getPasswordForUsername:self.username
                                           andServiceName:@"WordPress.com"
                                                    error:&error];
-    [self clearReaderCookies];
+    [self clearWpComCookies];
     [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
 //    [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = YES;
     [PushManager registerForRemotePushNotifications];
     [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLoginNotification object:self.username];
 }
 
-- (void)clearReaderCookies {
-    NSArray *readerCookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
-    for (NSHTTPCookie *cookie in readerCookies) {
+- (void)clearWpComCookies {
+    NSArray *wpComCookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
+    for (NSHTTPCookie *cookie in wpComCookies) {
         if ([cookie.domain hasSuffix:@"wordpress.com"]) {
             [[NSHTTPCookieStorage sharedHTTPCookieStorage] deleteCookie:cookie];
         }

@@ -6,7 +6,6 @@
 
 #import "StatsWebViewController.h"
 #import "Blog+Jetpack.h"
-#import "WordPressAppDelegate.h"
 #import "WordPressComApi.h"
 #import "AFHTTPClient.h"
 #import "AFHTTPRequestOperation.h"
@@ -176,15 +175,16 @@ static NSString *_lastAuthedName = nil;
     if (blog) {
         [FileLogger log:@"Loading Stats for the following blog: %@", [blog url]];
 
-//        WordPressAppDelegate *appDelegate = [WordPressAppDelegate sharedWordPressApplicationDelegate];
-//        if( !appDelegate.connectionAvailable ) {
-//            [webView hideRefreshingState];
-//            [ReachabilityUtils showAlertNoInternetConnectionWithDelegate:self];
-//            [webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
-//            
-//        } else {
-//            [self initStats];
-//        }
+        if(![ReachabilityUtils sharedInstance].connectionAvailable) {
+            [webView hideRefreshingState];
+            [ReachabilityUtils showAlertNoInternetConnectionWithRetryBlock:^{
+                [self loadStats];
+            }];
+            [webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+
+        } else {
+            [self initStats];
+        }
     } else {
         [webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
     }
@@ -334,11 +334,12 @@ static NSString *_lastAuthedName = nil;
         return;
     }
     
-//    WordPressAppDelegate *appDelegate = [WordPressAppDelegate sharedWordPressApplicationDelegate];
-//    if( !appDelegate.connectionAvailable ) {
-//        [ReachabilityUtils showAlertNoInternetConnectionWithDelegate:self]; 
-//        return;
-//    }
+    if( ![ReachabilityUtils sharedInstance].connectionAvailable ) {
+        [ReachabilityUtils showAlertNoInternetConnectionWithRetryBlock:^{
+            [self loadStats];
+        }];
+        return;
+    }
 
     if (!authed) {
         [self authStats];

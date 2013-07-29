@@ -2,7 +2,6 @@
 //  GeneralWalkthroughViewController.m
 //  WordPress
 //
-//  Created by DX074 on 13-06-27.
 //  Copyright (c) 2013 WordPress. All rights reserved.
 //
 
@@ -324,11 +323,11 @@
     return [result count] != 0;
 }
 
-- (NewAddUsersBlogViewController *)addUsersBlogViewController
+- (NewAddUsersBlogViewController *)addUsersBlogViewController:(NSString*)xmlRPCUrl
 {
+    BOOL isWpCom = (xmlRPCUrl == nil);
     NewAddUsersBlogViewController *vc = [[NewAddUsersBlogViewController alloc] init];
-    vc.username = generalWalkthroughView.usernameText.text;
-    vc.password = generalWalkthroughView.passwordText.text;
+    vc.account = [self createAccountWithUsername:nil andPassword:nil isWPCom:isWpCom xmlRPCUrl:xmlRPCUrl];
 
     vc.blogAdditionCompleted = ^(NewAddUsersBlogViewController * viewController){
         [self.navigationController popViewControllerAnimated:NO];
@@ -348,7 +347,7 @@
 }
 
 - (void)showAddUsersBlogsForWPCom {
-    NewAddUsersBlogViewController *vc = [self addUsersBlogViewController];
+    NewAddUsersBlogViewController *vc = [self addUsersBlogViewController:nil];
     
     NSString *siteUrl = [generalWalkthroughView.siteUrlText.text trim];
     if ([siteUrl length] != 0) {
@@ -356,8 +355,7 @@
     } else if ([_dotComSiteUrl length] != 0) {
         vc.siteUrl = _dotComSiteUrl;
     }
-    
-    vc.isWPCom = YES;
+
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -373,14 +371,24 @@
 {
     NSParameterAssert(blogDetails != nil);
     
-    WPAccount *account = [WPAccount createOrUpdateSelfHostedAccountWithXmlrpc:xmlRPCUrl username:generalWalkthroughView.usernameText.text andPassword:generalWalkthroughView.passwordText.text];
-    
+    WPAccount *account = [self createAccountWithUsername:generalWalkthroughView.usernameText.text andPassword:generalWalkthroughView.passwordText.text isWPCom:NO xmlRPCUrl:xmlRPCUrl];
+
     NSMutableDictionary *newBlog = [NSMutableDictionary dictionaryWithDictionary:blogDetails];
     [newBlog setObject:xmlRPCUrl forKey:@"xmlrpc"];
     
     _blog = [account findOrCreateBlogFromDictionary:newBlog];
     [_blog dataSave];
     
+}
+
+- (WPAccount *)createAccountWithUsername:(NSString *)username andPassword:(NSString *)password isWPCom:(BOOL)isWPCom xmlRPCUrl:(NSString *)xmlRPCUrl {
+    WPAccount *account;
+    if (isWPCom) {
+            account = [WPAccount createOrUpdateWordPressComAccountWithUsername:username andPassword:password];
+        } else {
+            account = [WPAccount createOrUpdateSelfHostedAccountWithXmlrpc:xmlRPCUrl username:username andPassword:password];
+        }
+    return account;
 }
 
 - (void)synchronizeNewlyAddedBlog {

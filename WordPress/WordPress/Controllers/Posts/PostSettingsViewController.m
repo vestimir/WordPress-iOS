@@ -628,7 +628,10 @@
                     
 					pickerView.tag = TAG_PICKER_STATUS;
 					[pickerView reloadAllComponents];
-					[pickerView selectRow:[statusList indexOfObject:self.apost.statusTitle] inComponent:0 animated:NO];
+                    NSInteger selectedRowIndex = [statusList indexOfObject:self.apost.statusTitle];
+                    if (selectedRowIndex != NSNotFound) {
+                        [pickerView selectRow:[statusList indexOfObject:self.apost.statusTitle] inComponent:0 animated:NO];
+                    }
 					[self showPicker:pickerView];
 					break;
 				}
@@ -638,7 +641,10 @@
 
 					pickerView.tag = TAG_PICKER_VISIBILITY;
 					[pickerView reloadAllComponents];
-					[pickerView selectRow:[visibilityList indexOfObject:visibilityLabel.text] inComponent:0 animated:NO];
+                    NSInteger selectedRowIndex = [statusList indexOfObject:self.apost.statusTitle];
+                    if (selectedRowIndex != NSNotFound) {
+                        [pickerView selectRow:[visibilityList indexOfObject:visibilityLabel.text] inComponent:0 animated:NO];
+                    }
 					[self showPicker:pickerView];
 					break;
 				}
@@ -666,7 +672,10 @@
             pickerView.tag = TAG_PICKER_FORMAT;
             [pickerView reloadAllComponents];
             if ([formatsList count] != 0 && ([formatsList indexOfObject:self.post.postFormatText] != NSNotFound)) {
-                [pickerView selectRow:[formatsList indexOfObject:self.post.postFormatText] inComponent:0 animated:NO];
+                NSInteger selectedRowIndex = [formatsList indexOfObject:self.post.postFormatText];
+                if (selectedRowIndex != NSNotFound) {
+                    [pickerView selectRow:[formatsList indexOfObject:self.post.postFormatText] inComponent:0 animated:NO];
+                }
             }
             [self showPicker:pickerView];
             break;

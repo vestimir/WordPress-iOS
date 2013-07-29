@@ -2,7 +2,6 @@
 //  SignInOperation.m
 //  WordPress
 //
-//  Created by DX074 on 13-06-28.
 //  Copyright (c) 2013 WordPress. All rights reserved.
 //
 

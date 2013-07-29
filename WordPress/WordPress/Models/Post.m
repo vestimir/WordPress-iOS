@@ -291,7 +291,7 @@
                    parameters:parameters
                       success:^(AFHTTPRequestOperation *operation, id responseObject) {
                           NSDictionary *mediaItem = (NSDictionary *)responseObject;
-                          self.featuredImageURL = [mediaItem objectForKey:@"link"];
+                          self.featuredImageURL = [mediaItem stringForKey:@"link"];
                           if (success) success();
                       } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                           if (failure) {
@@ -387,8 +387,12 @@
                                                                                    if ([responseObject respondsToSelector:@selector(numericValue)]) {
                                                                                        self.postID = [responseObject numericValue];
                                                                                        self.remoteStatus = AbstractPostRemoteStatusSync;
-                                                                                       // Set the temporary date until we get it from the server so it sorts properly on the list
-                                                                                       self.date_created_gmt = [DateUtils localDateToGMTDate:[NSDate date]];
+                                                                                       
+                                                                                       if (!self.date_created_gmt) {
+                                                                                           // Set the temporary date until we get it from the server so it sorts properly on the list
+                                                                                           self.date_created_gmt = [DateUtils localDateToGMTDate:[NSDate date]];
+                                                                                       }
+                                                                                       
                                                                                        [self save];
                                                                                        [self getPostWithSuccess:success failure:failure];
                                                                                        [[NSNotificationCenter defaultCenter] postNotificationName:@"PostUploaded" object:self];

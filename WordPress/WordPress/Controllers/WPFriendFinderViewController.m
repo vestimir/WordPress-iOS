@@ -48,22 +48,41 @@ typedef void (^CancelBlock)();
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone 
                                                                                            target:self 
                                                                                            action:@selector(dismissFriendFinder:)];
-    if([[UIBarButtonItem class] respondsToSelector:@selector(appearance)])
+    if([[UIBarButtonItem class] respondsToSelector:@selector(appearance)]) {
        [UIBarButtonItem styleButtonAsPrimary:self.navigationItem.rightBarButtonItem];
-}
+    }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // remove notification
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    self.dismissBlock = nil;
+    self.activityView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    self.activityView.autoresizingMask = UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleLeftMargin;
+    CGRect f1 = self.activityView.frame;
+    CGRect f2 = self.view.frame;
+    f1.origin.x = (f2.size.width / 2.0f) - (f1.size.width / 2.0f);
+    f1.origin.y = (f2.size.height / 2.0f) - (f1.size.height / 2.0f);
+    self.activityView.frame = f1;
+
+    [self.view addSubview:self.activityView];
 }
 
 - (void)dismissFriendFinder:(id)sender
 {
     [self.navigationController dismissModalViewControllerAnimated:YES];
 }
+
+#pragma mark - UIWebView Delegate Methods
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    if ([[[webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML.length"] numericValue] integerValue] == 0) {
+        [self.activityView startAnimating];
+    }
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self.activityView stopAnimating];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    [self.activityView stopAnimating];
+
 
 - (void)configureFriendFinder:(id)config
 {
@@ -78,9 +97,9 @@ typedef void (^CancelBlock)();
     
     
     [self.webView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"FriendFinder.enableSources(%@)", [available JSONString]]];
-    
-    
 }
+
+
 
 - (void)authorizeSource:(NSString *)source
 {

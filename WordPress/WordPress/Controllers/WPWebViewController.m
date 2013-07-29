@@ -9,7 +9,7 @@
 #import "WPWebViewController.h"
 #import "PanelNavigationConstants.h"
 #import "ReachabilityUtils.h"
-#import "WPActivities.h"
+#import "WPActivityDefaults.h"
 #import "NSString+Helpers.h"
 #import "WPCookie.h"
 #import "PanelNavigationController.h"
@@ -302,7 +302,9 @@
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
     
     if (![ReachabilityUtils isInternetReachable]) {
-        [ReachabilityUtils showAlertNoInternetConnectionWithDelegate:self];
+        [ReachabilityUtils showAlertNoInternetConnectionWithRetryBlock:^{
+            [self refreshWebView];
+        }];
         self.optionsButton.enabled = NO;
         self.refreshButton.enabled = NO;
         return;
@@ -487,9 +489,6 @@
 
     if (NSClassFromString(@"UIActivity") != nil) {
         NSString *title = [self getDocumentTitle];
-        SafariActivity *safariActivity = [[SafariActivity alloc] init];
-        InstapaperActivity *instapaperActivity = [[InstapaperActivity alloc] init];
-        PocketActivity *pocketActivity = [[PocketActivity alloc] init];
 
         NSMutableArray *activityItems = [NSMutableArray array];
         if (title) {
@@ -497,36 +496,16 @@
         }
 
         [activityItems addObject:[NSURL URLWithString:permaLink]];
-        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:@[safariActivity, instapaperActivity, pocketActivity]];
+        UIActivityViewController *activityViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems applicationActivities:[WPActivityDefaults defaultActivities]];
+        if (title) {
+            [activityViewController setValue:title forKey:@"subject"];
+        }
         activityViewController.completionHandler = ^(NSString *activityType, BOOL completed) {
             if (!completed)
                 return;
             
-            NSString *event;
-            if ([activityType isEqualToString:UIActivityTypeMail]) {
-                event = StatsEventWebviewSharedArticleViaEmail;
-            } else if ([activityType isEqualToString:UIActivityTypeMessage]) {
-                event = StatsEventWebviewSharedArticleViaSMS;
-            } else if ([activityType isEqualToString:UIActivityTypePostToTwitter]) {
-                event = StatsEventWebviewSharedArticleViaTwitter;
-            } else if ([activityType isEqualToString:UIActivityTypePostToFacebook]) {
-                event = StatsEventWebviewSharedArticleViaFacebook;
-            } else if ([activityType isEqualToString:UIActivityTypeCopyToPasteboard]) {
-                event = StatsEventWebviewCopiedArticleDetails;
-            } else if ([activityType isEqualToString:UIActivityTypePostToWeibo]) {
-                event = StatsEventWebviewSharedArticleViaWeibo;
-            } else if ([activityType isEqualToString:NSStringFromClass([SafariActivity class])]) {
-                event = StatsEventWebviewOpenedArticleInSafari;
-            } else if ([activityType isEqualToString:NSStringFromClass([InstapaperActivity class])]) {
-                event = StatsEventWebviewSentArticleToInstapaper;
-            } else if ([activityType isEqualToString:NSStringFromClass([PocketActivity class])]) {
-                event = StatsEventWebviewSentArticleToPocket;
-            }
-            
-            if (event != nil) {
-                event = [NSString stringWithFormat:@"%@ - %@", self.statsPrefixForShareActions, event];
-                [WPMobileStats trackEventForWPCom:event];
-            }
+        [WPActivityDefaults trackActivityType:activityType withPrefix:self.statsPrefixForShareActions]; 
+        
         };
         [self presentViewController:activityViewController animated:YES completion:nil];
         return;
@@ -543,7 +522,9 @@
 
 - (void)reload {
     if (![ReachabilityUtils isInternetReachable]) {
-        [ReachabilityUtils showAlertNoInternetConnectionWithDelegate:self];
+        [ReachabilityUtils showAlertNoInternetConnectionWithRetryBlock:^{
+            [self refreshWebView];
+        }];
         self.optionsButton.enabled = NO;
         self.refreshButton.enabled = NO;
         return;
@@ -652,17 +633,6 @@
         [self.scrollView setContentOffset:bottomOffset animated:YES];
     }
 }
-
-
-#pragma mark -
-#pragma mark AlertView Delegate Methods
-
-- (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex {
-    if(buttonIndex > 0) {
-        [self refreshWebView];
-    }
-}
-
 
 #pragma mark - UIActionSheetDelegate
 

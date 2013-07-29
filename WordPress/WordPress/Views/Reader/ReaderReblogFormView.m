@@ -117,10 +117,10 @@
 			[blogs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
 				if ([[obj numberForKey:@"blogid"] isEqualToNumber:primaryBlogId]) {
 					[self setDestinationBlog:obj];
-					stop = YES;
+					*stop = YES;
 				}
 			}];
-		} else {
+		} else if ([blogs count]) {
 			[self setDestinationBlog:[blogs objectAtIndex:0]];
 		}
     }

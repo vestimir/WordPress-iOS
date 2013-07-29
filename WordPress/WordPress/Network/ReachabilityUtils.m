@@ -9,6 +9,56 @@
 #import "ReachabilityUtils.h"
 #import "WordPressAppDelegate.h"
 
+@interface ReachabilityAlert : NSObject <UIAlertViewDelegate>
+
+@property (nonatomic, copy) void (^retryBlock)();
+
+- (id)initWithRetryBlock:(void (^)())retryBlock;
+- (void)show;
+
+@end
+
+static ReachabilityAlert *currentReachabilityAlert = nil;
+
+@implementation ReachabilityAlert
+
+- (id)initWithRetryBlock:(void (^)())retryBlock {
+    self = [super init];
+    if (self) {
+        self.retryBlock = retryBlock;
+    }
+    return self;
+}
+
+- (void)show {
+    if (currentReachabilityAlert) {
+        return;
+    }
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No Connection", @"")
+                                                    message:NSLocalizedString(@"The Internet connection appears to be offline.", @"")
+                                                   delegate:self
+                                          cancelButtonTitle:NSLocalizedString(@"OK", @"")
+                                          otherButtonTitles:nil];
+    if(self.retryBlock) {
+        [alert addButtonWithTitle:NSLocalizedString(@"Retry?", @"")];
+    }
+    [alert show];
+    currentReachabilityAlert = self;
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    ReachabilityAlert *alert = currentReachabilityAlert;
+    currentReachabilityAlert = nil;
+    if (buttonIndex == 1 && self.retryBlock) {
+        self.retryBlock();
+    }
+    alert = nil;
+}
+
+@end
+
+#pragma mark - 
+
 @implementation ReachabilityUtils
 
 + (instancetype)sharedInstance {
@@ -29,22 +79,14 @@
 
 
 + (void)showAlertNoInternetConnection {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No Connection", @"")
-                                                        message:NSLocalizedString(@"The Internet connection appears to be offline.", @"")
-                                                       delegate:nil
-                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                              otherButtonTitles:nil];
-    [alertView show];
+    ReachabilityAlert *alert = [[ReachabilityAlert alloc] initWithRetryBlock:nil];
+    [alert show];
 }
 
 
-+ (void)showAlertNoInternetConnectionWithDelegate:(id)delegate {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"No Connection", @"")
-                                                        message:NSLocalizedString(@"The Internet connection appears to be offline.", @"")
-                                                       delegate:delegate
-                                              cancelButtonTitle:NSLocalizedString(@"OK", @"")
-                                              otherButtonTitles:NSLocalizedString(@"Retry?", @""), nil];
-    [alertView show];
++ (void)showAlertNoInternetConnectionWithRetryBlock:(void (^)())retryBlock {
+    ReachabilityAlert *alert = [[ReachabilityAlert alloc] initWithRetryBlock:retryBlock];
+    [alert show];
 }
 
 + (void)startReachabilityNotifier {

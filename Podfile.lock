@@ -2,14 +2,15 @@ PODS:
   - AFNetworking (1.2.0)
   - CTidy (0.3.0)
   - DTCoreText (1.6.1):
-    - DTFoundation/Core (~> 1.4.3)
-    - DTFoundation/DTHMLParser (~> 1.4.3)
-    - DTFoundation/UIKit (~> 1.4.3)
-  - DTFoundation/Core (1.4.4)
-  - DTFoundation/DTHMLParser (1.4.4):
+    - DTFoundation/Core (~> 1.4.5)
+    - DTFoundation/DTHTMLParser (~> 1.4.5)
+    - DTFoundation/UIKit (~> 1.4.5)
+  - DTFoundation/Core (1.4.5)
+  - DTFoundation/DTHTMLParser (1.4.5):
     - DTFoundation/Core
-  - DTFoundation/UIKit (1.4.4):
+  - DTFoundation/UIKit (1.4.5):
     - DTFoundation/Core
+  - google-plus-ios-sdk (1.3.0)
   - JSONKit (1.5pre)
   - MGImageUtilities (0.0.1)
   - Mixpanel (2.0.0)
@@ -30,6 +31,7 @@ DEPENDENCIES:
   - AFNetworking (= 1.2)
   - CTidy (from `git://github.com/wordpress-mobile/CTidy.git`)
   - DTCoreText (~> 1.5)
+  - google-plus-ios-sdk (~> 1.2)
   - JSONKit (~> 1.4)
   - MGImageUtilities (from `git://github.com/wordpress-mobile/MGImageUtilities.git`)
   - Mixpanel
@@ -59,8 +61,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AFNetworking: 3cbae45f61a9f995cdbd56bd571223910d7f4e44
   CTidy: 6a35875a96dd441822e620732c1113be19769067
-  DTCoreText: cb50eba89a78c842e6db89a310f8f1833f3e45bd
-  DTFoundation: c2fd15b2163d8245773911e990ac665b888c4d76
+  DTCoreText: 9cad56dc95a7b3fbdcb6c6bf422c4980fd3d890c
+  DTFoundation: 77e8f12780bd986e7bdf01d67668bd7db2ab2273
+  google-plus-ios-sdk: 38378c4094a72a4fcdd5254c03fdd1813b345fb9
   JSONKit: 409734ab3407fce90ef7eaa95d7168f38d9a6601
   MGImageUtilities: ab3580f2161b10f8a41331baea87aaafbd688950
   Mixpanel: d456c27f7520e22784a15d0bcd9d5c287080b0cd
