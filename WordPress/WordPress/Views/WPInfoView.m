@@ -19,8 +19,9 @@
 #pragma mark Lifecycle Methods
 
 + (WPInfoView *)WPInfoViewWithTitle:(NSString *)titleText message:(NSString *)messageText cancelButton:(NSString *)cancelText {
-    NSArray *arr = [[NSBundle mainBundle] loadNibNamed:@"WPInfoView" owner:nil options:nil];
-    WPInfoView *view = [arr objectAtIndex:0];
+//    NSArray *arr = [[NSBundle mainBundle] loadNibNamed:@"WPInfoView" owner:nil options:nil];
+//    WPInfoView *view = [arr objectAtIndex:0];
+    WPInfoView *view = [[WPInfoView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [view setTitle:titleText message:messageText cancelButton:cancelText];
     
     return view;

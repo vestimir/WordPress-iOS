@@ -106,6 +106,7 @@
 		C551CC58179867D700454E97 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C551CC57179867D600454E97 /* MapKit.framework */; };
 		C551CC5A179867F500454E97 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C551CC59179867F300454E97 /* Accounts.framework */; };
 		C551CC5C1798680900454E97 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C551CC5B1798680800454E97 /* CoreMedia.framework */; };
+		C559DF9E17A714E100756723 /* GeneralWalkthroughViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C559DF9D17A714E100756723 /* GeneralWalkthroughViewController.m */; };
 		C575FC1817A2C3E10040F992 /* NSURL+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = C575FC1717A2C3E10040F992 /* NSURL+Util.m */; };
 		C575FC1B17A6C1730040F992 /* AddUsersBlogsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C575FC1A17A6C1720040F992 /* AddUsersBlogsViewController.m */; };
 		C575FC2417A6C3AE0040F992 /* ReaderPostDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C575FC1D17A6C3AE0040F992 /* ReaderPostDetailViewController.m */; };
@@ -185,7 +186,6 @@
 		C5FB8D8417A1BED30064BB92 /* NotificationsFollowDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C0817A1BED20064BB92 /* NotificationsFollowDetailViewController.m */; };
 		C5FB8D8517A1BED30064BB92 /* NotificationsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C0A17A1BED20064BB92 /* NotificationsViewController.m */; };
 		C5FB8D8617A1BED30064BB92 /* EditPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C0D17A1BED20064BB92 /* EditPageViewController.m */; };
-		C5FB8D8717A1BED30064BB92 /* GeneralWalkthroughViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C0F17A1BED20064BB92 /* GeneralWalkthroughViewController.m */; };
 		C5FB8D8817A1BED30064BB92 /* LoginCompletedWalkthroughViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C1117A1BED20064BB92 /* LoginCompletedWalkthroughViewController.m */; };
 		C5FB8D8917A1BED30064BB92 /* PagesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C1417A1BED20064BB92 /* PagesViewController.m */; };
 		C5FB8D8A17A1BED30064BB92 /* PageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8C1617A1BED20064BB92 /* PageViewController.m */; };
@@ -285,7 +285,6 @@
 		C5FB8E1517A1BED30064BB92 /* EditorKeyboardToolbarButtonItem.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D2517A1BED30064BB92 /* EditorKeyboardToolbarButtonItem.m */; };
 		C5FB8E1617A1BED30064BB92 /* FollowButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D2717A1BED30064BB92 /* FollowButton.m */; };
 		C5FB8E1717A1BED30064BB92 /* NoteCommentPostBanner.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D2917A1BED30064BB92 /* NoteCommentPostBanner.m */; };
-		C5FB8E1817A1BED30064BB92 /* GeneralWalkthroughView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D2C17A1BED30064BB92 /* GeneralWalkthroughView.m */; };
 		C5FB8E1917A1BED30064BB92 /* WPNUXBackButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D2E17A1BED30064BB92 /* WPNUXBackButton.m */; };
 		C5FB8E1A17A1BED30064BB92 /* WPNUXMainButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D3017A1BED30064BB92 /* WPNUXMainButton.m */; };
 		C5FB8E1B17A1BED30064BB92 /* WPNUXPrimaryButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8D3217A1BED30064BB92 /* WPNUXPrimaryButton.m */; };
@@ -460,6 +459,8 @@
 		C551CC57179867D600454E97 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		C551CC59179867F300454E97 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		C551CC5B1798680800454E97 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		C559DF9C17A714E100756723 /* GeneralWalkthroughViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneralWalkthroughViewController.h; sourceTree = "<group>"; };
+		C559DF9D17A714E100756723 /* GeneralWalkthroughViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneralWalkthroughViewController.m; sourceTree = "<group>"; };
 		C575FC1617A2C3E10040F992 /* NSURL+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURL+Util.h"; sourceTree = "<group>"; };
 		C575FC1717A2C3E10040F992 /* NSURL+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSURL+Util.m"; sourceTree = "<group>"; };
 		C575FC1917A6C1720040F992 /* AddUsersBlogsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AddUsersBlogsViewController.h; sourceTree = "<group>"; };
@@ -594,8 +595,6 @@
 		C5FB8C0A17A1BED20064BB92 /* NotificationsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsViewController.m; sourceTree = "<group>"; };
 		C5FB8C0C17A1BED20064BB92 /* EditPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPageViewController.h; sourceTree = "<group>"; };
 		C5FB8C0D17A1BED20064BB92 /* EditPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPageViewController.m; sourceTree = "<group>"; };
-		C5FB8C0E17A1BED20064BB92 /* GeneralWalkthroughViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneralWalkthroughViewController.h; sourceTree = "<group>"; };
-		C5FB8C0F17A1BED20064BB92 /* GeneralWalkthroughViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneralWalkthroughViewController.m; sourceTree = "<group>"; };
 		C5FB8C1017A1BED20064BB92 /* LoginCompletedWalkthroughViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginCompletedWalkthroughViewController.h; sourceTree = "<group>"; };
 		C5FB8C1117A1BED20064BB92 /* LoginCompletedWalkthroughViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginCompletedWalkthroughViewController.m; sourceTree = "<group>"; };
 		C5FB8C1317A1BED20064BB92 /* PagesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PagesViewController.h; sourceTree = "<group>"; };
@@ -802,8 +801,6 @@
 		C5FB8D2717A1BED30064BB92 /* FollowButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FollowButton.m; sourceTree = "<group>"; };
 		C5FB8D2817A1BED30064BB92 /* NoteCommentPostBanner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NoteCommentPostBanner.h; sourceTree = "<group>"; };
 		C5FB8D2917A1BED30064BB92 /* NoteCommentPostBanner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NoteCommentPostBanner.m; sourceTree = "<group>"; };
-		C5FB8D2B17A1BED30064BB92 /* GeneralWalkthroughView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneralWalkthroughView.h; sourceTree = "<group>"; };
-		C5FB8D2C17A1BED30064BB92 /* GeneralWalkthroughView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneralWalkthroughView.m; sourceTree = "<group>"; };
 		C5FB8D2D17A1BED30064BB92 /* WPNUXBackButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPNUXBackButton.h; sourceTree = "<group>"; };
 		C5FB8D2E17A1BED30064BB92 /* WPNUXBackButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPNUXBackButton.m; sourceTree = "<group>"; };
 		C5FB8D2F17A1BED30064BB92 /* WPNUXMainButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPNUXMainButton.h; sourceTree = "<group>"; };
@@ -1395,10 +1392,10 @@
 		C5FB8C0B17A1BED20064BB92 /* NUX */ = {
 			isa = PBXGroup;
 			children = (
+				C559DF9C17A714E100756723 /* GeneralWalkthroughViewController.h */,
+				C559DF9D17A714E100756723 /* GeneralWalkthroughViewController.m */,
 				C5FB8C0C17A1BED20064BB92 /* EditPageViewController.h */,
 				C5FB8C0D17A1BED20064BB92 /* EditPageViewController.m */,
-				C5FB8C0E17A1BED20064BB92 /* GeneralWalkthroughViewController.h */,
-				C5FB8C0F17A1BED20064BB92 /* GeneralWalkthroughViewController.m */,
 				C5FB8C1017A1BED20064BB92 /* LoginCompletedWalkthroughViewController.h */,
 				C5FB8C1117A1BED20064BB92 /* LoginCompletedWalkthroughViewController.m */,
 			);
@@ -1752,8 +1749,6 @@
 		C5FB8D2A17A1BED30064BB92 /* NUX */ = {
 			isa = PBXGroup;
 			children = (
-				C5FB8D2B17A1BED30064BB92 /* GeneralWalkthroughView.h */,
-				C5FB8D2C17A1BED30064BB92 /* GeneralWalkthroughView.m */,
 				C5FB8D2D17A1BED30064BB92 /* WPNUXBackButton.h */,
 				C5FB8D2E17A1BED30064BB92 /* WPNUXBackButton.m */,
 				C5FB8D2F17A1BED30064BB92 /* WPNUXMainButton.h */,
@@ -2095,7 +2090,6 @@
 				C5FB8D8417A1BED30064BB92 /* NotificationsFollowDetailViewController.m in Sources */,
 				C5FB8D8517A1BED30064BB92 /* NotificationsViewController.m in Sources */,
 				C5FB8D8617A1BED30064BB92 /* EditPageViewController.m in Sources */,
-				C5FB8D8717A1BED30064BB92 /* GeneralWalkthroughViewController.m in Sources */,
 				C5FB8D8817A1BED30064BB92 /* LoginCompletedWalkthroughViewController.m in Sources */,
 				C5FB8D8917A1BED30064BB92 /* PagesViewController.m in Sources */,
 				C5FB8D8A17A1BED30064BB92 /* PageViewController.m in Sources */,
@@ -2195,7 +2189,6 @@
 				C5FB8E1517A1BED30064BB92 /* EditorKeyboardToolbarButtonItem.m in Sources */,
 				C5FB8E1617A1BED30064BB92 /* FollowButton.m in Sources */,
 				C5FB8E1717A1BED30064BB92 /* NoteCommentPostBanner.m in Sources */,
-				C5FB8E1817A1BED30064BB92 /* GeneralWalkthroughView.m in Sources */,
 				C5FB8E1917A1BED30064BB92 /* WPNUXBackButton.m in Sources */,
 				C5FB8E1A17A1BED30064BB92 /* WPNUXMainButton.m in Sources */,
 				C5FB8E1B17A1BED30064BB92 /* WPNUXPrimaryButton.m in Sources */,
@@ -2231,6 +2224,7 @@
 				C575FC2D17A6C5900040F992 /* SelectWPComBlogVisibilityViewController.m in Sources */,
 				C575FC6317A6CFF10040F992 /* WPActivityDefaults.m in Sources */,
 				C575FC6617A6D0480040F992 /* GooglePlusActivity.m in Sources */,
+				C559DF9E17A714E100756723 /* GeneralWalkthroughViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
