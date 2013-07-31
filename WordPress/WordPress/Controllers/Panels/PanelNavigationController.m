@@ -69,7 +69,6 @@
 - (UIView *)viewAfter:(UIView *)view;
 - (NSArray *)partiallyVisibleViews;
 - (BOOL)viewControllerExpectsWidePanel:(UIViewController *)controller;
-- (void)relayAppearanceMethod:(void(^)(UIViewController* controller))relay;
 - (void)adjustFramesForRotation;
 
 - (UIView *)createWrapViewForViewController:(UIViewController *)controller;
@@ -84,27 +83,11 @@
 - (void)setPanelNavigationController:(PanelNavigationController *)panelNavigationController;
 @end
 
-@interface UIViewController (PanelNavigationController_ViewContainmentEmulation)
-
-- (void)addChildViewController:(UIViewController *)childController;
-- (void)removeFromParentViewController;
-- (void)willMoveToParentViewController:(UIViewController *)parent;
-- (void)didMoveToParentViewController:(UIViewController *)parent;
-
-- (BOOL)vdc_shouldRelay;
-- (void)vdc_viewWillAppear:(bool)animated;
-- (void)vdc_viewDidAppear:(bool)animated;
-- (void)vdc_viewWillDisappear:(bool)animated;
-- (void)vdc_viewDidDisappear:(bool)animated;
-
-@end
-
 #pragma mark -
 
 @implementation PanelNavigationController {
     CGFloat _panOrigin;
     CGFloat _stackOffset;
-    BOOL _isAppeared;
     BOOL _isShowingPoppedIcon;
     BOOL _panned;
     BOOL _pushing;
@@ -141,7 +124,6 @@
 - (id)initWithDetailController:(UIViewController *)detailController masterViewController:(UIViewController *)masterController {
     self = [super init];
     if (self) {
-        _isAppeared = NO;
         if (IS_IPHONE) {
             if (detailController) {
                 _navigationController = [[UINavigationController alloc] initWithRootViewController:detailController];
@@ -160,7 +142,6 @@
 }
 
 - (void)loadView {
-    _isAppeared = NO;
     self.view = [[UIView alloc] init];
     self.view.frame = [UIScreen mainScreen].applicationFrame;
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -257,36 +238,12 @@
     [self prepareDetailView:viewToPrepare forController:self.detailViewController];
 
     [self addPanner];
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller viewWillAppear:animated];
-    }];
-}
-
-- (void)viewDidAppear:(BOOL)animated {
-    [super viewDidAppear:animated];
-
-    _isAppeared = YES;
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller viewDidAppear:animated];
-    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
 
     [self removePanner];
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller viewWillDisappear:animated];
-    }];
-}
-
-- (void)viewDidDisappear:(BOOL)animated {
-    [super viewDidDisappear:animated];
-
-    _isAppeared = NO;
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller viewDidDisappear:animated];
-    }];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
@@ -299,28 +256,13 @@
 
     [self adjustFramesForRotation];
     
-    if (IS_IPAD)
+    if (IS_IPAD) {
         [self setStackOffset:[self nearestValidOffsetWithVelocity:0] duration:duration];
-    
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller willAnimateRotationToInterfaceOrientation:interfaceOrientation duration:duration];
-    }];
-}
-
-- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration {
-    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-    }];
+    }
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-
-    [self relayAppearanceMethod:^(UIViewController *controller) {
-        [controller didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    }];
     
     // Redraw shadows. This fixes an issue where the 1..n-1 detail view's shadow can be
     // incorrect when there are more than two detail views on the stack.
@@ -369,7 +311,6 @@
     [self.masterViewController didReceiveMemoryWarning];
     [self.detailViewController didReceiveMemoryWarning];
     [self.detailViewControllers makeObjectsPerformSelector:@selector(didReceiveMemoryWarning)];
-    
 }
 
 #pragma mark - View Wrapping
@@ -421,16 +362,13 @@
     return [[self wrapViewForViewController:controller] toolbar];
 }
 
-
 - (BOOL)isToolbarHiddenForViewController:(UIViewController *)controller {
     return [[self wrapViewForViewController:controller] isToolbarHidden];
 }
 
-
 - (void)setToolbarHidden:(BOOL)hidden forViewController:(UIViewController *)controller {
     [self setToolbarHidden:hidden forViewController:controller animated:YES];
 }
-
 
 - (void)setToolbarHidden:(BOOL)hidden forViewController:(UIViewController *)controller animated:(BOOL)animated {
 	PanelViewWrapper *wrapView = [self wrapViewForViewController:controller];
@@ -568,17 +506,10 @@
             [self.navigationController setToolbarHidden:YES animated:YES];
             sidebarButton = _detailViewController.navigationItem.leftBarButtonItem; // Retained and auto released to address a scenario found by running the analyzer where the object could leak.
         } else {
-            if (_isAppeared) {
-                [_detailViewController vdc_viewWillDisappear:NO];
-            }
-            
             [_detailViewController willMoveToParentViewController:nil];
             UIView *view = [self viewOrViewWrapper:_detailViewController.view];
             [view removeFromSuperview];
-
-            if (_isAppeared) {
-                [_detailViewController vdc_viewDidDisappear:NO];
-            }
+            
             [_detailViewController setPanelNavigationController:nil];
             [_detailViewController removeFromParentViewController];
             [_detailViewController didMoveToParentViewController:nil];
@@ -671,14 +602,7 @@
             }
             
             [self prepareDetailView:wrappedView forController:_detailViewController];
-            if (_isAppeared) {
-                [_detailViewController vdc_viewWillAppear:NO];
-            }
             [self.detailViewContainer addSubview:wrappedView];
-            
-            if (_isAppeared) {
-                [_detailViewController vdc_viewDidAppear:NO];
-            }
             [_detailViewController didMoveToParentViewController:self];
         }
     }
@@ -707,7 +631,7 @@
 //    }
 }
 
-- (void)showNotificationForNoteType: (NSString *)noteType {
+- (void)showNotificationForNoteType:(NSString *)noteType {
     UIImage *noteIcon = [UIImage imageNamed: [NSString stringWithFormat:@"note_navbar_icon_%@", noteType]];
     if (noteIcon == nil)
         noteIcon = [UIImage imageNamed:@"note_navbar_icon_comment"];
@@ -1551,24 +1475,6 @@
     return [NSArray arrayWithArray:views];
 }
 
-- (void)relayAppearanceMethod:(void(^)(UIViewController* controller))relay {
-    bool shouldRelay = ![self respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)] || ![self performSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
-
-    // don't relay if the controller supports automatic relaying
-    if (!shouldRelay)
-        return;
-
-    relay(self.masterViewController);
-    if (self.navigationController) {
-        relay(self.navigationController);
-    } else {
-        relay(self.detailViewController);
-        for (UIViewController *controller in self.detailViewControllers) {
-            relay(controller);
-        }
-    }
-}
-
 #pragma mark - Navigation methods
 
 - (void)pushViewController:(UIViewController *)viewController animated:(BOOL)animated {
@@ -1602,19 +1508,12 @@
         }
                 
         [self addChildViewController:viewController];
-        if (_isAppeared) {
-            [viewController vdc_viewWillAppear:animated];
-        }
 
         UIView *wrappedView = [self createWrapViewForViewController:viewController];
         [self.view addSubview:wrappedView];
 
         [self.detailViews addObject:wrappedView];
         [self.detailViewWidths addObject:[NSNumber numberWithFloat:newPanelWidth]];
-
-        if (_isAppeared) {
-            [viewController vdc_viewDidAppear:animated];
-        }
 
         [self addShadowTo:wrappedView];
         
@@ -1647,16 +1546,11 @@
         if (self.topViewController != self.detailViewController) {
             viewController = self.topViewController;
             [viewController willMoveToParentViewController:nil];
-            [viewController vdc_viewWillDisappear:animated];
+            [viewController viewWillDisappear:animated];
             [viewController removeFromParentViewController];
 
             UIView *view = [self viewOrViewWrapper:viewController.view];
             [view removeFromSuperview];
-//            [viewController.view removeFromSuperview];
-            [viewController vdc_viewDidDisappear:animated];
-            
-            // cleanup wrapper and toolbar.
-//            [self removeWrapperForView:viewController.view];
             
             [self.detailViewControllers removeLastObject];
             [self.detailViews removeLastObject];
@@ -1738,73 +1632,6 @@ static const char *panelNavigationControllerKey = "PanelNavigationController";
 
 - (void)setPanelNavigationController:(PanelNavigationController *)panelNavigationController {
     objc_setAssociatedObject(self, panelNavigationControllerKey, panelNavigationController, OBJC_ASSOCIATION_ASSIGN);
-}
-
-@end
-
-@implementation UIViewController (PanelNavigationControllerPanel)
-
-#define OBJC_ADD_METHOD_IF_MISSING(selector,fakeSelector,args)     if (!class_getInstanceMethod(self, selector)) { \
-    class_addMethod([UIViewController class], selector, method_getImplementation(class_getInstanceMethod(self, fakeSelector)), args); }
-
-
-+ (void)load {
-    [super load];
-    OBJC_ADD_METHOD_IF_MISSING(@selector(addChildViewController:), @selector(fake_addChildViewController:), "v@:@");
-    OBJC_ADD_METHOD_IF_MISSING(@selector(removeFromParentViewController), @selector(fake_removeFromParentViewController), "v@:");
-    OBJC_ADD_METHOD_IF_MISSING(@selector(willMoveToParentViewController:), @selector(fake_willMoveToParentViewController:), "v@:@");
-    OBJC_ADD_METHOD_IF_MISSING(@selector(didMoveToParentViewController:), @selector(fake_didMoveToParentViewController:), "v@:@");
-}
-
-- (void)fake_addChildViewController:(UIViewController *)childController {
-}
-
-- (void)fake_removeFromParentViewController {
-}
-
-- (void)fake_willMoveToParentViewController:(UIViewController *)parent {
-}
-
-- (void)fake_didMoveToParentViewController:(UIViewController *)parent {
-}
-
-@end
-
-@implementation UIViewController (PanelNavigationController_ViewContainmentEmulation_Fakes)
-
-- (BOOL)vdc_shouldRelay {
-    if (self.panelNavigationController)
-        return [self.panelNavigationController vdc_shouldRelay];
-
-    return ![self respondsToSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)] || ![self performSelector:@selector(automaticallyForwardAppearanceAndRotationMethodsToChildViewControllers)];
-}
-
-- (void)vdc_viewWillAppear:(bool)animated {
-    if (![self vdc_shouldRelay])
-        return;
-
-    [self viewWillAppear:animated];
-}
-
-- (void)vdc_viewDidAppear:(bool)animated{
-    if (![self vdc_shouldRelay])
-        return;
-
-    [self viewDidAppear:animated];
-}
-
-- (void)vdc_viewWillDisappear:(bool)animated{
-    if (![self vdc_shouldRelay])
-        return;
-
-    [self viewWillDisappear:animated];
-}
-
-- (void)vdc_viewDidDisappear:(bool)animated{
-    if (![self vdc_shouldRelay])
-        return;
-
-    [self viewDidDisappear:animated];
 }
 
 @end
