@@ -1,3 +1,24 @@
+/*
+ * UpdateChecker.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
 #import "UpdateChecker.h"
 #import "NSString+Helpers.h"
 #import "UIDevice+WordPressIdentifier.h"
@@ -6,6 +27,10 @@
 #import <UIDeviceIdentifier/UIDeviceHardware.h>
 
 static NSString *const STATS_LAST_UPDATED_DATE = @"statsDate";
+static UpdateChecker *instance = nil;
+
+@interface UpdateChecker () <UIAlertViewDelegate>
+@end
 
 @implementation UpdateChecker
 
@@ -38,6 +63,11 @@ static NSString *const STATS_LAST_UPDATED_DATE = @"statsDate";
 }
 
 + (void)sendDeviceInfoAndCheckForUpgrade {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [[UpdateChecker alloc] init];
+    });
+    
     //generate and post the stats data
 	/*
 	 - device_uuid – A unique identifier to the iPhone/iPod that the app is installed on.
@@ -103,6 +133,14 @@ static NSString *const STATS_LAST_UPDATED_DATE = @"statsDate";
     
 	[[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:STATS_LAST_UPDATED_DATE];
 	[[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 1) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://itunes.apple.com/us/app/wordpress/id335703880?mt=8&ls=1"]];
+    }
+    
+    instance = nil;
 }
 
 @end

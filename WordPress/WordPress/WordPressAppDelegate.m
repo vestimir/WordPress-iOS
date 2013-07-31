@@ -234,6 +234,8 @@
 	//The guide says: After calling this method, the application also posts a UIApplicationDidChangeStatusBarFrameNotification notification to give interested objects a chance to respond to the change.
 	//but seems that the notification is never sent.
 	//we are using a custom notification
+    
+    // NOT USED ?
 	[[NSNotificationCenter defaultCenter] postNotificationName:DidChangeStatusBarFrame object:nil];
 }
 
@@ -241,15 +243,30 @@
 #pragma mark -
 #pragma mark Public Methods
 
-- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
-	WPLog(@"Showing alert with title: %@", message);
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
-                                                    message:message
-                                                   delegate:self
-                                          cancelButtonTitle:NSLocalizedString(@"Need Help?", @"'Need help?' button label, links off to the WP for iOS FAQ.")
-                                          otherButtonTitles:NSLocalizedString(@"OK", @"OK button label."), nil];
-    [alert show];
-}
+//- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
+//	WPLog(@"Showing alert with title: %@", message);
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+//                                                    message:message
+//                                                   delegate:self
+//                                          cancelButtonTitle:NSLocalizedString(@"Need Help?", @"'Need help?' button label, links off to the WP for iOS FAQ.")
+//                                          otherButtonTitles:NSLocalizedString(@"OK", @"OK button label."), nil];
+//    [alert show];
+//}
+//
+//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+//    HelpViewController *helpViewController = [[HelpViewController alloc] init];
+//    UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:helpViewController];
+//    if (IS_IPAD) {
+//        aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+//        aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+//    }
+//
+//    UIViewController *presenter = self.panelNavigationController;
+//    if (presenter.presentedViewController) {
+//        presenter = presenter.presentedViewController;
+//    }
+//    [presenter presentViewController:aNavigationController animated:YES completion:nil];
+//}
 
 //- (void)showNotificationErrorAlert:(NSNotification *)notification {
 //	NSString *cleanedErrorMsg = nil;
@@ -287,72 +304,69 @@
 #pragma mark Private Methods
 
 - (void)customizeAppearance {
-    // If UIAppearance is supported, configure global styles.
-    //Configure navigation bar style if >= iOS 5
-    if ([[UINavigationBar class] respondsToSelector:@selector(appearance)]) {
-        [[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar_bg"] forToolbarPosition:UIToolbarPositionBottom barMetrics:UIBarMetricsDefault];
-        
-        [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_bg"] forBarMetrics:UIBarMetricsDefault];
-        [[UINavigationBar appearance] setTitleTextAttributes:
-         [NSDictionary dictionaryWithObjectsAndKeys:
-          [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0],
-          UITextAttributeTextColor,
-          [UIColor whiteColor],
-          UITextAttributeTextShadowColor,
-          [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
-          UITextAttributeTextShadowOffset,
-          nil]];
-        
-        [[UIBarButtonItem appearance] setTintColor:[UIColor colorWithRed:229.0/255.0 green:229.0/255.0 blue:229.0/255.0 alpha:1.0]];
-        
-        [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_active"] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_landscape"] forState:UIControlStateNormal barMetrics:UIBarMetricsLandscapePhone];
-        [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_landscape_active"] forState:UIControlStateHighlighted barMetrics:UIBarMetricsLandscapePhone];
-        
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_active"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_landscape"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateNormal barMetrics:UIBarMetricsLandscapePhone];
-        [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_landscape_active"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsLandscapePhone];
-        
-        NSDictionary *titleTextAttributesForStateNormal = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                           [UIColor colorWithRed:34.0/255.0 green:34.0/255.0 blue:34.0/255.0 alpha:1.0],
-                                                           UITextAttributeTextColor,
-                                                           [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0],
-                                                           UITextAttributeTextShadowColor,
-                                                           [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
-                                                           UITextAttributeTextShadowOffset,
-                                                           nil];
-        
-        
-        NSDictionary *titleTextAttributesForStateDisabled = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                             [UIColor colorWithRed:150.0/255.0 green:150.0/255.0 blue:150.0/255.0 alpha:1.0],
-                                                             UITextAttributeTextColor,
-                                                            [UIColor colorFromHex:0xeeeeee],
-                                                             UITextAttributeTextShadowColor,
-                                                             [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
-                                                             UITextAttributeTextShadowOffset,
-                                                             nil];
-        
-        NSDictionary *titleTextAttributesForStateHighlighted = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                [UIColor colorWithRed:34.0/255.0 green:34.0/255.0 blue:34.0/255.0 alpha:1.0],
-                                                                UITextAttributeTextColor,
-                                                                [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0],
-                                                                UITextAttributeTextShadowColor,
-                                                                [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
-                                                                UITextAttributeTextShadowOffset,
-                                                                nil];
-        
-        
-        [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateNormal forState:UIControlStateNormal];
-        [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateDisabled forState:UIControlStateDisabled];
-        [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateHighlighted forState:UIControlStateHighlighted];
-        
-        [[UISegmentedControl appearance] setTintColor:[UIColor colorFromHex:0xeeeeee]];
-        [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateNormal forState:UIControlStateNormal];
-        [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateDisabled forState:UIControlStateDisabled];
-        [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateHighlighted forState:UIControlStateHighlighted];
-    }
+    // Configure global styles.
+    [[UIToolbar appearance] setBackgroundImage:[UIImage imageNamed:@"toolbar_bg"] forToolbarPosition:UIToolbarPositionBottom barMetrics:UIBarMetricsDefault];
+    
+    [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_bg"] forBarMetrics:UIBarMetricsDefault];
+    [[UINavigationBar appearance] setTitleTextAttributes:
+     [NSDictionary dictionaryWithObjectsAndKeys:
+      [UIColor colorWithRed:70.0/255.0 green:70.0/255.0 blue:70.0/255.0 alpha:1.0],
+      UITextAttributeTextColor,
+      [UIColor whiteColor],
+      UITextAttributeTextShadowColor,
+      [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
+      UITextAttributeTextShadowOffset,
+      nil]];
+    
+    [[UIBarButtonItem appearance] setTintColor:[UIColor colorWithRed:229.0/255.0 green:229.0/255.0 blue:229.0/255.0 alpha:1.0]];
+    
+    [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg"] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_active"] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_landscape"] forState:UIControlStateNormal barMetrics:UIBarMetricsLandscapePhone];
+    [[UIBarButtonItem appearance] setBackgroundImage:[UIImage imageNamed:@"navbar_button_bg_landscape_active"] forState:UIControlStateHighlighted barMetrics:UIBarMetricsLandscapePhone];
+    
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_active"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsDefault];
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_landscape"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateNormal barMetrics:UIBarMetricsLandscapePhone];
+    [[UIBarButtonItem appearance] setBackButtonBackgroundImage:[[UIImage imageNamed:@"navbar_back_button_bg_landscape_active"] stretchableImageWithLeftCapWidth:14.f topCapHeight:0] forState:UIControlStateHighlighted barMetrics:UIBarMetricsLandscapePhone];
+    
+    NSDictionary *titleTextAttributesForStateNormal = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                       [UIColor colorWithRed:34.0/255.0 green:34.0/255.0 blue:34.0/255.0 alpha:1.0],
+                                                       UITextAttributeTextColor,
+                                                       [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0],
+                                                       UITextAttributeTextShadowColor,
+                                                       [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
+                                                       UITextAttributeTextShadowOffset,
+                                                       nil];
+    
+    
+    NSDictionary *titleTextAttributesForStateDisabled = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                         [UIColor colorWithRed:150.0/255.0 green:150.0/255.0 blue:150.0/255.0 alpha:1.0],
+                                                         UITextAttributeTextColor,
+                                                        [UIColor colorFromHex:0xeeeeee],
+                                                         UITextAttributeTextShadowColor,
+                                                         [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
+                                                         UITextAttributeTextShadowOffset,
+                                                         nil];
+    
+    NSDictionary *titleTextAttributesForStateHighlighted = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                            [UIColor colorWithRed:34.0/255.0 green:34.0/255.0 blue:34.0/255.0 alpha:1.0],
+                                                            UITextAttributeTextColor,
+                                                            [UIColor colorWithRed:255.0/255.0 green:255.0/255.0 blue:255.0/255.0 alpha:1.0],
+                                                            UITextAttributeTextShadowColor,
+                                                            [NSValue valueWithUIOffset:UIOffsetMake(0, 1)],
+                                                            UITextAttributeTextShadowOffset,
+                                                            nil];
+    
+    
+    [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateNormal forState:UIControlStateNormal];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateDisabled forState:UIControlStateDisabled];
+    [[UIBarButtonItem appearance] setTitleTextAttributes:titleTextAttributesForStateHighlighted forState:UIControlStateHighlighted];
+    
+    [[UISegmentedControl appearance] setTintColor:[UIColor colorFromHex:0xeeeeee]];
+    [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateNormal forState:UIControlStateNormal];
+    [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateDisabled forState:UIControlStateDisabled];
+    [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateHighlighted forState:UIControlStateHighlighted];
 }
 
 - (void)setAppBadge {
@@ -410,17 +424,13 @@
     [[PushManager sharedInstance] handleRemoteNotification:userInfo applicationState:application.applicationState];
 }
 
-#pragma mark -
-#pragma mark UIAlertViewDelegate
+#pragma mark - UIAlertViewDelegate
 
+// TODO Put in pushmanager
 //- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
 //	[self setAlertRunning:NO];
 //	
-//    if (alertView.tag == 102) { // Update alert
-//        if (buttonIndex == 1) {
-//            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://itunes.apple.com/us/app/wordpress/id335703880?mt=8&ls=1"]];
-//        }
-//    } else if (alertView.tag == kNotificationNewComment) {
+//    if (alertView.tag == kNotificationNewComment) {
 //        if (buttonIndex == 1) {
 //            [self openNotificationScreenWithOptions:lastNotificationInfo];
 //            lastNotificationInfo = nil;
@@ -431,33 +441,7 @@
 //                [self.panelNavigationController showNotificationsView:YES];
 //            lastNotificationInfo = nil;
 //        }
-//	} else {
-//		//Need Help Alert
-//		switch(buttonIndex) {
-//			case 0: {
-//				HelpViewController *helpViewController = [[HelpViewController alloc] init];
-//                UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:helpViewController];
-//                if (IS_IPAD) {
-//                    aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//                    aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-//                }
-//                
-//                UIViewController *presenter = self.panelNavigationController;
-//                if (presenter.modalViewController) {
-//                    presenter = presenter.modalViewController;
-//                }
-//                [presenter presentModalViewController:aNavigationController animated:YES];
-//                
-//				break;
-//			}
-//			case 1:
-//				//ok
-//				break;
-//			default:
-//				break;
-//		}
-//		
-//	}
+//    }
 //}
 
 #pragma mark - Crashlytics
@@ -510,6 +494,7 @@
     [defaults synchronize];
     [WPMobileStats trackEventForSelfHostedAndWPCom:@"Crashed" properties:@{@"crash_id": crash.identifier}];
 }
+
 
 #pragma mark - Debug
 
