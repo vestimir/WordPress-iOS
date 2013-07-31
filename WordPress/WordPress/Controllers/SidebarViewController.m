@@ -193,12 +193,14 @@
     // present our content with a slight delay, and then the events fire.
     // Need to find a true fix and remove this workaround.
     // See http://ios.trac.wordpress.org/ticket/1114 and #1135
-    if (IS_IPHONE && !( [[self.resultsController fetchedObjects] count] == 0 && ![WPAccount defaultWordPressComAccount] )) {
-        // Don't delay presentation on iPhone, or the sidebar is briefly visible after launch
-        [self presentContent];
-    } else {
-        [self performSelector:@selector(presentContent) withObject:self afterDelay:0.01];
-    }
+    
+    // TODO Remove: RP May not need this since project is iOS 6+ now
+//    if (IS_IPHONE && !( [[self.resultsController fetchedObjects] count] == 0 && ![WPAccount defaultWordPressComAccount] )) {
+//        // Don't delay presentation on iPhone, or the sidebar is briefly visible after launch
+//        [self presentContent];
+//    } else {
+//        [self performSelector:@selector(presentContent) withObject:self afterDelay:0.01];
+//    }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
