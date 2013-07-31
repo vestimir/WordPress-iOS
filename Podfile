@@ -6,7 +6,7 @@ pod 'Reachability',	'~> 3.0.0'
 pod 'JSONKit',		  '~> 1.4'
 pod 'NSURL+IDN', :podspec => 'https://raw.github.com/koke/NSURL-IDN/master/Podfile'
 pod 'CTidy', :git => 'git://github.com/wordpress-mobile/CTidy.git'
-pod 'DTCoreText',   '~> 1.5.3'
+pod 'DTCoreText',   '1.5.3'
 pod 'UIDeviceIdentifier', '~> 0.1'
 pod 'SVProgressHUD', '~> 0.9'
 pod 'SSKeychain',   '~> 0.2'
@@ -17,6 +17,7 @@ pod 'NSObject-SafeExpectations', :podspec => 'https://raw.github.com/koke/NSObje
 pod 'Mixpanel'
 pod 'google-plus-ios-sdk', '~> 1.2'
 pod 'MGImageUtilities', :git => 'git://github.com/wordpress-mobile/MGImageUtilities.git'
+pod 'PocketAPI'
 
 target :WordPressTest, :exclusive => true do
   pod 'OHHTTPStubs', '~> 1.1'
