@@ -503,9 +503,7 @@
         activityViewController.completionHandler = ^(NSString *activityType, BOOL completed) {
             if (!completed)
                 return;
-            
-        [WPActivityDefaults trackActivityType:activityType withPrefix:self.statsPrefixForShareActions]; 
-        
+            [WPActivityDefaults trackActivityType:activityType withPrefix:self.statsPrefixForShareActions]; 
         };
         [self presentViewController:activityViewController animated:YES completion:nil];
         return;

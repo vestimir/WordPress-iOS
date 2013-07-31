@@ -361,7 +361,6 @@ CGFloat const AddUsersBlogBottomBackgroundHeight = 64;
     [WPMobileStats trackEventForSelfHostedAndWPCom:StatsEventAddBlogsClickedAddSelected properties:properties];
     
     _addSelectedButton.enabled = NO;
-    
     for (NSDictionary *blog in _usersBlogs) {
 		if([_selectedBlogs containsObject:[blog valueForKey:@"blogid"]]) {
 			[self createBlog:blog withAccount:self.account];

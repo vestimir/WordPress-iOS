@@ -17,6 +17,7 @@
 #import "WPAccount.h"
 #import <WPXMLRPC/WPXMLRPC.h>
 #import <SVProgressHUD/SVProgressHUD.h>
+#import <NSObject-SafeExpectations/NSObject+SafeExpectations.h>
 
 @interface EditSiteViewController (PrivateMethods)
 
@@ -470,7 +471,7 @@
 - (void)validateXmlprcURL:(NSURL *)xmlRpcURL
 {
     WordPressXMLRPCApi *api = [WordPressXMLRPCApi apiWithXMLRPCEndpoint:xmlRpcURL username:usernameTextField.text password:passwordTextField.text];
-
+    
     [api getBlogOptionsWithSuccess:^(id options){
         if ([options objectForKey:@"wordpress.com"] != nil) {
             _isSiteDotCom = true;

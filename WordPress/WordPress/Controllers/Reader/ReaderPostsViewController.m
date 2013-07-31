@@ -25,6 +25,9 @@
 #import "WPTableImageSource.h"
 #import "WPInfoView.h"
 #import "ReachabilityUtils.h"
+#import "WPCookie.h"
+#import "NSString+Helpers.h"
+#import "UserAgent.h"
 
 NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedNativeFriendFinder";
 
@@ -47,6 +50,7 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 - (void)handleReblogButtonTapped:(id)sender;
 - (void)showReblogForm;
 - (void)hideReblogForm;
+- (void)syncItemsWithSuccess:(void (^)())success failure:(void (^)(NSError *))failure;
 - (void)onSyncSuccess:(AFHTTPRequestOperation *)operation response:(id)responseObject;
 - (void)handleKeyboardDidShow:(NSNotification *)notification;
 - (void)handleKeyboardWillHide:(NSNotification *)notification;
@@ -61,6 +65,8 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 	// (at least for the first time). We'll have DTCoreText prime its font cache here so things are ready
 	// for the detail view, and avoid a perceived lag. 
 	[DTCoreTextFontDescriptor fontDescriptorWithFontAttributes:nil];
+    
+    [AFImageRequestOperation addAcceptableContentTypes:[NSSet setWithObject:@"image/jpg"]];
 }
 
 #pragma mark - Life Cycle methods
@@ -84,7 +90,6 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 
 - (void)viewDidLoad {
 	[super viewDidLoad];
-
 
     CGFloat maxWidth = self.tableView.bounds.size.width;
     if (IS_IPHONE) {
@@ -163,9 +168,8 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
     
 	self.panelNavigationController.delegate = self;
 	
-	NSDictionary *dict = [ReaderPost currentTopic];
-	NSString *title = [[dict objectForKey:@"title"] capitalizedString];
-	self.title = NSLocalizedString(title, @"");
+	self.title = [[[ReaderPost currentTopic] objectForKey:@"title"] capitalizedString];
+    [self loadImagesForVisibleRows];
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleKeyboardDidShow:) name:UIKeyboardWillShowNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleKeyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
@@ -590,6 +594,43 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 
 
 - (void)syncItemsWithUserInteraction:(BOOL)userInteraction success:(void (^)())success failure:(void (^)(NSError *))failure {
+    
+    // if needs auth.
+    if([WPCookie hasCookieForURL:[NSURL URLWithString:@"https://wordpress.com"] andUsername:[[WordPressComApi sharedApi] username]]) {
+       [self syncItemsWithSuccess:success failure:failure];
+        return;
+    }
+    
+    //
+    [UserAgent useDefaultUserAgent];
+    NSString *username = [[WordPressComApi sharedApi] username];
+    NSString *password = [[WordPressComApi sharedApi] password];
+    NSMutableURLRequest *mRequest = [[NSMutableURLRequest alloc] init];
+    NSString *requestBody = [NSString stringWithFormat:@"log=%@&pwd=%@&redirect_to=http://wordpress.com",
+                             [username stringByUrlEncoding],
+                             [password stringByUrlEncoding]];
+    
+    [mRequest setURL:[NSURL URLWithString:@"https://wordpress.com/wp-login.php"]];
+    [mRequest setHTTPBody:[requestBody dataUsingEncoding:NSUTF8StringEncoding]];
+    [mRequest setValue:[NSString stringWithFormat:@"%d", [requestBody length]] forHTTPHeaderField:@"Content-Length"];
+    [mRequest addValue:@"*/*" forHTTPHeaderField:@"Accept"];
+    [mRequest setHTTPMethod:@"POST"];
+    
+    
+    AFHTTPRequestOperation *authRequest = [[AFHTTPRequestOperation alloc] initWithRequest:mRequest];
+    [authRequest setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        [UserAgent useAppUserAgent];
+        [self syncItemsWithSuccess:success failure:failure];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        [UserAgent useAppUserAgent];
+        [self syncItemsWithSuccess:success failure:failure];
+    }];
+    
+    [authRequest start];
+}
+
+    
+- (void)syncItemsWithSuccess:(void (^)())success failure:(void (^)(NSError *))failure {
 	NSString *endpoint = [ReaderPost currentEndpoint];
 	NSNumber *numberToSync = [NSNumber numberWithInteger:ReaderPostsToSync];
 	NSDictionary *params = @{@"number":numberToSync, @"per_page":numberToSync};
@@ -625,9 +666,9 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 	id before;
 	if([endpoint isEqualToString:@"freshly-pressed"]) {
 		// freshly-pressed wants an ISO string but the rest want a timestamp.
-		before = [DateUtils isoStringFromDate:post.dateCreated];
+		before = [DateUtils isoStringFromDate:post.date_created_gmt];
 	} else {
-		before = [NSNumber numberWithInteger:[post.dateCreated timeIntervalSince1970]];
+		before = [NSNumber numberWithInteger:[post.date_created_gmt timeIntervalSince1970]];
 	}
 
 	NSDictionary *params = @{@"before":before, @"number":numberToSync, @"per_page":numberToSync};
@@ -655,18 +696,21 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 
 
 - (void)onSyncSuccess:(AFHTTPRequestOperation *)operation response:(id)responseObject {
+	BOOL wasLoadingMore = _loadingMore;
 	_loadingMore = NO;
 	
 	NSDictionary *resp = (NSDictionary *)responseObject;
 	NSArray *postsArr = [resp arrayForKey:@"posts"];
 	
 	if (!postsArr) {
-		_hasMoreContent = NO;
+		if(wasLoadingMore) {
+			_hasMoreContent = NO;
+		}
 		return;
 	}
 	
 	// if # of results is less than # requested then no more content.
-	if ([postsArr count] < ReaderPostsToSync) {
+	if ([postsArr count] < ReaderPostsToSync && wasLoadingMore) {
 		_hasMoreContent = NO;
 	}
 	
@@ -767,8 +811,7 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 	
     [self configureTableHeader];
 	
-	NSString *title = [[[ReaderPost currentTopic] stringForKey:@"title"] capitalizedString];
-	self.title = NSLocalizedString(title, @"");
+	self.title = [[[ReaderPost currentTopic] stringForKey:@"title"] capitalizedString];
 
     if ([ReachabilityUtils sharedInstance].connectionAvailable == YES && ![self isSyncing] ) {
 		[[NSUserDefaults standardUserDefaults] removeObjectForKey:ReaderLastSyncDateKey];
@@ -809,11 +852,11 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 				
 				[[NSUserDefaults standardUserDefaults] setObject:usersBlogs forKey:@"wpcom_users_blogs"];
 				
-                __block NSNumber *preferredBlogId;
                 if ([usersBlogs count] > 1) {
 					[[WordPressComApi sharedApi] getPath:@"me"
 											  parameters:nil
 												 success:^(AFHTTPRequestOperation *operation, id responseObject) {
+													 __block NSNumber *preferredBlogId;
 													 NSDictionary *dict = (NSDictionary *)responseObject;
 													 NSNumber *primaryBlog = [dict objectForKey:@"primary_blog"];
 													 [usersBlogs enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
@@ -822,20 +865,25 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 															 *stop = YES;
 														 }
 													 }];
+													 
+													 if (!preferredBlogId) {
+														 NSDictionary *dict = [usersBlogs objectAtIndex:0];
+														 preferredBlogId = [dict numberForKey:@"blogid"];
+													 }
+													 
+													 [[NSUserDefaults standardUserDefaults] setObject:preferredBlogId forKey:@"wpcom_users_prefered_blog_id"];
+													 [NSUserDefaults resetStandardUserDefaults];
+													 
 												 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 													 // TODO: Handle Failure. Retry maybe?
 												 }];
 					
-					
 				}
-
-                if (!preferredBlogId) {
-                    NSDictionary *dict = [usersBlogs objectAtIndex:0];
-                    preferredBlogId = [dict numberForKey:@"blogid"];
-                }
                 
-                [[NSUserDefaults standardUserDefaults] setObject:preferredBlogId forKey:@"wpcom_users_prefered_blog_id"];
-                [NSUserDefaults resetStandardUserDefaults];
+                if ([usersBlogs count] == 0) {
+                    return;
+                }
+
 			} failure:^(AFHTTPRequestOperation *operation, NSError *error) {
 				// Fail silently.
             }];

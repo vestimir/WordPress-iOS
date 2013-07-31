@@ -560,6 +560,7 @@ NSString *const EditPostViewControllerAutosaveDidFailNotification = @"EditPostVi
     if (selContext == kSelectionsCategoriesContext) {
         NSLog(@"selected categories: %@", selectedObjects);
         NSLog(@"post: %@", self.post);
+
         // TODO Eliminate cross context relationship forming; selectedObjects could still be from a different context.
         NSMutableSet *categories = [self.post mutableSetValueForKey:@"categories"];
         [categories removeAllObjects];

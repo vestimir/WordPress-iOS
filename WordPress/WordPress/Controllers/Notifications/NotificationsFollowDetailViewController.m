@@ -11,6 +11,7 @@
 #import "WordPressComApi.h"
 #import "NSString+XMLExtensions.h"
 #import "NSString+Helpers.h"
+#import "NSURL+Util.h"
 #import "NotificationsFollowTableViewCell.h"
 #import "WPWebViewController.h"
 #import <QuartzCore/QuartzCore.h>
@@ -310,7 +311,6 @@
         if (likeDetails) {
             NSString *blogURLString = [likeDetails objectForKey:@"blog_url"];
             NSURL *blogURL = [NSURL URLWithString:blogURLString];
-            
             if (!blogURL) {
                 return;
             }

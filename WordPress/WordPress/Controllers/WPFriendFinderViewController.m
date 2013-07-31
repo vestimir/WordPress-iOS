@@ -24,6 +24,7 @@ typedef void (^CancelBlock)();
 @interface WPFriendFinderViewController () <UIAlertViewDelegate>
 
 @property (nonatomic, copy) DismissBlock dismissBlock;
+@property (nonatomic, strong) UIActivityIndicatorView *activityView;
 
 - (void)findEmails;
 - (void)findTwitterFriends;
@@ -61,6 +62,15 @@ typedef void (^CancelBlock)();
     self.activityView.frame = f1;
 
     [self.view addSubview:self.activityView];
+}
+
+- (void)viewDidUnload
+{
+    [super viewDidUnload];
+    // remove notification
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    self.dismissBlock = nil;
+    self.activityView = nil;
 }
 
 - (void)dismissFriendFinder:(id)sender
@@ -339,5 +349,20 @@ typedef void (^CancelBlock)();
     }
 }
 
+#pragma mark - UIWebView Delegate Methods
+
+- (void)webViewDidStartLoad:(UIWebView *)webView {
+    if ([[[webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML.length"] numericValue] integerValue] == 0) {
+        [self.activityView startAnimating];
+    }
+}
+
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
+    [self.activityView stopAnimating];
+}
+
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+    [self.activityView stopAnimating];
+}
 
 @end

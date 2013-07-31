@@ -1,4 +1,3 @@
-
 #import "PanelNavigationController.h"
 
 @class AutosaveManager;
