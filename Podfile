@@ -6,7 +6,7 @@ pod 'Reachability',	'~> 3.0.0'
 pod 'JSONKit',		  '~> 1.4'
 pod 'NSURL+IDN', :podspec => 'https://raw.github.com/koke/NSURL-IDN/master/Podfile'
 pod 'CTidy', :git => 'git://github.com/wordpress-mobile/CTidy.git'
-pod 'DTCoreText',   '~> 1.5'
+pod 'DTCoreText',   '~> 1.5.3'
 pod 'UIDeviceIdentifier', '~> 0.1'
 pod 'SVProgressHUD', '~> 0.9'
 pod 'SSKeychain',   '~> 0.2'
@@ -15,13 +15,12 @@ pod 'wpxmlrpc', '~> 0.1'
 pod 'WordPressApi', :podspec => 'https://raw.github.com/koke/WordPressApi/master/WordPressApi.podspec'
 pod 'NSObject-SafeExpectations', :podspec => 'https://raw.github.com/koke/NSObject-SafeExpectations/master/NSObject-SafeExpectations.podspec'
 pod 'Mixpanel'
-pod 'MGImageUtilities', :git => 'git://github.com/wordpress-mobile/MGImageUtilities.git'
-pod 'PocketAPI', '~> 1.0.2'
 pod 'google-plus-ios-sdk', '~> 1.2'
+pod 'MGImageUtilities', :git => 'git://github.com/wordpress-mobile/MGImageUtilities.git'
 
-#target :WordPressTest, :exclusive => true do
-#  pod 'OHHTTPStubs', '~> 1.1'
-#end
+target :WordPressTest, :exclusive => true do
+  pod 'OHHTTPStubs', '~> 1.1'
+end
 
 # The post install hook add certain compiler flags for JSONKit files so that
 # they won't generate warnings. This had been done in the podspec before, but
@@ -77,5 +76,4 @@ post_install do |installer|
     JSONKIT_FLAGS = "-Wno-deprecated-objc-isa-usage -Wno-format -Wno-parentheses"
     add_compiler_flags(installer.project, "JSONKit.m", JSONKIT_FLAGS)
 end
-
 
