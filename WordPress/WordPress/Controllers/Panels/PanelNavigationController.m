@@ -23,6 +23,7 @@
 #pragma mark -
 
 @interface PanelNavigationController () <UIGestureRecognizerDelegate>
+
 @property (nonatomic, strong) UINavigationController *navigationController;
 @property (nonatomic, strong) UIView *detailViewContainer;
 @property (weak, nonatomic, readonly) UIView *masterView;
@@ -38,73 +39,23 @@
 @property (nonatomic, strong) UIImageView *sidebarBorderView;
 @property (nonatomic, strong) UIButton *notificationButton, *menuButton;
 @property (nonatomic, strong) UIImageView *dividerImageView, *spacerImageView;
-
-- (void)showSidebar;
-- (void)showSidebarAnimated:(BOOL)animated;
-- (void)showSidebarWithVelocity:(CGFloat)velocity;
-- (void)closeSidebar;
-- (void)closeSidebarAnimated:(BOOL)animated;
-- (void)closeSidebarWithVelocity:(CGFloat)velocity;
-- (void)disableDetailView;
-- (void)enableDetailView;
-- (void)prepareDetailView:(UIView *)view forController:(UIViewController *)controller;
-- (void)addShadowTo:(UIView *)view;
-- (void)removeShadowFrom:(UIView *)view;
-- (void)setScrollsToTop:(BOOL)scrollsToTop forView:(UIView *)view;
-- (void)addPanner;
-- (void)removePanner;
-- (void)setFrameForViewController:(UIViewController *)viewController;
-- (void)setViewOffset:(CGFloat)offset forView:(UIView *)view;
-- (void)setStackOffset:(CGFloat)offset duration:(CGFloat)duration;
-- (void)animateView:(UIView *)view toOffset:(CGFloat)offset withVelocity:(CGFloat)velocity;
-- (void)setStackOffset:(CGFloat)offset withVelocity:(CGFloat)velocity;
-- (CGFloat)nearestValidOffsetWithVelocity:(CGFloat)velocity;
-- (CGFloat)maxOffsetSoft;
-- (CGFloat)maxOffsetHard;
-- (CGFloat)minOffsetSoft;
-- (CGFloat)minOffsetHard;
-- (NSInteger)indexForView:(UIView *)view;
-- (UIView *)viewForIndex:(NSUInteger)index;
-- (UIView *)viewBefore:(UIView *)view;
-- (UIView *)viewAfter:(UIView *)view;
-- (NSArray *)partiallyVisibleViews;
-- (BOOL)viewControllerExpectsWidePanel:(UIViewController *)controller;
-- (void)adjustFramesForRotation;
-
-- (UIView *)createWrapViewForViewController:(UIViewController *)controller;
-- (PanelViewWrapper *)wrapViewForViewController:(UIViewController *)controller;
-- (UIView *)viewOrViewWrapper:(UIView *)view;
-
-- (void)animatePoppedIcon;
+@property (nonatomic, assign) BOOL isShowingPoppedIcon;
+@property (nonatomic, assign) BOOL panned;
+@property (nonatomic, assign) BOOL pushing;
+@property (nonatomic, assign) CGFloat panOrigin;
+@property (nonatomic, assign) CGFloat stackOffset;
 
 @end
 
 @interface UIViewController (PanelNavigationController_Internal)
+
 - (void)setPanelNavigationController:(PanelNavigationController *)panelNavigationController;
+
 @end
 
 #pragma mark -
 
-@implementation PanelNavigationController {
-    CGFloat _panOrigin;
-    CGFloat _stackOffset;
-    BOOL _isShowingPoppedIcon;
-    BOOL _panned;
-    BOOL _pushing;
-}
-
-@synthesize detailViewController = _detailViewController;
-@synthesize masterViewController = _masterViewController;
-@synthesize navigationController = _navigationController;
-@synthesize detailViewContainer = _detailViewContainer;
-@synthesize detailViewControllers = _detailViewControllers;
-@synthesize detailViews = _detailViews;
-@synthesize detailViewWidths = _detailViewWidths;
-@synthesize detailTapper = _detailTapper;
-@synthesize panner = _panner;
-@synthesize popPanelsView = _popPanelsView;
-@synthesize sidebarBorderView = _sidebarBorderView;
-@synthesize delegate;
+@implementation PanelNavigationController
 
 - (void)dealloc {
     if (self.navigationController) {
@@ -512,8 +463,6 @@
             
             [_detailViewController setPanelNavigationController:nil];
             [_detailViewController removeFromParentViewController];
-            [_detailViewController didMoveToParentViewController:nil];
-
         }
     }
 
@@ -575,8 +524,6 @@
             [self addChildViewController:_detailViewController];
 
             UIView *wrappedView = [self createWrapViewForViewController:_detailViewController];
-
-
             BOOL newIsWide = [self viewControllerExpectsWidePanel:_detailViewController];
             
             if (newIsWide != oldWasWide) {
@@ -1193,7 +1140,6 @@
         velocity *= 0.25f;
 
         overShot = 22.f * (velocity * PANEL_OVERSHOT_FRICTION);
-//        distance += ABS(overShot); // added but never used?
         CGFloat overShotDuration = ABS(overShot/(velocity * (1-PANEL_OVERSHOT_FRICTION))) * 1.25;
         [keyTimes addObject:[NSNumber numberWithFloat:(duration/(duration+overShotDuration))]];
         duration += overShotDuration;
@@ -1214,7 +1160,6 @@
         
     [viewLayer addAnimation:animation forKey:@"position"];
     viewLayer.position = endPosition;
-    
 }
 
 - (void)setStackOffset:(CGFloat)offset withVelocity:(CGFloat)velocity{
@@ -1250,7 +1195,6 @@
     }
     _stackOffset = offset - remainingOffset;
     [self partiallyVisibleViews];
-    
 }
 
 
@@ -1315,12 +1259,10 @@
         offset += [[self.detailViewWidths objectAtIndex:(viewCount - 2)] floatValue];
         offset -= self.view.bounds.size.width;
         diff = ABS(_stackOffset + remainingVelocity / velocityFactor - offset);
-//        remainingVelocity -= remainingVelocity / velocityFactor; // set but never read?
         if (diff > previousDiff) {
             return previousOffset;
         } else {
             previousOffset = offset;
-//            previousDiff = diff; // set but never read?
         }
     }
     
