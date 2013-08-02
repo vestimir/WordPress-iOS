@@ -27,10 +27,6 @@
 
 @property (nonatomic, readonly, copy) NSArray *viewControllers; // The current view controller stack.
 
-#pragma mark - Initialization
-
-- (id)initWithDetailController:(UIViewController *)detailController masterViewController:(UIViewController *)masterController;
-
 #pragma mark - Navigation methods
 
 /// Uses a horizontal slide transition. Has no effect if the view controller is already in the stack.

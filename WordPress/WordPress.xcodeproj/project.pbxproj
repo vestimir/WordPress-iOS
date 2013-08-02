@@ -35,7 +35,6 @@
 		C53D732C179D7B5D00FEED8D /* EditPostViewController~iphone.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D730E179D7B5D00FEED8D /* EditPostViewController~iphone.xib */; };
 		C53D732D179D7B5D00FEED8D /* EditSiteViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D730F179D7B5D00FEED8D /* EditSiteViewController.xib */; };
 		C53D732E179D7B5D00FEED8D /* HelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D7310179D7B5D00FEED8D /* HelpViewController.xib */; };
-		C53D732F179D7B5D00FEED8D /* MainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D7311179D7B5D00FEED8D /* MainWindow.xib */; };
 		C53D7330179D7B5D00FEED8D /* MediaObjectView.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D7312179D7B5D00FEED8D /* MediaObjectView.xib */; };
 		C53D7331179D7B5D00FEED8D /* NotificationsCommentDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D7313179D7B5D00FEED8D /* NotificationsCommentDetailViewController.xib */; };
 		C53D7332179D7B5D00FEED8D /* NotificationsFollowDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C53D7314179D7B5D00FEED8D /* NotificationsFollowDetailViewController.xib */; };
@@ -218,6 +217,8 @@
 		C5E3CCB317A9B1F300981839 /* navbar_shadow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3CC9117A9B1F300981839 /* navbar_shadow@2x.png */; };
 		C5E3CCB417A9B1F300981839 /* navbar_toggle.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3CC9217A9B1F300981839 /* navbar_toggle.png */; };
 		C5E3CCB517A9B1F300981839 /* navbar_toggle@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3CC9317A9B1F300981839 /* navbar_toggle@2x.png */; };
+		C5E3CCD517ABF88300981839 /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3CCD317ABF88300981839 /* background.png */; };
+		C5E3CCD617ABF88300981839 /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3CCD417ABF88300981839 /* background@2x.png */; };
 		C5FB8B9A179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */; };
 		C5FB8B9B179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */; };
 		C5FB8D6117A1BED30064BB92 /* NSMutableDictionary+Helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8BB917A1BED20064BB92 /* NSMutableDictionary+Helpers.m */; };
@@ -458,7 +459,6 @@
 		C53D730E179D7B5D00FEED8D /* EditPostViewController~iphone.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = "EditPostViewController~iphone.xib"; sourceTree = "<group>"; };
 		C53D730F179D7B5D00FEED8D /* EditSiteViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditSiteViewController.xib; sourceTree = "<group>"; };
 		C53D7310179D7B5D00FEED8D /* HelpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = HelpViewController.xib; sourceTree = "<group>"; };
-		C53D7311179D7B5D00FEED8D /* MainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainWindow.xib; sourceTree = "<group>"; };
 		C53D7312179D7B5D00FEED8D /* MediaObjectView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MediaObjectView.xib; sourceTree = "<group>"; };
 		C53D7313179D7B5D00FEED8D /* NotificationsCommentDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationsCommentDetailViewController.xib; sourceTree = "<group>"; };
 		C53D7314179D7B5D00FEED8D /* NotificationsFollowDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NotificationsFollowDetailViewController.xib; sourceTree = "<group>"; };
@@ -659,6 +659,8 @@
 		C5E3CC9117A9B1F300981839 /* navbar_shadow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_shadow@2x.png"; sourceTree = "<group>"; };
 		C5E3CC9217A9B1F300981839 /* navbar_toggle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = navbar_toggle.png; sourceTree = "<group>"; };
 		C5E3CC9317A9B1F300981839 /* navbar_toggle@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "navbar_toggle@2x.png"; sourceTree = "<group>"; };
+		C5E3CCD317ABF88300981839 /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
+		C5E3CCD417ABF88300981839 /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background@2x.png"; sourceTree = "<group>"; };
 		C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISegmentBarBlackButtonHighlighted.png; sourceTree = "<group>"; };
 		C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISegmentBarBlackButtonHighlighted@2x.png"; sourceTree = "<group>"; };
 		C5FB8BB817A1BED20064BB92 /* NSMutableDictionary+Helpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableDictionary+Helpers.h"; sourceTree = "<group>"; };
@@ -1118,7 +1120,6 @@
 				C53D730E179D7B5D00FEED8D /* EditPostViewController~iphone.xib */,
 				C53D730F179D7B5D00FEED8D /* EditSiteViewController.xib */,
 				C53D7310179D7B5D00FEED8D /* HelpViewController.xib */,
-				C53D7311179D7B5D00FEED8D /* MainWindow.xib */,
 				C53D7312179D7B5D00FEED8D /* MediaObjectView.xib */,
 				C53D7313179D7B5D00FEED8D /* NotificationsCommentDetailViewController.xib */,
 				C53D7314179D7B5D00FEED8D /* NotificationsFollowDetailViewController.xib */,
@@ -1181,6 +1182,8 @@
 		C54DB6E7178E178B00A2C743 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				C5E3CCD317ABF88300981839 /* background.png */,
+				C5E3CCD417ABF88300981839 /* background@2x.png */,
 				C5E3CC7117A9B1F300981839 /* Navbar */,
 				C5E3CC1C17A9B10200981839 /* Sidebar */,
 				C54DB6E8178E178B00A2C743 /* blavatar-wpcom.png */,
@@ -2167,7 +2170,6 @@
 				C53D732C179D7B5D00FEED8D /* EditPostViewController~iphone.xib in Resources */,
 				C53D732D179D7B5D00FEED8D /* EditSiteViewController.xib in Resources */,
 				C53D732E179D7B5D00FEED8D /* HelpViewController.xib in Resources */,
-				C53D732F179D7B5D00FEED8D /* MainWindow.xib in Resources */,
 				C53D7330179D7B5D00FEED8D /* MediaObjectView.xib in Resources */,
 				C53D7331179D7B5D00FEED8D /* NotificationsCommentDetailViewController.xib in Resources */,
 				C53D7332179D7B5D00FEED8D /* NotificationsFollowDetailViewController.xib in Resources */,
@@ -2272,6 +2274,8 @@
 				C5E3CCB317A9B1F300981839 /* navbar_shadow@2x.png in Resources */,
 				C5E3CCB417A9B1F300981839 /* navbar_toggle.png in Resources */,
 				C5E3CCB517A9B1F300981839 /* navbar_toggle@2x.png in Resources */,
+				C5E3CCD517ABF88300981839 /* background.png in Resources */,
+				C5E3CCD617ABF88300981839 /* background@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

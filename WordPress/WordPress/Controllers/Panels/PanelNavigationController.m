@@ -16,6 +16,7 @@
 #import "NotificationsViewController.h"
 #import "Note.h"
 #import "Constants.h"
+#import "SidebarViewController.h"
 
 #define MENU_BUTTON_WIDTH 38.0f
 //#import "SoundUtil.h"
@@ -72,22 +73,16 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (id)initWithDetailController:(UIViewController *)detailController masterViewController:(UIViewController *)masterController {
+- (id)init {
     self = [super init];
     if (self) {
         if (IS_IPHONE) {
-            if (detailController) {
-                _navigationController = [[UINavigationController alloc] initWithRootViewController:detailController];
-            } else {
-                _navigationController = [[UINavigationController alloc] init];
-            }
+            _navigationController = [[UINavigationController alloc] init];
         } else {
             _detailViewControllers = [[NSMutableArray alloc] init];
             _detailViews = [[NSMutableArray alloc] init];
             _detailViewWidths = [[NSMutableArray alloc] init];
         }
-        self.detailViewController = detailController;
-        self.masterViewController = masterController;        
     }
     return self;
 }
@@ -102,48 +97,12 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
-    self.detailViewContainer = [[UIView alloc] init];
     
-    if (IS_IPAD) {
-        self.detailViewContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    } else {
-        self.detailViewContainer.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-    }
-    self.detailViewContainer.autoresizesSubviews = YES;
-    self.detailViewContainer.clipsToBounds = YES;
-    [self.view addSubview:self.detailViewContainer];
-    
-    if (self.navigationController) {
-        [self addChildViewController:self.navigationController];
-        [self.detailViewContainer addSubview:self.navigationController.view];
-        [self.navigationController didMoveToParentViewController:self];
-    } else if (self.detailViewController) {
-        UIView *wrappedView = [self createWrapViewForViewController:self.detailViewController];
-        [self.detailViewContainer addSubview:wrappedView];
-    }
-    self.detailViewContainer.frame = CGRectMake(0, 0, DETAIL_WIDTH, DETAIL_HEIGHT);
-    [self.detailViews addObject:self.detailViewContainer];
-    [self.detailViewWidths addObject:[NSNumber numberWithFloat:DETAIL_WIDTH]];
-    self.masterView.frame = CGRectMake(0, 0, DETAIL_LEDGE_OFFSET, self.view.frame.size.height);
-    self.masterView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    [self.view insertSubview:self.masterViewController.view belowSubview:self.detailViewContainer];
-
-    //Right border view for sidebar
-    _sidebarBorderView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sidebar_border_bg"]];
-    _sidebarBorderView.contentMode = UIViewContentModeScaleToFill;
-    [_sidebarBorderView setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
-    _sidebarBorderView.frame = CGRectMake((IS_IPAD) ? SIDEBAR_WIDTH : (SIDEBAR_WIDTH - DETAIL_LEDGE - 4.0f), 0.0f, 2.0f, self.view.bounds.size.height);
-    [self.view insertSubview:_sidebarBorderView atIndex:0];
-    _sidebarBorderView.hidden = YES;
-    
-    _stackOffset = 0;
-    if (IS_IPHONE) {
-        _stackOffset = DETAIL_LEDGE_OFFSET;
-    } else {
-        _stackOffset = 0;
-    }
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]];
+
+    [self setupSidebarAndDetailViewContainer];
+    [self setupSidebarRightBorder];
+    
     if (IS_IPAD) {
         CGFloat height = UIInterfaceOrientationIsPortrait(self.interfaceOrientation) ? self.view.bounds.size.height: self.view.bounds.size.width;
         //The iOS simulator would pull in the wrong values
@@ -167,8 +126,7 @@
         
         [self.view addSubview:_popPanelsView];
         [self.view sendSubviewToBack:_popPanelsView];
-    }
-    if (IS_IPAD) {
+        
         [self showSidebarAnimated:NO];
     }
     
@@ -221,6 +179,59 @@
         for (UIView *view in self.detailViews) {
             [self addShadowTo:view];
         }
+    }
+}
+
+- (void)setupSidebarAndDetailViewContainer {
+    _masterViewController = [[SidebarViewController alloc] init];
+    
+    // The sidebar is the first controller and view
+    [self addChildViewController:_masterViewController];
+    _masterViewController.view.frame = CGRectMake(0, 0, DETAIL_LEDGE_OFFSET, self.view.frame.size.height);
+    _masterViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    [self.view addSubview:_masterViewController.view];
+    [_masterViewController setPanelNavigationController:self];
+    [_masterViewController didMoveToParentViewController:self];
+    
+    // Other panels
+    self.detailViewContainer = [[UIView alloc] init];
+    
+    if (IS_IPAD) {
+        self.detailViewContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    } else {
+        self.detailViewContainer.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+    }
+    
+    self.detailViewContainer.autoresizesSubviews = YES;
+    self.detailViewContainer.clipsToBounds = YES;
+    [self.view addSubview:self.detailViewContainer];
+    
+    if (self.navigationController) {
+        [self addChildViewController:self.navigationController];
+        [self.detailViewContainer addSubview:self.navigationController.view];
+        [self.navigationController didMoveToParentViewController:self];
+    }
+    
+    self.detailViewContainer.frame = CGRectMake(0, 0, DETAIL_WIDTH, DETAIL_HEIGHT);
+    [self.detailViews addObject:self.detailViewContainer];
+    [self.detailViewWidths addObject:[NSNumber numberWithFloat:DETAIL_WIDTH]];
+    [self.view addSubview:self.detailViewContainer];
+}
+
+- (void)setupSidebarRightBorder {
+    //Right border view for sidebar
+    _sidebarBorderView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sidebar_border_bg"]];
+    _sidebarBorderView.contentMode = UIViewContentModeScaleToFill;
+    [_sidebarBorderView setAutoresizingMask:UIViewAutoresizingFlexibleHeight];
+    _sidebarBorderView.frame = CGRectMake((IS_IPAD) ? SIDEBAR_WIDTH : (SIDEBAR_WIDTH - DETAIL_LEDGE - 4.0f), 0.0f, 2.0f, self.view.bounds.size.height);
+    [self.view insertSubview:_sidebarBorderView atIndex:0];
+    _sidebarBorderView.hidden = YES;
+    
+    _stackOffset = 0;
+    if (IS_IPHONE) {
+        _stackOffset = DETAIL_LEDGE_OFFSET;
+    } else {
+        _stackOffset = 0;
     }
 }
 
@@ -455,7 +466,7 @@
     if (_detailViewController) {
         if (self.navigationController) {
             [self.navigationController setToolbarHidden:YES animated:YES];
-            sidebarButton = _detailViewController.navigationItem.leftBarButtonItem; // Retained and auto released to address a scenario found by running the analyzer where the object could leak.
+            sidebarButton = _detailViewController.navigationItem.leftBarButtonItem;
         } else {
             [_detailViewController willMoveToParentViewController:nil];
             UIView *view = [self viewOrViewWrapper:_detailViewController.view];
@@ -701,39 +712,6 @@
     return _menuView.frame.size.width > MENU_BUTTON_WIDTH;
 }
 
-- (void)setMasterViewController:(UIViewController *)masterViewController {
-    /*
-     When replacing the master view controller:
-     
-     - Call the right UIViewController containment methods
-     - On iPhone: Set/restore scrollsToTop. Only one scroll view can have it enabled if we
-     want to be able to scroll by tapping on the status bar
-     - On iPad: scroll to top is magically awesome and decides which scroll view to scroll
-     depending on where you tap
-     - Replace the master view with the new one
-     */
-    if (_masterViewController == masterViewController) return;
-
-    if (_masterViewController) {
-        if (IS_IPHONE) {
-            [self setScrollsToTop:YES forView:_masterViewController.view];
-        }
-        [_masterViewController willMoveToParentViewController:nil];
-        [_masterViewController setPanelNavigationController:nil];
-        [_masterViewController removeFromParentViewController];
-    }
-
-    _masterViewController = masterViewController;
-
-    if (_masterViewController) {
-        [self addChildViewController:_masterViewController];
-        [_masterViewController setPanelNavigationController:self];
-        [_masterViewController didMoveToParentViewController:self];
-        if (IS_IPHONE) {
-            [self setScrollsToTop:NO forView:_masterViewController.view];
-        }
-    }
-}
 
 #pragma mark - Sidebar control
 
@@ -1355,7 +1333,6 @@
 }
 
 - (NSArray *)partiallyVisibleViews {
-
     NSMutableArray *views = [NSMutableArray arrayWithCapacity:[self.detailViews count]];    
     for (int idx=0;idx < [self.detailViews count];idx++) {
         UIView *view = (UIView *)[self.detailViews objectAtIndex:idx];

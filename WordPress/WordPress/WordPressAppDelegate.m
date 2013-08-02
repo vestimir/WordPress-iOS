@@ -1,6 +1,5 @@
 #import <Crashlytics/Crashlytics.h>
 #import "WordPressAppDelegate.h"
-#import "SidebarViewController.h"
 #import "WordPressComApi.h"
 #import "WordPressComApiCredentials.h"
 #import "WPMobileStats.h"
@@ -14,6 +13,7 @@
 #import "WPAccount.h"
 #import "UpdateChecker.h"
 #import "UserAgent.h"
+#import "Blog.h"
 
 #import <UIDeviceHardware.h>
 #import "UIDevice+WordPressIdentifier.h"
@@ -77,9 +77,7 @@
     // View hierarchy setup
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
-    SidebarViewController *sidebarViewController = [[SidebarViewController alloc] init];
-    
-    self.panelNavigationController = [[PanelNavigationController alloc] initWithDetailController:nil masterViewController:sidebarViewController];
+    self.panelNavigationController = [[PanelNavigationController alloc] init];
     self.window.rootViewController = self.panelNavigationController;
     
 	//listener for XML-RPC errors
