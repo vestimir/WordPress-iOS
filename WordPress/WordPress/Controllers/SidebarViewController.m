@@ -51,6 +51,7 @@
     BOOL changingContentForSelectedSection;
 }
 
+@property (nonatomic, weak) UITableView *tableView;
 @property (nonatomic, strong) Post *currentQuickPost;
 @property (nonatomic, strong) QuickPhotoButtonView *quickPhotoButton;
 @property (nonatomic, strong) UIActionSheet *quickPhotoActionSheet;
@@ -88,7 +89,7 @@
 @implementation SidebarViewController
 
 @synthesize resultsController = _resultsController, openSection=_openSection, sectionInfoArray=_sectionInfoArray;
-@synthesize tableView, settingsButton, quickPhotoButton;
+@synthesize settingsButton, quickPhotoButton;
 @synthesize currentQuickPost = _currentQuickPost;
 @synthesize utililtyView;
 @synthesize currentIndexPath;
@@ -96,16 +97,20 @@
 
 - (void)dealloc {
     self.resultsController.delegate = nil;
-    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
+    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
+    self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.showsVerticalScrollIndicator = NO;
+    
+    self.tableView.backgroundColor = [UIColor purpleColor];
+    
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_bg"]];
 
     utililtyView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_footer_bg"]];
@@ -114,9 +119,6 @@
     utililtyView.layer.shadowColor = [[UIColor blackColor] CGColor];
     utililtyView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
     utililtyView.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:utililtyView.bounds cornerRadius:PANEL_CORNER_RADIUS] CGPath];
-        
-    //self.view.backgroundColor = SIDEBAR_BGCOLOR;
-//    self.openSection = nil;
     
     // create the sectionInfoArray, stores data for collapsing/expanding sections in the tableView
 	if (self.sectionInfoArray == nil) {
@@ -139,6 +141,8 @@
     self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
     self.settingsButton.titleLabel.shadowOffset = CGSizeMake(0, -1.0f);
     [settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    
+    [self.view addSubview:self.settingsButton];
 
     if ([[self.resultsController fetchedObjects] count] > 0) {
         [self setupQuickPhotoButton];
@@ -201,10 +205,13 @@
 //    } else {
 //        [self performSelector:@selector(presentContent) withObject:self afterDelay:0.01];
 //    }
+    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated]; 
+
+    [self presentContent];
 
     if (IS_IPHONE && _showingWelcomeScreen) {
         _showingWelcomeScreen = NO;
@@ -289,6 +296,8 @@
             UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:welcomeViewController];
             aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
             aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+
+            [self.panelNavigationController.view.window makeKeyAndVisible];
 
             [self.panelNavigationController presentViewController:aNavigationController animated:YES completion:nil];
             [self checkNothingToShow];
@@ -665,7 +674,6 @@ NSLog(@"%@", self.sectionInfoArray);
         SectionInfo *sectionInfo = [self.sectionInfoArray objectAtIndex:section - 1];
         return sectionInfo.open ? NUM_ROWS : 0;
     }
-    
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
@@ -839,7 +847,7 @@ NSLog(@"%@", self.sectionInfoArray);
     [self processRowSelectionAtIndexPath:[indexPathsToInsert objectAtIndex:0] closingSidebar:NO];
     
     // scroll to the section header view if it's not visible
-    CGRect sectionRect = [tableView rectForSection:openSectionIdx];
+    CGRect sectionRect = [self.tableView rectForSection:openSectionIdx];
     [self.tableView scrollRectToVisible:sectionRect animated:YES];
     
 }

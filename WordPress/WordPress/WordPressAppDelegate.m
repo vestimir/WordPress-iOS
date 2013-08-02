@@ -76,9 +76,11 @@
     
     // View hierarchy setup
     self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+
     
     self.panelNavigationController = [[PanelNavigationController alloc] init];
-    self.window.rootViewController = self.panelNavigationController;
+    [self.window setRootViewController:self.panelNavigationController];
+    
     
 	//listener for XML-RPC errors
 	//in the future we could put the errors message in a dedicated screen that users can bring to front when samething went wrong, and can take a look at the error msg.
@@ -90,7 +92,7 @@
 //    // another notification message came from WPWebViewController
 //	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(showNotificationErrorAlert:) name:@"OpenWebPageFailed" object:nil];
     
-	[self.window makeKeyAndVisible];
+  	[self.window makeKeyAndVisible];
     
 	[PushManager registerForRemotePushNotifications];
     

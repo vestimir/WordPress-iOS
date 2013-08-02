@@ -12,7 +12,7 @@
 @class Post;
 
 @interface SidebarViewController : UIViewController <UIActionSheetDelegate, SidebarSectionHeaderViewDelegate, UITableViewDataSource, UITableViewDelegate> {
-    IBOutlet UITableView *tableView;
+//    IBOutlet UITableView *tableView;
     IBOutlet UIButton *settingsButton;
     IBOutlet UIView *utililtyView;
     NSUInteger openSectionIdx;
@@ -20,7 +20,7 @@
     BOOL restoringView;
 }
 
-@property (nonatomic, strong) IBOutlet UITableView *tableView;
+//@property (nonatomic, strong) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) IBOutlet UIButton *settingsButton;
 @property (nonatomic, strong) IBOutlet UIView *utililtyView;
 
