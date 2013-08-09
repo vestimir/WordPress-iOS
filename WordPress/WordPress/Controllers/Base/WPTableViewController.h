@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) Blog *blog;
 @property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, assign) BOOL incrementalLoadingSupported;
+@property (nonatomic, assign) BOOL isScrolling;
 
 - (void)promptForPassword;
 

@@ -30,6 +30,7 @@
 #import "ReaderPostsViewController.h"
 #import "GeneralWalkthroughViewController.h"
 #import "WordPressDataModel.h"
+#import "ViewAdminButton.h"
 
 // Height for reader/notification/blog cells
 #define SIDEBAR_CELL_HEIGHT 51.0f
@@ -135,7 +136,7 @@
     [self.settingsButton setTitle:NSLocalizedString(@"Settings", @"App settings") forState:UIControlStateNormal ];
     self.settingsButton.titleLabel.lineBreakMode = NSLineBreakByClipping;
     self.settingsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    self.settingsButton.titleLabel.minimumFontSize = 12.0f;
+    self.settingsButton.titleLabel.minimumScaleFactor = 0.8;
     self.settingsButton.titleEdgeInsets = UIEdgeInsetsMake (0.0f, 12.0f, 0.0f, 10.0f);
     self.settingsButton.imageEdgeInsets = UIEdgeInsetsMake(0.0f, 8.0f, 0.0f, 0.0f);
     self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
@@ -466,6 +467,15 @@ NSLog(@"%@", self.sectionInfoArray);
     }
 }
 
+- (void)viewAdmin:(UIControl *)sender
+{
+    [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedViewAdmin forEvent:StatsEventAppClosed];
+
+    Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:(sender.tag - 1) inSection:0]];
+    NSString *dashboardUrl = [blog.xmlrpc stringByReplacingOccurrencesOfString:@"xmlrpc.php" withString:@"wp-admin/"];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:dashboardUrl]];
+}
+
 #pragma mark - Quick Photo Methods
 
 - (void)quickPhotoButtonViewTapped:(QuickPhotoButtonView *)sender {
@@ -709,6 +719,7 @@ NSLog(@"%@", self.sectionInfoArray);
     if (cell == nil) {
         cell = [[SidebarTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
+    [[cell.contentView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
     NSString *title = nil;
       
@@ -766,8 +777,17 @@ NSLog(@"%@", self.sectionInfoArray);
             }
             case 5:
             {
-                title = NSLocalizedString(@"View Admin", @"Menu item to load the dashboard in a an in-app web view");
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_dashboard"];
+                
+                ViewAdminButton *viewAdminButton = [[ViewAdminButton alloc] initWithFrame:CGRectMake(0.0f, 0.0f, SIDEBAR_WIDTH, DEFAULT_ROW_HEIGHT)];
+
+                [viewAdminButton setTitle:NSLocalizedString(@"View Admin", @"Menu item to load the dashboard in a an in-app web view") forState:UIControlStateNormal];
+                [viewAdminButton setTag:indexPath.section];
+                [viewAdminButton addTarget:self action:@selector(viewAdmin:) forControlEvents:UIControlEventTouchUpInside];
+
+                [cell.contentView addSubview:viewAdminButton];
+                
+                title = nil;
+                cell.imageView.image = nil;
                 break;
             }
             default:
@@ -890,13 +910,7 @@ NSLog(@"%@", self.sectionInfoArray);
         }
     }
     
-    self.currentIndexPath = indexPath;
-    
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:indexPath.row], @"row", [NSNumber numberWithInteger:indexPath.section], @"section", nil];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"kSelectedSidebarIndexDictionary"];
-    [NSUserDefaults resetStandardUserDefaults];
-    
-    UIViewController *detailViewController = nil;  
+    UIViewController *detailViewController = nil;
     if (indexPath.section == 0) { // Reader & Notifications
         
         if (indexPath.row == 0) { // Reader
@@ -911,11 +925,9 @@ NSLog(@"%@", self.sectionInfoArray);
             NotificationsViewController *notificationsViewController = [[NotificationsViewController alloc] init];
             detailViewController = notificationsViewController;
         }
-
     } else {
         Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:(indexPath.section - 1) inSection:0]];
         NSString *blogURL = @"";
-        NSString *dashboardURL = @"";
         
         Class controllerClass = nil;
         //did user select the same item, but for a different blog? If so then just update the data in the view controller.
@@ -975,33 +987,9 @@ NSLog(@"%@", self.sectionInfoArray);
 //                    [SoundUtil playSwipeSound];
                 }
                 return;
+
             case 5:
-                [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedViewAdmin forEvent:StatsEventAppClosed];
-                
-                 dashboardURL = [blog.xmlrpc stringByReplacingOccurrencesOfString:@"xmlrpc.php" withString:@"wp-admin/"];
-                //dashboard already selected
-                if ([self.panelNavigationController.detailViewController isMemberOfClass:[WPWebViewController class]] 
-                    && 
-                    [((WPWebViewController*)self.panelNavigationController.detailViewController).url.absoluteString isEqual:dashboardURL]
-                    ) {
-                    if (IS_IPAD) {
-                        [self.panelNavigationController showSidebar];
-                    } else {
-                        [self.panelNavigationController popToRootViewControllerAnimated:NO];
-                        [self.panelNavigationController closeSidebar];
-                    }
-                } else {
-                    WPWebViewController *webViewController = [[WPWebViewController alloc] init];
-                    [webViewController setUrl:[NSURL URLWithString:dashboardURL]];
-                    [webViewController setUsername:blog.username];
-                    [webViewController setPassword:blog.password];
-                    [webViewController setWpLoginURL:[NSURL URLWithString:blog.loginUrl]];
-                    [self.panelNavigationController setDetailViewController:webViewController closingSidebar:closingSidebar];
-                }
-                if (IS_IPAD) {
-//                    [SoundUtil playSwipeSound];
-                }
-                return;
+                break;
             default:
                 controllerClass = [PostsViewController class];
                 break;    
@@ -1010,7 +998,7 @@ NSLog(@"%@", self.sectionInfoArray);
         if (IS_IPAD) {
 //            [SoundUtil playSwipeSound];
         }
-        
+
         [[NSNotificationCenter defaultCenter] postNotificationName:kSelectedBlogChanged 
                                                             object:nil 
                                                           userInfo:[NSDictionary dictionaryWithObject:blog forKey:@"blog"]];
@@ -1032,7 +1020,13 @@ NSLog(@"%@", self.sectionInfoArray);
                 [detailViewController performSelector:@selector(setBlog:) withObject:blog];
             }
         }
-    } 
+    }
+
+    self.currentIndexPath = indexPath;
+
+    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:indexPath.row], @"row", [NSNumber numberWithInteger:indexPath.section], @"section", nil];
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"kSelectedSidebarIndexDictionary"];
+    [NSUserDefaults resetStandardUserDefaults];
 
     if (detailViewController) {
         [self.panelNavigationController setDetailViewController:detailViewController closingSidebar:closingSidebar];

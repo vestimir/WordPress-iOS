@@ -8,10 +8,13 @@
 
 #import "WPMobileStats.h"
 #import <Mixpanel/Mixpanel.h>
+#import <Quantcast-Measure/QuantcastMeasurement.h>
 #import "WordPressComApiCredentials.h"
 #import "WordPressComApi.h"
 #import "WordPressDataModel.h"
 #import "Blog.h"
+#import "NSString+Helpers.h"
+#import "UserAgent.h"
 
 // General
 NSString *const StatsEventAppOpened = @"Application Opened";
@@ -32,10 +35,15 @@ NSString *const StatsPropertySidebarClickedQuickPhoto = @"sidebar_clicked_quick_
 
 // Reader
 NSString *const StatsEventReaderOpened = @"Reader - Opened";
-NSString *const StatsEventReaderClickedShowTopicSelector = @"Reader - Show Topic Selector";
+NSString *const StatsEventReaderHomePageRefresh = @"Reader - Home Page Refreshed";
+NSString *const StatsEventReaderInfiniteScroll = @"Reader - Infinite Scroll";
 NSString *const StatsEventReaderSelectedFreshlyPressedTopic = @"Reader - Selected Freshly Pressed Topic";
-NSString *const StatsEventReaderSelectedTopic = @"Reader - Selected Topic";
-NSString *const StatsPropertyReaderOpenedArticleDetails = @"reader_opened_article_details";
+NSString *const StatsEventReaderSelectedCategory = @"Reader - Selected Category";
+NSString *const StatsEventReaderOpenedArticleDetails = @"Reader - Opened Article Details";
+NSString *const StatsEventReaderPublishedComment = @"Reader - Published Comment";
+NSString *const StatsEventReaderReblogged = @"Reader - Reblogged";
+NSString *const StatsEventReaderLikedPost = @"Reader - Liked Post";
+NSString *const StatsEventReaderUnlikedPost = @"Reader - Unliked Post";
 
 // Reader Detail
 NSString *const StatsPropertyReaderDetailClickedPrevious = @"reader_detail_clicked_previous";
@@ -270,6 +278,29 @@ NSString *const StatsEventAddBlogsClickedAddSelected = @"Add Blogs - Clicked Add
         [[Mixpanel sharedInstance].people increment:@"Application Opened" by:@(1)];
         [[Mixpanel sharedInstance].people set:@{ @"$username": username, @"$first_name" : username }];
     }
+    
+    NSString *userId = [[NSUserDefaults standardUserDefaults] objectForKey:@"wpcom_user_id"];
+    [[QuantcastMeasurement sharedInstance] beginMeasurementSessionWithAPIKey:[WordPressComApiCredentials quantcastAPIKey] userIdentifier:userId labels:nil];
+}
+
++ (void)updateUserIDForStats:(NSString *)userID
+{
+    [[QuantcastMeasurement sharedInstance] recordUserIdentifier:[userID md5] withLabels:nil];
+}
+
++ (void)pauseSession
+{
+    [[QuantcastMeasurement sharedInstance] pauseSessionWithLabels:nil];
+}
+
++ (void)endSession
+{
+    [[QuantcastMeasurement sharedInstance] endMeasurementSessionWithLabels:nil];
+}
+
++ (void)resumeSession
+{
+    [[QuantcastMeasurement sharedInstance] resumeSessionWithLabels:nil];
 }
 
 + (void)trackEventForSelfHostedAndWPCom:(NSString *)event
@@ -300,6 +331,23 @@ NSString *const StatsEventAddBlogsClickedAddSelected = @"Add Blogs - Clicked Add
 + (void)trackEventForWPComWithSavedProperties:(NSString *)event
 {
     [[self sharedInstance] trackEventForWPComWithSavedProperties:event];
+}
+
++ (void)pingWPComStatsEndpoint:(NSString *)statName
+{
+    int x = arc4random();
+    NSString *statsURL = [NSString stringWithFormat:@"%@%@%@%@%d" , kMobileReaderURL, @"&template=stats&stats_name=", statName, @"&rnd=", x];
+    NSMutableURLRequest* request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:statsURL  ]];
+    [request setValue:[UserAgent appUserAgent] forHTTPHeaderField:@"User-Agent"];
+    @autoreleasepool {
+        NSURLConnection *conn = [[NSURLConnection alloc] initWithRequest:request delegate:nil];
+        [conn start];
+    }
+}
+
++ (void)logQuantcastEvent:(NSString *)quantcast
+{
+    [[QuantcastMeasurement sharedInstance] logEvent:quantcast withLabels:nil];
 }
 
 + (void)clearPropertiesForAllEvents

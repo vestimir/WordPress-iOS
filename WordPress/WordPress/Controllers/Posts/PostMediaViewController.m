@@ -65,9 +65,6 @@
 - (void)initObjects {
 	self.photos = [[NSMutableArray alloc] init];
 	self.videos = [[NSMutableArray alloc] init];
-	picker = [[UIImagePickerController alloc] init];
-	picker.delegate = self;
-	picker.allowsEditing = NO;
     actionSheetRect = CGRectZero;
 }
 
@@ -480,9 +477,18 @@
 #pragma mark -
 #pragma mark Picker Methods
 
+- (UIImagePickerController *)resetImagePicker {
+    picker.delegate = nil;
+    picker = [[UIImagePickerController alloc] init];
+	picker.delegate = self;
+	picker.allowsEditing = NO;
+    return picker;
+}
+
 - (void)pickPhotoFromCamera:(id)sender {
 	self.currentOrientation = [self interpretOrientation:[UIDevice currentDevice].orientation];
     if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        [self resetImagePicker];
         picker.sourceType = UIImagePickerControllerSourceTypeCamera;
 		picker.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeImage];
 		
@@ -511,6 +517,7 @@
 
 - (void)pickVideoFromCamera:(id)sender {
 	self.currentOrientation = [self interpretOrientation:[UIDevice currentDevice].orientation];
+    [self resetImagePicker];
 	picker.sourceType =  UIImagePickerControllerSourceTypeCamera;
 	picker.mediaTypes = [NSArray arrayWithObject:(NSString *)kUTTypeMovie];
 	picker.videoQuality = UIImagePickerControllerQualityTypeMedium;
@@ -564,6 +571,7 @@
         if (IS_IPAD && addPopover != nil) {
             [addPopover dismissPopoverAnimated:YES];
         }        
+        [self resetImagePicker];
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         if ([(UIView *)sender tag] == TAG_ACTIONSHEET_VIDEO) {
 			barButton = postDetailViewController.movieButton;
