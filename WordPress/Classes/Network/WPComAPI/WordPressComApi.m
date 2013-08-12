@@ -84,9 +84,7 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
 
 @end
 
-@implementation WordPressComApi {
-    NSString *_authToken;
-}
+@implementation WordPressComApi
 
 + (WordPressComApi *)sharedApi {
     static WordPressComApi *_sharedApi = nil;
@@ -125,57 +123,10 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
 
 #pragma mark - Account management
 
-
-- (NSURLRequest*)signInWithUsername:(NSString *)username password:(NSString *)password { // success:(void (^)())success failure:(void (^)(NSError *error))failure {
+- (void)signInWithUsername:(NSString *)username password:(NSString *)password success:(void (^)(NSString *authToken))success failure:(void (^)(NSError *error))failure {
     NSAssert(username != nil, @"username is nil");
     NSAssert(password != nil, @"password is nil");
-//    if (self.username && ![username isEqualToString:self.username]) {
-//        [self signOut]; // Only one account supported for now
-//    }
-//    self.username = username;
-//    self.password = password;
-
-//    void (^successBlock)(AFHTTPRequestOperation *,id) = ^(AFHTTPRequestOperation *operation, id responseObject) {
-//        /*
-//         responseObject should look like:
-//         {
-//         "access_token": "YOUR_API_TOKEN",
-//         "blog_id": "blog id",
-//         "blog_url": "blog url",
-//         "token_type": "bearer"
-//         }
-//         */
-//        NSString *accessToken;
-//        if ([responseObject respondsToSelector:@selector(objectForKey:)]) {
-//            accessToken = [responseObject objectForKey:@"access_token"];
-//        }
-//        if (accessToken == nil) {
-//            //WPFLog(@"No access token found on OAuth response: %@", responseObject);
-//            //FIXME: this error message is crappy. Understand the posible reasons why responseObject is not what we expected and return a proper error
-//            NSString *localizedDescription = NSLocalizedString(@"Error authenticating", @"");
-//            NSError *error = [NSError errorWithDomain:WordPressComApiErrorDomain code:WordPressComApiErrorNoAccessToken userInfo:@{NSLocalizedDescriptionKey: localizedDescription}];
-//            if (failure) {
-//                failure(error);
-//            }
-//            return;
-//        }
-//        self.authToken = accessToken;
-//        NSError *error = nil;
-//        [SFHFKeychainUtils storeUsername:self.username andPassword:self.password forServiceName:@"WordPress.com" updateExisting:YES error:&error];
-//        if (error) {
-//            if (failure) {
-//                failure(error);
-//            }
-//        } else {
-//            [[NSUserDefaults standardUserDefaults] setObject:self.username forKey:@"wpcom_username_preference"];
-//            [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"wpcom_authenticated_flag"];
-//            [[NSUserDefaults standardUserDefaults] synchronize];
-////            [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = YES;
-//            [PushManager registerForRemotePushNotifications];
-//            [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLoginNotification object:self.username];
-//            if (success) success();
-//        }
-//    };
+    
     AFHTTPClient *client = [AFHTTPClient clientWithBaseURL:[NSURL URLWithString:WordPressComApiOauthBaseUrl]];
 //    [client registerHTTPOperationClass:[WPJSONRequestOperation class]];
     [client setDefaultHeader:@"User-Agent" value:[UserAgent appUserAgent]];
@@ -188,18 +139,21 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
                              @"password": password
                              };
 
-//    [self postPath:@"/oauth2/token"
-//        parameters:params
-//           success:successBlock
-//           failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//    WPFLog(@"Couldn't signin the user: %@", error);
-//               self.password = nil;
-//               if (operation.response.statusCode != 400) {
-//                   [WPError showAlertWithError:error];
-//               }
-//               if (failure) failure(error);
-//             }];
-    return [self requestWithMethod:@"POST" path:@"/oauth2/token" parameters:params];
+    [self postPath:@"/oauth2/token"
+        parameters:params
+           success:^(AFHTTPRequestOperation *operation, id response) {
+               if ([response respondsToSelector:@selector(objectForKey:)]) {
+                   success([response objectForKey:@"access_token"]);
+               }
+           }
+           failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+               WPFLog(@"Couldn't signin the user: %@", error);
+               self.password = nil;
+               if (operation.response.statusCode != 400) {
+                   [WPError showAlertWithError:error];
+               }
+               if (failure) failure(error);
+           }];
 }
 
 - (void)refreshTokenWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure {
@@ -209,8 +163,12 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
     [self signInWithUsername:self.username password:self.password success:success failure:failure];
 }
 
-- (void)signInWithToken:(NSString *)token {
-    self.authToken = token;
+// TODO Move out
+- (void)signOut {
+    
+    [self clearWpComCookies];
+    [self clearAuthorizationHeader];
+    
 }
 
 - (BOOL)hasCredentials {
@@ -418,9 +376,14 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
 
     WPXMLRPCClient *api = [[WPXMLRPCClient alloc] initWithXMLRPCEndpoint:[NSURL URLWithString:kWPcomXMLRPCUrl]];
     [api setAuthorizationHeaderWithToken:self.authToken];
+    
+    // TODO This will be in the account
+    NSString *username = self.username;
+    NSString *password = self.password;
+    
     //Update supported notifications dictionary
     [api callMethod:@"wpcom.set_mobile_push_notification_settings"
-         parameters:[NSArray arrayWithObjects:[self usernameForXmlrpc], [self passwordForXmlrpc], updatedSettings, token, @"apple", nil]
+         parameters:[NSArray arrayWithObjects:username, password, updatedSettings, token, @"apple", nil]
             success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 // Hooray!
                 if (success)
@@ -670,26 +633,22 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
  We believe jetpack settings might be causing this, but since we're actually doing authentication
  with the authToken, we don't care that much about username/password in this method
  */
-//- (NSString *)usernameForXmlrpc {
-//    NSString *username = self.username;
-//    if (!username)
-//        username = @"";
-//    return username;
-//}
-//
-//- (NSString *)passwordForXmlrpc {
-//    NSString *password = self.password;
-//    if (!password)
-//        password = @"";
-//    return password;
-//}
+- (NSString *)usernameForXmlrpc {
+    NSString *username = self.username;
+    if (!username)
+        username = @"";
+    return username;
+}
+
+- (NSString *)passwordForXmlrpc {
+    NSString *password = self.password;
+    if (!password)
+        password = @"";
+    return password;
+}
 /* HACK ENDS */
 
 #pragma mark - Oauth methods
-
-- (NSString *)authToken {
-    return _authToken;
-}
 
 - (void)setAuthToken:(NSString *)authToken {
     _authToken = authToken;

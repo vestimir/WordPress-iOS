@@ -44,8 +44,8 @@ extern NSString *const WordPressComApiErrorMessageKey;
 /// @name Account management
 ///-------------------------
 
-- (NSURLRequest*)signInWithUsername:(NSString*)username password:(NSString*)password;
-- (void)signInWithUsername:(NSString *)username password:(NSString *)password success:(void (^)())success failure:(void (^)(NSError *error))failure;
+- (void)signInWithUsername:(NSString *)username password:(NSString *)password success:(void (^)(NSString *authToken))success failure:(void (^)(NSError *error))failure;
+
 - (void)refreshTokenWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
 - (BOOL)hasCredentials;
 - (void)validateWPComAccountWithEmail:(NSString *)email andUsername:(NSString *)username andPassword:(NSString *)password success:(void (^)(id responseObject))success failure:(void (^)(NSError *error))failure;
@@ -118,7 +118,6 @@ extern NSString *const WordPressComApiErrorMessageKey;
 /// @name OAuth info
 ///-----------------
 
-- (NSString *)authToken;
 + (NSString *)WordPressAppId;
 + (NSString *)WordPressAppSecret;
 

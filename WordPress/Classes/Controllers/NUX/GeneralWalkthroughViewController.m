@@ -31,10 +31,9 @@
 #import "WPAccount.h"
 #import "HelpViewController.h"
 #import "GeneralWalkthroughViewController.h"
-#import "WPComSignInOperation.h"
 #import "WPRestNetworkManager.h"
 
-@interface GeneralWalkthroughViewController () <NetworkRequestDelegate, UIScrollViewDelegate, UITextFieldDelegate> {
+@interface GeneralWalkthroughViewController () <UIScrollViewDelegate, UITextFieldDelegate> {
     UIScrollView *_scrollView;
     UIView *_mainTextureView;
     WPNUXSecondaryButton *_skipToCreateAccount;
@@ -1126,9 +1125,17 @@ CGFloat const GeneralWalkthroughSignInButtonHeight = 41.0;
     [WPMobileStats trackEventForSelfHostedAndWPCom:StatsEventNUXFirstWalkthroughSignedInForDotCom];
     
     [SVProgressHUD showWithStatus:NSLocalizedString(@"Connecting to WordPress.com", nil) maskType:SVProgressHUDMaskTypeBlack];
-
-    WPComSignInOperation *signIn = [[WPComSignInOperation alloc] initWithOwner:self username:_usernameText.text password:_passwordText.text];
-    [[WPRestNetworkManager sharedRestClient] enqueueHTTPRequestOperation:signIn];
+    
+    [WPAccount signInWithUsername:username password:password success:^{
+        [SVProgressHUD dismiss];
+        _userIsDotCom = true;
+        [self showAddUsersBlogsForWPCom];
+    } failure:^(NSError *error) {
+        // User shouldn't get here because the getOptions call should fail, but in the unlikely case they do throw up an error message.
+        [SVProgressHUD dismiss];
+        WPFLog(@"Login failed with username %@ : %@", _usernameText.text, error);
+        [self displayGenericErrorMessage:NSLocalizedString(@"Please update your credentials and try again.", nil)];
+    }];
 }
 
 - (void)signInForSelfHostedForUsername:(NSString *)username password:(NSString *)password options:(NSDictionary *)options andApi:(WordPressXMLRPCApi *)api
@@ -1333,21 +1340,6 @@ CGFloat const GeneralWalkthroughSignInButtonHeight = 41.0;
             control.frame = frame;
         }
     }];
-}
-
-#pragma mark - NetworkRequestDelegate
-
-- (void)networkRequestComplete:(NSOperation *)operation {
-    [SVProgressHUD dismiss];
-    _userIsDotCom = true;
-    [self showAddUsersBlogsForWPCom];
-}
-
-- (void)networkRequestFailed:(NSError *)error {
-    // User shouldn't get here because the getOptions call should fail, but in the unlikely case they do throw up an error message.
-    [SVProgressHUD dismiss];
-    WPFLog(@"Login failed with username %@ : %@", _usernameText.text, error);
-    [self displayGenericErrorMessage:NSLocalizedString(@"Please update your credentials and try again.", nil)];
 }
 
 @end

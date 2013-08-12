@@ -25,6 +25,9 @@ extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
 @property (nonatomic, retain) NSSet *blogs;
 @property (nonatomic, retain) NSSet *jetpackBlogs;
 
+@property (nonatomic, strong) NSString *authToken;
+@property (nonatomic, assign) BOOL isWpComAuthenticated;
+
 /**
  The account's password
  
@@ -127,5 +130,12 @@ extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
 - (void)removeJetpackBlogsObject:(Blog *)value;
 - (void)addJetpackBlogs:(NSSet *)values;
 - (void)removeJetpackBlogs:(NSSet *)values;
+
+@end
+
+@interface WPAccount (WordPressComApi)
+
++ (void)signInWithUsername:(NSString *)username password:(NSString *)password
+                   success:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
 
 @end

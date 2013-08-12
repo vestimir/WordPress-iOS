@@ -8,8 +8,11 @@
 
 #import "WPAccount.h"
 #import "Blog.h"
+#import "Note.h"
 #import "NSString+XMLExtensions.h"
 #import "WordPressDataModel.h"
+#import "NotificationsManager.h"
+#import "WordPressComApi.h"
 
 #import <SFHFKeychainUtils/SFHFKeychainUtils.h>
 
@@ -17,7 +20,6 @@ static NSString * const DefaultDotcomAccountDefaultsKey = @"AccountDefaultDotcom
 static NSString * const DotcomXmlrpcKey = @"https://wordpress.com/xmlrpc.php";
 static WPAccount *__defaultDotcomAccount = nil;
 NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAccountDefaultWordPressComAccountChangedNotification";
-
 
 @interface WPAccount ()
 @property (nonatomic, retain) NSString *xmlrpc;
@@ -32,6 +34,8 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 @dynamic isWpcom;
 @dynamic blogs;
 @dynamic jetpackBlogs;
+@synthesize authToken;
+@synthesize isWpComAuthenticated;
 
 #pragma mark - Default WordPress.com account
 
@@ -119,6 +123,7 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 
 #pragma mark - Blog creation
 
+// TODO move to blog model and pass in account
 - (Blog *)findOrCreateBlogFromDictionary:(NSDictionary *)blogInfo {
     NSString *blogUrl = [[blogInfo objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""];
 	if([blogUrl hasSuffix:@"/"])
@@ -147,7 +152,6 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 #pragma mark - Account Management
 
 - (void)signOut {
-    NSError *error = nil;
 #if FALSE
     // Until we have accounts, don't delete the password or any blog with that username will stop working
     [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:@"WordPress.com" error:&error];
@@ -155,19 +159,19 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
     [NotificationsManager unregisterForRemotePushNotifications];
     //    [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = NO;
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey]; //Remove the token from Preferences, otherwise the token is never sent to the server on the next login
-    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:WordPressComApiOauthServiceName error:&error];
+//    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:WordPressComApiOauthServiceName error:&error];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_username_preference"];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_authenticated_flag"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     self.authToken = nil;
     self.username = nil;
     self.password = nil;
-    [self clearAuthorizationHeader];
+//    [self clearAuthorizationHeader];
     
     // Remove all notes
     [Note removeAllNotesWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]];
     
-    [self clearWpComCookies];
+//    [self clearWpComCookies];
     
     // Notify the world
     [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
@@ -187,6 +191,41 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
                           updateExisting:YES
                                    error:nil];
     }
+}
+
+@end
+
+@implementation WPAccount (WordPressComApi)
+
++ (void)signInWithUsername:(NSString *)username password:(NSString *)password
+                   success:(void (^)())successBlock failure:(void (^)(NSError *))failureBlock {
+    [[WordPressComApi sharedApi] signInWithUsername:username password:password success:^(NSString *token){
+        if (token == nil) {
+            NSString *localizedDescription = NSLocalizedString(@"Error authenticating", @"");
+            NSError *error = [NSError errorWithDomain:WordPressComApiErrorDomain code:WordPressComApiErrorNoAccessToken userInfo:@{NSLocalizedDescriptionKey: localizedDescription}];
+            failureBlock(error);
+            return;
+        }
+        
+        WPAccount *account = [self createOrUpdateWordPressComAccountWithUsername:username andPassword:password];
+        account.authToken = token;
+        
+        NSError *error = nil;
+        [SFHFKeychainUtils storeUsername:username andPassword:password forServiceName:@"WordPress.com" updateExisting:YES error:&error];
+        if (error) {
+            failureBlock(error);
+        } else {
+            [[NSUserDefaults standardUserDefaults] setObject:username forKey:@"wpcom_username_preference"];
+            [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"wpcom_authenticated_flag"];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            account.isWpComAuthenticated = YES;
+            [NotificationsManager registerForRemotePushNotifications];
+            [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLoginNotification object:username];
+            successBlock();
+        }
+    } failure:^(NSError *error) {
+        failureBlock(error);
+    }];
 }
 
 @end

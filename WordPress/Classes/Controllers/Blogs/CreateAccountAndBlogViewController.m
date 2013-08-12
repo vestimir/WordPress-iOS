@@ -1364,7 +1364,7 @@ CGFloat const CreateAccountAndBlogKeyboardOffset = 132.0;
         
     }];
     WPAsyncBlockOperation *userSignIn = [WPAsyncBlockOperation operationWithBlock:^(WPAsyncBlockOperation *operation){
-        void (^signInSuccess)(void) = ^{
+        void (^signInSuccess)(NSString *token) = ^(NSString *token){
             [operation didSucceed];
         };
         void (^signInFailure)(NSError *) = ^(NSError *error) {

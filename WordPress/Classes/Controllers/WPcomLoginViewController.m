@@ -7,7 +7,6 @@
 
 #import "WPcomLoginViewController.h"
 
-#import "WPComSignInOperation.h"
 #import "WPRestNetworkManager.h"
 
 #import "UITableViewTextFieldCell.h"
@@ -16,7 +15,7 @@
 #import "WordPressComApi.h"
 #import "ReachabilityUtils.h"
 
-@interface WPcomLoginViewController () <UITextFieldDelegate, NetworkRequestDelegate> {
+@interface WPcomLoginViewController () <UITextFieldDelegate> {
     UITableViewTextFieldCell *loginCell, *passwordCell;
 }
 
@@ -323,12 +322,31 @@
         isSigningIn = YES;
         self.footerText = @" ";
         
-        WPComSignInOperation *signInOperation = [[WPComSignInOperation alloc] initWithOwner:self username:username password:password];
-        [[WPRestNetworkManager sharedRestClient] enqueueHTTPRequestOperation:signInOperation];
+        [WPAccount signInWithUsername:username password:password success:^{
+            WPAccount *account = [WPAccount createOrUpdateWordPressComAccountWithUsername:loginCell.textField.text andPassword:passwordCell.textField.text];
+            [WPAccount setDefaultWordPressComAccount:account];
+            
+            [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:1]] withRowAnimation:UITableViewRowAnimationNone];
+            
+            if (self.delegate) {
+                [self.delegate loginController:self didAuthenticateWithAccount:account];
+            }
+            
+            if (self.dismissWhenFinished) {
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
+        } failure:^(NSError *error) {
+            WPFLog(@"Login failed with error: %@", error);
+            self.footerText = NSLocalizedString(@"Sign in failed. Please try again.", @"");
+            self.buttonText = NSLocalizedString(@"Sign In", @"");
+            self.isSigningIn = NO;
+            [self.tableView reloadData];
+            [WPAccount removeDefaultWordPressComAccount];
+        }];
+        
     }
     [self.tableView reloadData];
 }
-
 
 - (IBAction)cancel:(id)sender {
     if (self.delegate) {
@@ -337,31 +355,6 @@
     if (self.dismissWhenFinished) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
-}
-
-#pragma mark - NetworkRequestDelegate
-
-- (void)networkRequestComplete:(NSOperation *)operation {
-    WPAccount *account = [WPAccount createOrUpdateWordPressComAccountWithUsername:loginCell.textField.text andPassword:passwordCell.textField.text];
-    [WPAccount setDefaultWordPressComAccount:account];
-    
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:0 inSection:1]] withRowAnimation:UITableViewRowAnimationNone];
-    
-    if (self.delegate) {
-        [self.delegate loginController:self didAuthenticateWithAccount:account];
-    }
-    
-    if (self.dismissWhenFinished) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
-- (void)networkRequestFailed:(NSError *)error {
-    WPFLog(@"Login failed with error: %@", error);
-    self.footerText = NSLocalizedString(@"Sign in failed. Please try again.", @"");
-    self.buttonText = NSLocalizedString(@"Sign In", @"");
-    self.isSigningIn = NO;
-    [self.tableView reloadData];
 }
 
 @end
