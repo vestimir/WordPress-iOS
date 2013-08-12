@@ -105,6 +105,15 @@ extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
  */
 - (Blog *)findOrCreateBlogFromDictionary:(NSDictionary *)blogInfo;
 
+///-------------------------
+/// @name Account Management
+///-------------------------
+
+/*
+ Sign out of this account
+ */
+- (void)signOut;
+
 @end
 
 @interface WPAccount (CoreDataGeneratedAccessors)

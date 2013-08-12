@@ -18,7 +18,7 @@
 #import "WPToast.h"
 #import "Blog.h"
 #import <AFJSONRequestOperation.h>
-#import "PushManager.h"
+#import "NotificationsManager.h"
 #import "UserAgent.h"
 #import <UIDeviceHardware.h>
 #import "UIDevice+WordPressIdentifier.h"
@@ -213,33 +213,6 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
     self.authToken = token;
 }
 
-- (void)signOut {
-    NSError *error = nil;
-#if FALSE
-    // Until we have accounts, don't delete the password or any blog with that username will stop working
-    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:@"WordPress.com" error:&error];
-#endif
-    [PushManager unregisterForRemotePushNotifications];
-//    [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = NO;
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey]; //Remove the token from Preferences, otherwise the token is never sent to the server on the next login
-    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:WordPressComApiOauthServiceName error:&error];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_username_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_authenticated_flag"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    self.authToken = nil;
-    self.username = nil;
-    self.password = nil;
-    [self clearAuthorizationHeader];
-
-    // Remove all notes
-    [Note removeAllNotesWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]];
-
-    [self clearWpComCookies];
-
-    // Notify the world
-    [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
-}
-
 - (BOOL)hasCredentials {
     return _authToken != nil;
 }
@@ -383,19 +356,6 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
 
 
 #pragma mark - Transitional methods
-
-- (void)updateCredentailsFromStore {
-    self.username = [[NSUserDefaults standardUserDefaults] objectForKey:@"wpcom_username_preference"];
-    NSError *error = nil;
-    self.password = [SFHFKeychainUtils getPasswordForUsername:self.username
-                                          andServiceName:@"WordPress.com"
-                                                   error:&error];
-    [self clearWpComCookies];
-    [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
-//    [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = YES;
-    [PushManager registerForRemotePushNotifications];
-    [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLoginNotification object:self.username];
-}
 
 - (void)clearWpComCookies {
     NSArray *wpComCookies = [[NSHTTPCookieStorage sharedHTTPCookieStorage] cookies];
@@ -710,19 +670,19 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
  We believe jetpack settings might be causing this, but since we're actually doing authentication
  with the authToken, we don't care that much about username/password in this method
  */
-- (NSString *)usernameForXmlrpc {
-    NSString *username = self.username;
-    if (!username)
-        username = @"";
-    return username;
-}
-
-- (NSString *)passwordForXmlrpc {
-    NSString *password = self.password;
-    if (!password)
-        password = @"";
-    return password;
-}
+//- (NSString *)usernameForXmlrpc {
+//    NSString *username = self.username;
+//    if (!username)
+//        username = @"";
+//    return username;
+//}
+//
+//- (NSString *)passwordForXmlrpc {
+//    NSString *password = self.password;
+//    if (!password)
+//        password = @"";
+//    return password;
+//}
 /* HACK ENDS */
 
 #pragma mark - Oauth methods

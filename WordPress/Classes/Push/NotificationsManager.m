@@ -1,4 +1,4 @@
-#import "PushManager.h"
+#import "NotificationsManager.h"
 #import "WPMobileStats.h"
 #import "WordPressComApi.h"
 #import "WPAccount.h"
@@ -6,13 +6,13 @@
 #import "UIDevice+WordPressIdentifier.h"
 #import "WPMobileStats.h"
 
-@implementation PushManager
+@implementation NotificationsManager
 
 + (instancetype)sharedInstance {
-    static PushManager *instance;
+    static NotificationsManager *instance;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        instance = [[PushManager alloc] init];
+        instance = [[NotificationsManager alloc] init];
     });
     return instance;
 }
@@ -28,7 +28,7 @@
 }
 
 + (void)unregisterForRemotePushNotifications {
-    [[PushManager sharedInstance] unregisterApnsToken];
+    [[NotificationsManager sharedInstance] unregisterApnsToken];
     [[UIApplication sharedApplication] unregisterForRemoteNotifications];
 }
 
@@ -45,7 +45,7 @@
     NSString *previousToken = [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey];
     if (![previousToken isEqualToString:myToken]) {
         [[NSUserDefaults standardUserDefaults] setObject:myToken forKey:kApnsDeviceTokenPrefKey];
-        [[PushManager sharedInstance] sendApnsToken];
+        [[NotificationsManager sharedInstance] sendApnsToken];
     }
 }
 

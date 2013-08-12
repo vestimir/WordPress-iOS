@@ -1,8 +1,8 @@
 #import <Foundation/Foundation.h>
 
-@interface PushManager : NSObject
+@interface NotificationsManager : NSObject
 
-+ (PushManager*)sharedInstance;
++ (NotificationsManager*)sharedInstance;
 
 + (void)registerForRemotePushNotifications;
 + (void)unregisterForRemotePushNotifications;

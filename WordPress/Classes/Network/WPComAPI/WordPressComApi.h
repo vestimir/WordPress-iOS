@@ -47,24 +47,12 @@ extern NSString *const WordPressComApiErrorMessageKey;
 - (NSURLRequest*)signInWithUsername:(NSString*)username password:(NSString*)password;
 - (void)signInWithUsername:(NSString *)username password:(NSString *)password success:(void (^)())success failure:(void (^)(NSError *error))failure;
 - (void)refreshTokenWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
-- (void)signInWithToken:(NSString *)token DEPRECATED_ATTRIBUTE;
-- (void)signOut;
 - (BOOL)hasCredentials;
 - (void)validateWPComAccountWithEmail:(NSString *)email andUsername:(NSString *)username andPassword:(NSString *)password success:(void (^)(id responseObject))success failure:(void (^)(NSError *error))failure;
 - (void)createWPComAccountWithEmail:(NSString *)email andUsername:(NSString *)username andPassword:(NSString *)password success:(void (^)(id responseObject))success failure:(void (^)(NSError *error))failure;
 - (void)validateWPComBlogWithUrl:(NSString *)blogUrl andBlogTitle:(NSString *)blogTitle andLanguageId:(NSNumber *)languageId success:(void (^)(id))success failure:(void (^)(NSError *))failure;
 - (void)createWPComBlogWithUrl:(NSString *)blogUrl andBlogTitle:(NSString *)blogTitle andLanguageId:(NSNumber *)languageId andBlogVisibility:(WordPressComApiBlogVisibility)visibility success:(void (^)(id))success failure:(void (^)(NSError *))failure;
 
-///---------------------------
-/// @name Transitional methods
-///---------------------------
-
-/**
- Reloads `self.username` and `self.password` from the defaults dictionary and keychain
- 
- Since WordPressComApi uses tokens now, this shouldn't be necessary and will be removed in the future
- */
-- (void)updateCredentailsFromStore;
 
 ///--------------------
 /// @name Notifications

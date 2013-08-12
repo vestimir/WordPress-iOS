@@ -6,7 +6,7 @@
 #import "ReachabilityUtils.h"
 #import "WordPressDataModel.h"
 #import "FileLogger.h"
-#import "PushManager.h"
+#import "NotificationsManager.h"
 #import "MediaManager.h"
 #import <PocketAPI/PocketAPI.h>
 #import "CameraPlusPickerManager.h"
@@ -94,11 +94,11 @@
     
   	[self.window makeKeyAndVisible];
     
-	[PushManager registerForRemotePushNotifications];
+	[NotificationsManager registerForRemotePushNotifications];
     
     NSDictionary *remoteNotif = [launchOptions objectForKey:UIApplicationLaunchOptionsRemoteNotificationKey];
     if (remoteNotif) {
-        [[PushManager sharedInstance] handleRemoteNotificationFromLaunch:remoteNotif];
+        [[NotificationsManager sharedInstance] handleRemoteNotificationFromLaunch:remoteNotif];
     }
     
     
@@ -410,18 +410,18 @@
 #pragma mark - Push Notification delegate
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
-    [[PushManager sharedInstance] didRegisterForRemoteNotifications:deviceToken];
+    [[NotificationsManager sharedInstance] didRegisterForRemoteNotifications:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
-	[[PushManager sharedInstance] didFailToRegisterForRemoteNotifications:error];
+	[[NotificationsManager sharedInstance] didFailToRegisterForRemoteNotifications:error];
 }
 
 // The notification is delivered when the application is running
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     application.applicationIconBadgeNumber = 0;
 
-    [[PushManager sharedInstance] handleRemoteNotification:userInfo applicationState:application.applicationState];
+    [[NotificationsManager sharedInstance] handleRemoteNotification:userInfo applicationState:application.applicationState];
 }
 
 #pragma mark - UIAlertViewDelegate
