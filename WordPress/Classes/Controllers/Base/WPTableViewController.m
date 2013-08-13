@@ -941,6 +941,10 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
     AssertSubclassMethod();
 }
 
+- (void)configureSwipeView:(UIView *)swipeView forIndexPath:(NSIndexPath *)indexPath {
+    AssertSubclassMethod();
+}
+
 - (void)resetResultsController {
 	_resultsController.delegate = nil;
 	_resultsController = nil;

@@ -379,7 +379,6 @@
 
 - (void)signOut { 
     if (isWPcom) {
-        [[WPAccount defaultWordPressComAccount] signOut];
         [WPAccount removeDefaultWordPressComAccount]; 
     } 
     [self.navigationController popViewControllerAnimated:YES]; 

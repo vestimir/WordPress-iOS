@@ -32,6 +32,7 @@ typedef NS_ENUM(NSUInteger, WordPressComApiBlogVisibility) {
 extern NSString *const WordPressComApiErrorDomain;
 extern NSString *const WordPressComApiErrorCodeKey;
 extern NSString *const WordPressComApiErrorMessageKey;
+extern NSString *const WordPressComApiOauthServiceName;
 
 
 @interface WordPressComApi : AFHTTPClient
@@ -39,6 +40,8 @@ extern NSString *const WordPressComApiErrorMessageKey;
 @property (nonatomic,readonly,strong) NSString *password;
 
 + (WordPressComApi *)sharedApi;
+
+- (void)removeCurrentAuthorization;
 
 ///-------------------------
 /// @name Account management

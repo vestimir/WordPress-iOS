@@ -317,7 +317,6 @@
 		C5E3CED417B93BDB00981839 /* WordPressComApiCredentials.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDDD17B93BDA00981839 /* WordPressComApiCredentials.m */; };
 		C5E3CED617B93BDB00981839 /* WPRestNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDE117B93BDA00981839 /* WPRestNetworkManager.m */; };
 		C5E3CED717B93BDB00981839 /* WPXMLRPCNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDE317B93BDA00981839 /* WPXMLRPCNetworkManager.m */; };
-		C5E3CED817B93BDB00981839 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDE717B93BDA00981839 /* NotificationsManager.m */; };
 		C5E3CED917B93BDB00981839 /* CPopoverManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDEA17B93BDB00981839 /* CPopoverManager.m */; };
 		C5E3CEDA17B93BDB00981839 /* DateUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDEC17B93BDB00981839 /* DateUtils.m */; };
 		C5E3CEDB17B93BDB00981839 /* FileLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CDEE17B93BDB00981839 /* FileLogger.m */; };
@@ -376,6 +375,7 @@
 		C5E3CF1017B93BDB00981839 /* WPWalkthroughTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CE5D17B93BDB00981839 /* WPWalkthroughTextField.m */; };
 		C5E3CF1117B93BDB00981839 /* WPWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CE5F17B93BDB00981839 /* WPWebView.m */; };
 		C5E3CF1317B93BDB00981839 /* WordPressAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CE6317B93BDB00981839 /* WordPressAppDelegate.m */; };
+		C5E3CF1817BACC3200981839 /* NotificationsManager.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CF1717BACC3200981839 /* NotificationsManager.m */; };
 		C5FB8B9A179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */; };
 		C5FB8B9B179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */; };
 		C5FB8E3517A1BEF30064BB92 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8E3417A1BEF30064BB92 /* EGORefreshTableHeaderView.m */; };
@@ -869,8 +869,6 @@
 		C5E3CDE217B93BDA00981839 /* WPXMLRPCNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPXMLRPCNetworkManager.h; sourceTree = "<group>"; };
 		C5E3CDE317B93BDA00981839 /* WPXMLRPCNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPXMLRPCNetworkManager.m; sourceTree = "<group>"; };
 		C5E3CDE417B93BDA00981839 /* PanelNavigationConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanelNavigationConstants.h; sourceTree = "<group>"; };
-		C5E3CDE617B93BDA00981839 /* NotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
-		C5E3CDE717B93BDA00981839 /* NotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
 		C5E3CDE917B93BDB00981839 /* CPopoverManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CPopoverManager.h; sourceTree = "<group>"; };
 		C5E3CDEA17B93BDB00981839 /* CPopoverManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CPopoverManager.m; sourceTree = "<group>"; };
 		C5E3CDEB17B93BDB00981839 /* DateUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtils.h; sourceTree = "<group>"; };
@@ -989,6 +987,8 @@
 		C5E3CE6217B93BDB00981839 /* WordPressAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WordPressAppDelegate.h; sourceTree = "<group>"; };
 		C5E3CE6317B93BDB00981839 /* WordPressAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WordPressAppDelegate.m; sourceTree = "<group>"; };
 		C5E3CF1417B94AF800981839 /* WordPress-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "WordPress-Info.plist"; sourceTree = "<group>"; };
+		C5E3CF1617BACC3200981839 /* NotificationsManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NotificationsManager.h; sourceTree = "<group>"; };
+		C5E3CF1717BACC3200981839 /* NotificationsManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NotificationsManager.m; sourceTree = "<group>"; };
 		C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISegmentBarBlackButtonHighlighted.png; sourceTree = "<group>"; };
 		C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISegmentBarBlackButtonHighlighted@2x.png"; sourceTree = "<group>"; };
 		C5FB8E3317A1BEF30064BB92 /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
@@ -1415,11 +1415,9 @@
 				C5E3CDA017B93BDA00981839 /* license.txt */,
 				C5E3CDA117B93BDA00981839 /* main.m */,
 				C5E3CDA217B93BDA00981839 /* Media */,
-				C5E3CDAB17B93BDA00981839 /* Migrations */,
 				C5E3CDAC17B93BDA00981839 /* Models */,
 				C5E3CDD017B93BDA00981839 /* Network */,
 				C5E3CDE417B93BDA00981839 /* PanelNavigationConstants.h */,
-				C5E3CDE517B93BDA00981839 /* Push */,
 				C5E3CDE817B93BDB00981839 /* Utils */,
 				C5E3CDFF17B93BDB00981839 /* Views */,
 				C5E3CE6117B93BDB00981839 /* WordPress-Prefix.pch */,
@@ -1748,13 +1746,6 @@
 			path = Media;
 			sourceTree = "<group>";
 		};
-		C5E3CDAB17B93BDA00981839 /* Migrations */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Migrations;
-			sourceTree = "<group>";
-		};
 		C5E3CDAC17B93BDA00981839 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -1833,18 +1824,11 @@
 			path = WPComAPI;
 			sourceTree = "<group>";
 		};
-		C5E3CDE517B93BDA00981839 /* Push */ = {
-			isa = PBXGroup;
-			children = (
-				C5E3CDE617B93BDA00981839 /* NotificationsManager.h */,
-				C5E3CDE717B93BDA00981839 /* NotificationsManager.m */,
-			);
-			path = Push;
-			sourceTree = "<group>";
-		};
 		C5E3CDE817B93BDB00981839 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				C5E3CF1617BACC3200981839 /* NotificationsManager.h */,
+				C5E3CF1717BACC3200981839 /* NotificationsManager.m */,
 				C5E3CDE917B93BDB00981839 /* CPopoverManager.h */,
 				C5E3CDEA17B93BDB00981839 /* CPopoverManager.m */,
 				C5E3CDEB17B93BDB00981839 /* DateUtils.h */,
@@ -2479,7 +2463,6 @@
 				C5E3CED417B93BDB00981839 /* WordPressComApiCredentials.m in Sources */,
 				C5E3CED617B93BDB00981839 /* WPRestNetworkManager.m in Sources */,
 				C5E3CED717B93BDB00981839 /* WPXMLRPCNetworkManager.m in Sources */,
-				C5E3CED817B93BDB00981839 /* NotificationsManager.m in Sources */,
 				C5E3CED917B93BDB00981839 /* CPopoverManager.m in Sources */,
 				C5E3CEDA17B93BDB00981839 /* DateUtils.m in Sources */,
 				C5E3CEDB17B93BDB00981839 /* FileLogger.m in Sources */,
@@ -2538,6 +2521,7 @@
 				C5E3CF1017B93BDB00981839 /* WPWalkthroughTextField.m in Sources */,
 				C5E3CF1117B93BDB00981839 /* WPWebView.m in Sources */,
 				C5E3CF1317B93BDB00981839 /* WordPressAppDelegate.m in Sources */,
+				C5E3CF1817BACC3200981839 /* NotificationsManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

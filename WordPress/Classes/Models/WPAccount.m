@@ -79,9 +79,27 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
     [[NSNotificationCenter defaultCenter] postNotificationName:WPAccountDefaultWordPressComAccountChangedNotification object:account];
 }
 
-+ (void)removeDefaultWordPressComAccount {
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:DefaultDotcomAccountDefaultsKey];
++ (void)removeDefaultWordPressComAccount {    
+    [SFHFKeychainUtils deleteItemForUsername:__defaultDotcomAccount.username andServiceName:WordPressComApiOauthServiceName error:nil];
     __defaultDotcomAccount = nil;
+    
+    // TODO: Form a relationship for Account and Note so Notes are deleted when the account is deleted
+    // - Posts/Pages/etc already have this
+    // Remove all notifications
+    [Note removeAllNotesWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]];
+    
+    // Remove the token from Preferences, otherwise the token is never sent to the server on the next login
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey];
+    [NotificationsManager unregisterForRemotePushNotifications];
+    
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:DefaultDotcomAccountDefaultsKey];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_username_preference"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_authenticated_flag"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+    
+    // Remove authorization header and cookies for the current instance of the API
+    [[WordPressComApi sharedApi] removeCurrentAuthorization];
+    
     [[NSNotificationCenter defaultCenter] postNotificationName:WPAccountDefaultWordPressComAccountChangedNotification object:nil];
 }
 
@@ -149,33 +167,6 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
     return blog;
 }
 
-#pragma mark - Account Management
-
-- (void)signOut {
-#if FALSE
-    // Until we have accounts, don't delete the password or any blog with that username will stop working
-    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:@"WordPress.com" error:&error];
-#endif
-    [NotificationsManager unregisterForRemotePushNotifications];
-    //    [WordPressAppDelegate sharedWordPressApplicationDelegate].isWPcomAuthenticated = NO;
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey]; //Remove the token from Preferences, otherwise the token is never sent to the server on the next login
-//    [SFHFKeychainUtils deleteItemForUsername:self.username andServiceName:WordPressComApiOauthServiceName error:&error];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_username_preference"];
-    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_authenticated_flag"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-    self.authToken = nil;
-    self.username = nil;
-    self.password = nil;
-//    [self clearAuthorizationHeader];
-    
-    // Remove all notes
-    [Note removeAllNotesWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]];
-    
-//    [self clearWpComCookies];
-    
-    // Notify the world
-    [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLogoutNotification object:nil];
-}
 
 #pragma mark - Custom accessors
 

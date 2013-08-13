@@ -80,7 +80,7 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
 @property (readwrite, nonatomic, strong) NSString *password;
 @property (nonatomic, strong) NSString *authToken;
 
-- (void)clearWpcomCookies;
+- (void)clearWpComCookies;
 
 @end
 
@@ -163,12 +163,9 @@ NSString *const WordPressComApiErrorMessageKey = @"WordPressComApiErrorMessageKe
     [self signInWithUsername:self.username password:self.password success:success failure:failure];
 }
 
-// TODO Move out
-- (void)signOut {
-    
+- (void)removeCurrentAuthorization {
     [self clearWpComCookies];
     [self clearAuthorizationHeader];
-    
 }
 
 - (BOOL)hasCredentials {
