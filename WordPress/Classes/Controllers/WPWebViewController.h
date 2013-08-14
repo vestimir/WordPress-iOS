@@ -9,21 +9,18 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
-@interface WPWebViewController : UIViewController <UIWebViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate> {
-    BOOL isLoading, needsLogin, hasLoadedContent;
-    UIWebView *webView;
-	NSTimer *statusTimer;   // This timer checks the nav buttons every 0.75 seconds, and updates them
-}
-@property (nonatomic,strong) NSURL *url;
-@property (nonatomic,strong) NSURL *wpLoginURL;
-@property (nonatomic,strong) NSString *username;
-@property (nonatomic,strong) NSString *password;
-@property (nonatomic,strong) NSString *statsPrefixForShareActions;
-@property (nonatomic,strong) IBOutlet UIWebView *webView;
-@property (nonatomic,strong) IBOutlet UIToolbar *toolbar;
-@property (nonatomic,strong) IBOutlet UIView *loadingView;
-@property (nonatomic,strong) IBOutlet UIActivityIndicatorView *activityIndicator;
-@property (nonatomic,strong) IBOutlet UILabel *loadingLabel;
+@interface WPWebViewController : UIViewController <UIWebViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate>
+
+@property (nonatomic, strong) NSURL *url;
+@property (nonatomic, strong) NSURL *wpLoginURL;
+@property (nonatomic, strong) NSString *username;
+@property (nonatomic, strong) NSString *password;
+@property (nonatomic, strong) NSString *statsPrefixForShareActions;
+@property (nonatomic, strong) IBOutlet UIWebView *webView;
+@property (nonatomic, strong) IBOutlet UIToolbar *toolbar;
+@property (nonatomic, strong) IBOutlet UIView *loadingView;
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (nonatomic, strong) IBOutlet UILabel *loadingLabel;
 @property (nonatomic, strong) IBOutlet UINavigationBar *iPadNavBar;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *backButton;
 @property (nonatomic, strong) IBOutlet UIBarButtonItem *forwardButton;
@@ -34,10 +31,11 @@
 @property (nonatomic) BOOL hidesLinkOptions;
 
 //reader variables
-@property (nonatomic,strong) NSString *detailContent;
-@property (nonatomic,strong) NSString *detailHTML;
-@property (nonatomic,strong) NSString *readerAllItems;
-@property (nonatomic) BOOL shouldScrollToBottom;
+@property (nonatomic, strong) NSString *detailContent;
+@property (nonatomic, strong) NSString *detailHTML;
+@property (nonatomic, strong) NSString *readerAllItems;
+@property (nonatomic, assign) BOOL shouldScrollToBottom;
+@property (nonatomic, assign) BOOL isLoading, needsLogin, hasLoadedContent;
 
 - (void) showCloseButton;
 - (IBAction) showLinkOptions;
@@ -45,4 +43,5 @@
 - (IBAction) goForward;
 - (IBAction) goBack;
 - (IBAction) reload;
+
 @end

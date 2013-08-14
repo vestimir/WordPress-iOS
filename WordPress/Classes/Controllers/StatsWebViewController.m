@@ -78,7 +78,7 @@ static NSString *_lastAuthedName = nil;
     self.title = NSLocalizedString(@"Stats", nil);
     
     // Bypass AFNetworking for ajax stats.
-    webView.useWebViewLoading = YES;
+    self.webView.useWebViewLoading = YES;
 
     if( [ReachabilityUtils sharedInstance].connectionAvailable == YES ) {
         [self.webView showRefreshingState];
@@ -177,17 +177,17 @@ static NSString *_lastAuthedName = nil;
         [FileLogger log:@"Loading Stats for the following blog: %@", [blog url]];
 
         if(![ReachabilityUtils sharedInstance].connectionAvailable) {
-            [webView hideRefreshingState];
+            [self.webView hideRefreshingState];
             [ReachabilityUtils showAlertNoInternetConnectionWithRetryBlock:^{
                 [self loadStats];
             }];
-            [webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+            [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
 
         } else {
             [self initStats];
         }
     } else {
-        [webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
+        [self.webView loadHTMLString:@"<html><head></head><body></body></html>" baseURL:nil];
     }
 }
 
@@ -282,7 +282,7 @@ static NSString *_lastAuthedName = nil;
     [mRequest setHTTPBody:[requestBody dataUsingEncoding:NSUTF8StringEncoding]];
     [mRequest setValue:[NSString stringWithFormat:@"%d", [requestBody length]] forHTTPHeaderField:@"Content-Length"];
     [mRequest addValue:@"*/*" forHTTPHeaderField:@"Accept"];
-    NSString *userAgent = [NSString stringWithFormat:@"%@", [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]];
+    NSString *userAgent = [NSString stringWithFormat:@"%@", [self.webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]];
     [mRequest addValue:userAgent forHTTPHeaderField:@"User-Agent"];
     [mRequest setHTTPMethod:@"POST"];
 
@@ -324,7 +324,7 @@ static NSString *_lastAuthedName = nil;
     }];
     
     [authRequest start];
-    [webView showRefreshingState];
+    [self.webView showRefreshingState];
 }
 
 
@@ -356,10 +356,10 @@ static NSString *_lastAuthedName = nil;
     NSMutableURLRequest *mRequest = [[NSMutableURLRequest alloc] init];
     [mRequest setURL:[NSURL URLWithString:pathStr]];
     [mRequest addValue:@"*/*" forHTTPHeaderField:@"Accept"];
-    NSString *userAgent = [NSString stringWithFormat:@"%@",[webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]];
+    NSString *userAgent = [NSString stringWithFormat:@"%@",[self.webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]];
     [mRequest addValue:userAgent forHTTPHeaderField:@"User-Agent"];
     
-    [webView loadRequest:mRequest];
+    [self.webView loadRequest:mRequest];
 }
 
 

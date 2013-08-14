@@ -43,61 +43,30 @@
 #define DEFAULT_ROW_HEIGHT 48
 #define NUM_ROWS 6
 
-@interface SidebarViewController () <NSFetchedResultsControllerDelegate, QuickPhotoButtonViewDelegate> {
-    QuickPhotoButtonView *quickPhotoButton;
-    UIActionSheet *quickPhotoActionSheet;
-    BOOL selectionRestored;
-    NSUInteger wantedSection;
-    BOOL _showingWelcomeScreen;
-    BOOL changingContentForSelectedSection;
-}
+@interface SidebarViewController () <NSFetchedResultsControllerDelegate, QuickPhotoButtonViewDelegate>
 
 @property (nonatomic, strong) Post *currentQuickPost;
-@property (nonatomic, strong) QuickPhotoButtonView *quickPhotoButton;
+@property (nonatomic, weak) QuickPhotoButtonView *quickPhotoButton;
 @property (nonatomic, strong) UIActionSheet *quickPhotoActionSheet;
 @property (nonatomic, strong) NSFetchedResultsController *resultsController;
 @property (nonatomic, weak) SectionInfo *openSection;
 @property (nonatomic, strong) NSMutableArray *sectionInfoArray;
 @property (readonly) NSInteger topSectionRowCount;
 @property (nonatomic, strong) NSIndexPath *currentIndexPath;
-@property (readonly) NSUInteger unreadNoteCount;
+@property (nonatomic, assign) NSUInteger openSectionIdx;
 @property (nonatomic, assign) BOOL hasUnseenNotes;
-
-- (SectionInfo *)sectionInfoForBlog:(Blog *)blog;
-- (void)addSectionInfoForBlog:(Blog *)blog;
-- (void)insertSectionInfoForBlog:(Blog *)blog atIndex:(NSUInteger)index;
-- (void)showWelcomeScreenIfNeeded;
-- (void)selectFirstAvailableItem;
-- (void)selectFirstAvailableBlog;
-- (void)selectBlogWithSection:(NSUInteger)index;
-- (void)selectBlog:(Blog *)blog;
-
-- (void)showQuickPhoto:(UIImagePickerControllerSourceType)sourceType useCameraPlus:(BOOL)useCameraPlus withImage:(UIImage *)image;
-- (void)showQuickPhoto:(UIImagePickerControllerSourceType)sourceType useCameraPlus:(BOOL)useCameraPlus;
-- (void)showQuickPhoto:(UIImagePickerControllerSourceType)sourceType;
-- (void)postDidUploadSuccessfully:(NSNotification *)notification;
-- (void)postUploadFailed:(NSNotification *)notification;
-- (void)postUploadCancelled:(NSNotification *)notification;
-- (void)setupQuickPhotoButton;
-- (void)tearDownQuickPhotoButton;
-- (void)handleCameraPlusImages:(NSNotification *)notification;
-- (void)presentContent;
-- (void)checkNothingToShow;
+@property (nonatomic, assign) BOOL showingWelcomeScreen;
+@property (nonatomic, assign) BOOL selectionRestored;
+@property (nonatomic, assign) BOOL changingContentForSelectedSection;
+@property (nonatomic, assign) BOOL wantedSection;
 
 @end
 
 @implementation SidebarViewController
 
-@synthesize resultsController = _resultsController, openSection=_openSection, sectionInfoArray=_sectionInfoArray;
-@synthesize settingsButton, quickPhotoButton;
-@synthesize currentQuickPost = _currentQuickPost;
-@synthesize utililtyView;
-@synthesize currentIndexPath;
-@synthesize quickPhotoActionSheet;
-@synthesize tableView;
-
 - (void)dealloc {
     self.resultsController.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)viewDidLoad {
@@ -110,12 +79,12 @@
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_bg"]];
 
-    utililtyView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_footer_bg"]];
-    utililtyView.layer.shadowRadius = 10.0f;
-    utililtyView.layer.shadowOpacity = 0.8f;
-    utililtyView.layer.shadowColor = [[UIColor blackColor] CGColor];
-    utililtyView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
-    utililtyView.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:utililtyView.bounds cornerRadius:PANEL_CORNER_RADIUS] CGPath];
+    self.utililtyView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_footer_bg"]];
+    self.utililtyView.layer.shadowRadius = 10.0f;
+    self.utililtyView.layer.shadowOpacity = 0.8f;
+    self.utililtyView.layer.shadowColor = [[UIColor blackColor] CGColor];
+    self.utililtyView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
+    self.utililtyView.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:self.utililtyView.bounds cornerRadius:PANEL_CORNER_RADIUS] CGPath];
     
     // create the sectionInfoArray, stores data for collapsing/expanding sections in the tableView
 	if (self.sectionInfoArray == nil) {
@@ -137,7 +106,7 @@
     self.settingsButton.imageEdgeInsets = UIEdgeInsetsMake(0.0f, 8.0f, 0.0f, 0.0f);
     self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
     self.settingsButton.titleLabel.shadowOffset = CGSizeMake(0, -1.0f);
-    [settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+    [self.settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
 
     if ([[self.resultsController fetchedObjects] count] > 0) {
         [self setupQuickPhotoButton];
@@ -191,7 +160,6 @@
     }
 }
 
-
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
@@ -200,7 +168,7 @@
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-    if (quickPhotoActionSheet) {
+    if (self.quickPhotoActionSheet) {
         // The quickphoto actionsheet is showing but its location is probably off
         // due to the rotation. Just represent it.
         [self quickPhotoButtonViewTapped:nil];
@@ -219,9 +187,9 @@
 
 - (void)presentContent {
     [self showWelcomeScreenIfNeeded];
-    if (!selectionRestored) {
+    if (!_selectionRestored) {
         [self restorePreservedSelection];
-        selectionRestored = YES;
+        _selectionRestored = YES;
     }
 }
 
@@ -277,15 +245,15 @@
 
 - (void)checkNothingToShow {
     if ( [[self.resultsController fetchedObjects] count] == 0 && ![WPAccount defaultWordPressComAccount] ) {
-        utililtyView.hidden = YES;
-        settingsButton.hidden = YES;
+        _utililtyView.hidden = YES;
+        _settingsButton.hidden = YES;
         
         // No user logged in and no blogs.
         // The panelViewController needs to loose its detail view if it has one.
         [self.panelNavigationController clearDetailViewController];
     } else {
-        utililtyView.hidden = NO;
-        settingsButton.hidden = NO;
+        _utililtyView.hidden = NO;
+        _settingsButton.hidden = NO;
     }
 }
 
@@ -450,9 +418,9 @@ NSLog(@"%@", self.sectionInfoArray);
 - (void)quickPhotoButtonViewTapped:(QuickPhotoButtonView *)sender {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
 
-    if (quickPhotoActionSheet) {
+    if (self.quickPhotoActionSheet) {
         // Dismiss the previous action sheet without invoking a button click.
-        [quickPhotoActionSheet dismissWithClickedButtonIndex:-1 animated:NO];
+        [self.quickPhotoActionSheet dismissWithClickedButtonIndex:-1 animated:NO];
     }
     
     [self.panelNavigationController showSidebar];
@@ -479,7 +447,7 @@ NSLog(@"%@", self.sectionInfoArray);
     
     actionSheet.actionSheetStyle = UIActionSheetStyleDefault;
     if (IS_IPAD) {
-        [actionSheet showFromRect:quickPhotoButton.frame inView:utililtyView animated:YES];
+        [actionSheet showFromRect:self.quickPhotoButton.frame inView:self.utililtyView animated:YES];
     } else {
         [actionSheet showInView:self.panelNavigationController.view];        
     }
@@ -530,7 +498,7 @@ NSLog(@"%@", self.sectionInfoArray);
 - (void)uploadQuickPhoto:(Post *)post {
     if (post != nil) {
         self.currentQuickPost = post;
-        [quickPhotoButton showProgress:YES animated:YES];
+        [self.quickPhotoButton showProgress:YES animated:YES];
         
         if (IS_IPHONE) {
             [self selectBlog:post.blog];
@@ -541,13 +509,13 @@ NSLog(@"%@", self.sectionInfoArray);
 - (void)postDidUploadSuccessfully:(NSNotification *)notification {
 //    appDelegate.isUploadingPost = NO;
     self.currentQuickPost = nil;
-    [quickPhotoButton showSuccess];
+    [self.quickPhotoButton showSuccess];
 }
 
 - (void)postUploadFailed:(NSNotification *)notification {
 //    appDelegate.isUploadingPost = NO;
     self.currentQuickPost = nil;
-    [quickPhotoButton showProgress:NO animated:YES];
+    [self.quickPhotoButton showProgress:NO animated:YES];
 
     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Quick Photo Failed", @"")
                                                     message:NSLocalizedString(@"The photo could not be published. It's been saved as a local draft.", @"")
@@ -559,7 +527,7 @@ NSLog(@"%@", self.sectionInfoArray);
 
 - (void)postUploadCancelled:(NSNotification *)notification {
     self.currentQuickPost = nil;
-    [quickPhotoButton showProgress:NO animated:YES];
+    [self.quickPhotoButton showProgress:NO animated:YES];
 }
 
 - (void)setCurrentQuickPost:(Post *)currentQuickPost {
@@ -579,39 +547,40 @@ NSLog(@"%@", self.sectionInfoArray);
 }
 
 - (void)setupQuickPhotoButton {    
-    if (quickPhotoButton) return;
+    if (self.quickPhotoButton) return;
     
     CGFloat gapWidth = 2.0f;
     CGFloat availableWidth = self.view.frame.size.width;
     CGFloat buttonWidth = (availableWidth - gapWidth) / 2; // Remove gap size, divide by 2 for 2 buttons
     
     // Make room for the photo button
-    CGRect settingsFrame = settingsButton.frame;
+    CGRect settingsFrame = _settingsButton.frame;
     settingsFrame.size.width = buttonWidth;
     settingsFrame.origin.x = (buttonWidth + 3.0f); // Using 3f since the parent view doesn't have an expected even width
-    settingsButton.frame = settingsFrame;
+    _settingsButton.frame = settingsFrame;
     
     // Match the height and y of the settings Button.
     CGRect frame = CGRectMake(0.0f, settingsFrame.origin.y, buttonWidth, settingsFrame.size.height);
-    self.quickPhotoButton = [[QuickPhotoButtonView alloc] initWithFrame:frame];
-    quickPhotoButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
-    quickPhotoButton.delegate = self;
+    QuickPhotoButtonView *quickPhotoView = [[QuickPhotoButtonView alloc] initWithFrame:frame];
+    self.quickPhotoButton = quickPhotoView;
+    self.quickPhotoButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin;
+    self.quickPhotoButton.delegate = self;
     
-    [self.utililtyView addSubview:quickPhotoButton];
+    [self.utililtyView addSubview:self.quickPhotoButton];
 }
 
 - (void)tearDownQuickPhotoButton {
-    if (!quickPhotoButton) return;
+    if (!self.quickPhotoButton) return;
 
-    [quickPhotoButton removeFromSuperview];
-    quickPhotoButton.delegate = nil;
+    [self.quickPhotoButton removeFromSuperview];
+    self.quickPhotoButton.delegate = nil;
     self.quickPhotoButton = nil;
     
     CGFloat availableWidth = self.view.frame.size.width;
-    CGRect frame = settingsButton.frame;
+    CGRect frame = self.settingsButton.frame;
     frame.origin.x = 0.0f;
     frame.size.width = availableWidth;
-    settingsButton.frame = frame;
+    self.settingsButton.frame = frame;
 }
 
 - (void)handleCameraPlusImages:(NSNotification *)notification {
@@ -797,7 +766,7 @@ NSLog(@"%@", self.sectionInfoArray);
 -(void)sectionHeaderView:(SidebarSectionHeaderView*)sectionHeaderView sectionOpened:(SectionInfo *)sectionOpened {
 	sectionOpened.open = YES;
     NSUInteger sectionNumber = [self.sectionInfoArray indexOfObject:sectionOpened] + 1;
-    openSectionIdx = sectionNumber;
+    self.openSectionIdx = sectionNumber;
     
     // Create an array containing the index paths of the rows to insert
     NSMutableArray *indexPathsToInsert = [NSMutableArray array];
@@ -836,7 +805,7 @@ NSLog(@"%@", self.sectionInfoArray);
     [self processRowSelectionAtIndexPath:[indexPathsToInsert objectAtIndex:0] closingSidebar:NO];
     
     // scroll to the section header view if it's not visible
-    CGRect sectionRect = [self.tableView rectForSection:openSectionIdx];
+    CGRect sectionRect = [self.tableView rectForSection:self.openSectionIdx];
     [self.tableView scrollRectToVisible:sectionRect animated:YES];
     
 }
@@ -868,7 +837,7 @@ NSLog(@"%@", self.sectionInfoArray);
     WPFLog(@"%@ %@ %@", self, NSStringFromSelector(_cmd), indexPath);
     
     if (self.currentIndexPath) {
-        if ([indexPath compare:self.currentIndexPath] == NSOrderedSame && !changingContentForSelectedSection) {
+        if ([indexPath compare:self.currentIndexPath] == NSOrderedSame && !_changingContentForSelectedSection) {
             if (IS_IPAD) {
                 [self.panelNavigationController showSidebar];
             } else {
@@ -1038,33 +1007,33 @@ NSLog(@"%@", self.sectionInfoArray);
 - (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     if (indexPath) {
-        wantedSection = indexPath.section;
+        _wantedSection = indexPath.section;
     } else {
-        wantedSection = 0;
+        _wantedSection = 0;
     }
     [self.tableView beginUpdates];
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
     [self.tableView endUpdates];
-    if (restoringView && currentIndexPath) {
-        restoringView = NO;
-        [[self tableView] selectRowAtIndexPath:currentIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+    if (self.restoringView && self.currentIndexPath) {
+        self.restoringView = NO;
+        [[self tableView] selectRowAtIndexPath:self.currentIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
         return;
     }
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     if (indexPath) {
-        if (indexPath.section != wantedSection || changingContentForSelectedSection) {
-            if (wantedSection > 0) {
-                NSUInteger sec = wantedSection;
-                if (wantedSection > indexPath.section && indexPath.section > 0) {
+        if (indexPath.section != _wantedSection || _changingContentForSelectedSection) {
+            if (_wantedSection > 0) {
+                NSUInteger sec = _wantedSection;
+                if (_wantedSection > indexPath.section && indexPath.section > 0) {
                     sec = indexPath.section; // Prevents an out of index error that was being error trapped, thus hiding a crash.
                 }
                 [self selectBlogWithSection:sec];
             } else {
                 [self selectFirstAvailableItem];
             }
-            changingContentForSelectedSection = NO;
+            _changingContentForSelectedSection = NO;
         }
     } else {
         [self selectFirstAvailableItem];
@@ -1095,11 +1064,11 @@ NSLog(@"%@", self.sectionInfoArray);
             NSIndexPath *openIndexPath = [self.tableView indexPathForSelectedRow];
             if (openIndexPath.section == (newIndexPath.row +1)) {
                 // We're swapping the content for the currently selected section and need to update accordingly.
-                changingContentForSelectedSection = YES;
+                _changingContentForSelectedSection = YES;
             }
             [self insertSectionInfoForBlog:anObject atIndex:newIndexPath.row];
             [self.tableView insertSections:[NSIndexSet indexSetWithIndex:newIndexPath.row + 1] withRowAnimation:UITableViewRowAnimationFade];
-            wantedSection = newIndexPath.row + 1;
+            _wantedSection = newIndexPath.row + 1;
             break;
         }
         case NSFetchedResultsChangeDelete:
@@ -1108,12 +1077,12 @@ NSLog(@"%@", self.sectionInfoArray);
             NSIndexPath *openIndexPath = [self.tableView indexPathForSelectedRow];
             if (openIndexPath.section == (newIndexPath.row +1)) {
                 // We're swapping the content for the currently selected section and need to update accordingly.
-                changingContentForSelectedSection = YES;
+                _changingContentForSelectedSection = YES;
             }
             SectionInfo *sectionInfo = [self.sectionInfoArray objectAtIndex:indexPath.row];
             if (self.openSection == sectionInfo) {
                 self.openSection = nil;
-                wantedSection = 0;
+                _wantedSection = 0;
             }
             [self.sectionInfoArray removeObjectAtIndex:indexPath.row];
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.row + 1] withRowAnimation:UITableViewRowAnimationNone];

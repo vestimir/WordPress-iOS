@@ -17,33 +17,21 @@
 @class WPReaderDetailViewController;
 
 @interface WPWebViewController ()
+
 @property (weak, readonly) UIScrollView *scrollView;
 @property (nonatomic, strong) UIActionSheet *linkOptionsActionSheet;
-- (NSString*) getDocumentPermalink;
-- (NSString*) getDocumentTitle;
-- (void)upgradeButtonsAndLabels:(NSTimer*)timer;
-- (BOOL)setMFMailFieldAsFirstResponder:(UIView*)view mfMailField:(NSString*)field;
-- (void)refreshWebView;
-- (void)setLoading:(BOOL)loading;
-- (void)retryWithLogin;
+
 @end
 
 @implementation WPWebViewController
-@synthesize url, wpLoginURL, username, password, detailContent, detailHTML, readerAllItems;
-@synthesize webView, toolbar, statusTimer;
-@synthesize loadingView, loadingLabel, activityIndicator;
-@synthesize iPadNavBar, backButton, forwardButton, refreshButton, spinnerButton, optionsButton;
-@synthesize linkOptionsActionSheet = _linkOptionsActionSheet;
-@synthesize hidesLinkOptions;
-@synthesize shouldScrollToBottom;
 
 - (void)dealloc
 {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
 
     self.webView.delegate = nil;
-    if ([webView isLoading]) {
-        [webView stopLoading];
+    if ([self.webView isLoading]) {
+        [self.webView stopLoading];
     }
     self.statusTimer = nil;
     self.linkOptionsActionSheet.delegate = nil;
@@ -97,7 +85,7 @@
         }
         
         if (!self.hidesLinkOptions) {
-            self.navigationItem.rightBarButtonItem = optionsButton;
+            self.navigationItem.rightBarButtonItem = self.optionsButton;
         }
         
     } else {
@@ -106,36 +94,34 @@
         UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
         [btn setImage:[UIImage imageNamed:@"sync_dark"] forState:UIControlStateNormal];
         [btn setImage:[UIImage imageNamed:@"sync_lite"] forState:UIControlStateHighlighted];
-
+        
         btn.frame = CGRectMake(0.0f, 0.0f, 30.0f, 30.0f);
         btn.autoresizingMask =  UIViewAutoresizingFlexibleHeight;
         [btn addTarget:self action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-        refreshButton.customView = btn;
+        self.refreshButton.customView = btn;
         
         if(self.navigationController && self.navigationController.navigationBarHidden == NO) {
-            CGRect frame = webView.frame;
-            frame.origin.y -= iPadNavBar.frame.size.height;
-            frame.size.height += iPadNavBar.frame.size.height;
-            webView.frame = frame;
-            self.navigationItem.rightBarButtonItem = refreshButton;
+            CGRect frame = self.webView.frame;
+            frame.origin.y -= self.iPadNavBar.frame.size.height;
+            frame.size.height += self.iPadNavBar.frame.size.height;
+            self.webView.frame = frame;
+            self.navigationItem.rightBarButtonItem = self.refreshButton;
             self.title = NSLocalizedString(@"Loading...", @"");
-            [iPadNavBar removeFromSuperview];
+            [self.iPadNavBar removeFromSuperview];
             self.iPadNavBar = self.navigationController.navigationBar;
         } else {
-            refreshButton.customView = btn;
-            iPadNavBar.topItem.title = NSLocalizedString(@"Loading...", @"");
+            self.refreshButton.customView = btn;
+            self.iPadNavBar.topItem.title = NSLocalizedString(@"Loading...", @"");
         }
     }
     
-    if ([forwardButton respondsToSelector:@selector(setTintColor:)]) {
-        UIColor *color = [UIColor colorFromHex:0x464646];
-        backButton.tintColor = color;
-        forwardButton.tintColor = color;
-        refreshButton.tintColor = color;
-        if ([[toolbar items] count] >= 4) {
-            UIBarButtonItem *actionButton = [[toolbar items] objectAtIndex:3];
-            actionButton.tintColor = color;
-        }
+    UIColor *color = [UIColor colorFromHex:0x464646];
+    self.backButton.tintColor = color;
+    self.forwardButton.tintColor = color;
+    self.refreshButton.tintColor = color;
+    if ([[self.toolbar items] count] >= 4) {
+        UIBarButtonItem *actionButton = [[self.toolbar items] objectAtIndex:3];
+        actionButton.tintColor = color;
     }
     
     self.optionsButton.enabled = NO;
@@ -164,13 +150,13 @@
         [self.forwardButton setImage:[UIImage imageNamed:@"next"]];
         
         // Replace refresh button with options button
-        backButton.width = (toolbar.frame.size.width / 2.0f) - 10.0f;
-        forwardButton.width = (toolbar.frame.size.width / 2.0f) - 10.0f;
+        self.backButton.width = (self.toolbar.frame.size.width / 2.0f) - 10.0f;
+        self.forwardButton.width = (self.toolbar.frame.size.width / 2.0f) - 10.0f;
         UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         NSArray *items = [NSArray arrayWithObjects:spacer,
-                          backButton, spacer,
-                          forwardButton, spacer, nil];
-        toolbar.items = items;
+                          self.backButton, spacer,
+                          self.forwardButton, spacer, nil];
+        self.toolbar.items = items;
     }
 }
 
@@ -227,23 +213,22 @@
 
 - (void)setStatusTimer:(NSTimer *)timer
 {
- //   [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-	if (statusTimer && timer != statusTimer) {
-		[statusTimer invalidate];
+	if (self.statusTimer && timer != self.statusTimer) {
+		[self.statusTimer invalidate];
 	}
-	statusTimer = timer;
+	self.statusTimer = timer;
 }
 
 
 - (void)upgradeButtonsAndLabels:(NSTimer*)timer {
-    self.backButton.enabled = webView.canGoBack;
-    self.forwardButton.enabled = webView.canGoForward;
-    if (!isLoading) {
+    self.backButton.enabled = self.webView.canGoBack;
+    self.forwardButton.enabled = self.webView.canGoForward;
+    if (!self.isLoading) {
         if (IS_IPAD) {
             if(self.navigationController.navigationBarHidden == NO) {
                 self.title = [self getDocumentTitle];
             } else {
-                [iPadNavBar.topItem setTitle:[self getDocumentTitle]];
+                [self.iPadNavBar.topItem setTitle:[self getDocumentTitle]];
             }
         }
         else
@@ -252,10 +237,10 @@
 }
 
 - (NSString*) getDocumentPermalink {
-    NSString *permaLink = [webView stringByEvaluatingJavaScriptFromString:@"Reader2.get_article_permalink();"];
+    NSString *permaLink = [self.webView stringByEvaluatingJavaScriptFromString:@"Reader2.get_article_permalink();"];
     if ( permaLink == nil || [[permaLink trim] isEqualToString:@""]) {
         // try to get the loaded URL within the webView
-        NSURLRequest *currentRequest = [webView request];
+        NSURLRequest *currentRequest = [self.webView request];
         if ( currentRequest != nil) {
             NSURL *currentURL = [currentRequest URL];
            // NSLog(@"Current URL is %@", currentURL.absoluteString);
@@ -273,13 +258,13 @@
 
 - (NSString*) getDocumentTitle {
      
-    NSString *title = [webView stringByEvaluatingJavaScriptFromString:@"Reader2.get_article_title();"];
+    NSString *title = [self.webView stringByEvaluatingJavaScriptFromString:@"Reader2.get_article_title();"];
     
     if( title != nil && [[title trim] isEqualToString:@""] == false ) {
         return [title trim];
     } else {
         //load the title from the document
-        title = [webView stringByEvaluatingJavaScriptFromString:@"document.title"]; 
+        title = [self.webView stringByEvaluatingJavaScriptFromString:@"document.title"]; 
         
         if ( title != nil && [[title trim] isEqualToString:@""] == false)
             return title;
@@ -308,14 +293,14 @@
         return;
     }
     
-    if (!needsLogin && self.username && self.password && ![WPCookie hasCookieForURL:self.url andUsername:self.username]) {
+    if (!self.needsLogin && self.username && self.password && ![WPCookie hasCookieForURL:self.url andUsername:self.username]) {
         WPFLog(@"We have login credentials but no cookie, let's try login first");
         [self retryWithLogin];
         return;
     }
     
     NSURL *webURL;
-    if (needsLogin) {
+    if (self.needsLogin) {
         if ( self.wpLoginURL != nil )
             webURL = self.wpLoginURL;
         else //try to guess the login URL
@@ -329,7 +314,7 @@
 //    [request setValue:[appDelegate applicationUserAgent] forHTTPHeaderField:@"User-Agent"];
     
     [request setCachePolicy:NSURLRequestReturnCacheDataElseLoad];
-    if (needsLogin) {
+    if (self.needsLogin) {
         NSString *request_body = [NSString stringWithFormat:@"log=%@&pwd=%@&redirect_to=%@",
                                   [self.username stringByUrlEncoding],
                                   [self.password stringByUrlEncoding],
@@ -349,23 +334,22 @@
 }
 
 - (void)retryWithLogin {
-    needsLogin = YES;
+    self.needsLogin = YES;
     [self refreshWebView];    
 }
 
 - (void)setUrl:(NSURL *)theURL {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-    if (url != theURL) {
-        url = theURL;
-        if (url && self.webView) {
+    if (self.url != theURL) {
+        self.url = theURL;
+        if (self.url && self.webView) {
             [self refreshWebView];
         }
     }
 }
 
 - (void)setLoading:(BOOL)loading {
-	
-    if (isLoading == loading)
+    if (self.isLoading == loading)
         return;
     
     self.optionsButton.enabled = !loading;
@@ -374,10 +358,10 @@
         CGRect frame = self.loadingView.frame;
         if (loading) {
             frame.origin.y -= frame.size.height;
-            [activityIndicator startAnimating];
+            [self.activityIndicator startAnimating];
         } else {
             frame.origin.y += frame.size.height;
-            [activityIndicator stopAnimating];
+            [self.activityIndicator stopAnimating];
         }
         
         [UIView animateWithDuration:0.2
@@ -407,7 +391,7 @@
                 self.spinnerButton = [[UIBarButtonItem alloc] initWithCustomView:customView];
                 
             }
-            NSMutableArray *newToolbarItems = [NSMutableArray arrayWithArray:toolbar.items];
+            NSMutableArray *newToolbarItems = [NSMutableArray arrayWithArray:self.toolbar.items];
             NSUInteger spinnerButtonIndex = [newToolbarItems indexOfObject:self.spinnerButton];
             NSUInteger refreshButtonIndex = [newToolbarItems indexOfObject:self.refreshButton];
             if (loading && refreshButtonIndex != NSNotFound) {
@@ -415,10 +399,10 @@
             } else if(spinnerButtonIndex != NSNotFound) {
                 [newToolbarItems replaceObjectAtIndex:spinnerButtonIndex withObject:self.refreshButton];
             }
-            toolbar.items = newToolbarItems;
+            self.toolbar.items = newToolbarItems;
         }
 	}
-    isLoading = loading;
+    self.isLoading = loading;
 }
 
 - (void)dismiss {
@@ -427,7 +411,7 @@
 
 - (void)goBack {
     if( self.detailContent != nil ) {
-        NSString *prevItemAvailable = [webView stringByEvaluatingJavaScriptFromString:@"Reader2.show_prev_item();"];
+        NSString *prevItemAvailable = [self.webView stringByEvaluatingJavaScriptFromString:@"Reader2.show_prev_item();"];
         if ( [prevItemAvailable rangeOfString:@"true"].location == NSNotFound )
             self.backButton.enabled = NO;
         else 
@@ -437,22 +421,22 @@
             if(self.navigationController.navigationBarHidden == NO) {
                 self.title = [self getDocumentTitle];
             } else {
-                [iPadNavBar.topItem setTitle:[self getDocumentTitle]];
+                [self.iPadNavBar.topItem setTitle:[self getDocumentTitle]];
             }
         }
         else
             self.title = [self getDocumentTitle];
     } else {
-        if ([webView isLoading]) {
-            [webView stopLoading];
+        if ([self.webView isLoading]) {
+            [self.webView stopLoading];
         }
-        [webView goBack];
+        [self.webView goBack];
     }
 }
 
 - (void)goForward {
     if( self.detailContent != nil ) {
-        NSString *nextItemAvailable = [webView stringByEvaluatingJavaScriptFromString:@"Reader2.show_next_item();"];
+        NSString *nextItemAvailable = [self.webView stringByEvaluatingJavaScriptFromString:@"Reader2.show_next_item();"];
         if ( [nextItemAvailable rangeOfString:@"true"].location == NSNotFound )
             self.forwardButton.enabled = NO;
         else 
@@ -462,16 +446,16 @@
             if(self.navigationController.navigationBarHidden == NO) {
                 self.title = [self getDocumentTitle];
             } else {
-                [iPadNavBar.topItem setTitle:[self getDocumentTitle]];
+                [self.iPadNavBar.topItem setTitle:[self getDocumentTitle]];
             }
         }
         else
             self.title = [self getDocumentTitle];
     } else {
-        if ([webView isLoading]) {
-            [webView stopLoading];
+        if ([self.webView isLoading]) {
+            [self.webView stopLoading];
         }
-        [webView goForward];
+        [self.webView goForward];
     }
 }
 
@@ -526,7 +510,7 @@
         return;
     }
     [self setLoading:YES];
-    [webView reload];
+    [self.webView reload];
 }
 
 // Find the Webview's UIScrollView backwards compatible
@@ -552,7 +536,7 @@
     NSURL *requestedURL = [request URL];
     NSString *requestedURLAbsoluteString = [requestedURL absoluteString];
     
-    if (!needsLogin && [requestedURLAbsoluteString rangeOfString:@"wp-login.php"].location != NSNotFound) {
+    if (!self.needsLogin && [requestedURLAbsoluteString rangeOfString:@"wp-login.php"].location != NSNotFound) {
         if (self.username && self.password) {
             WPFLog(@"WP is asking for credentials, let's login first");
             [self retryWithLogin];
@@ -582,7 +566,7 @@
     [FileLogger log:@"%@ %@: %@", self, NSStringFromSelector(_cmd), error];
     // -999: Canceled AJAX request
     // 102:  Frame load interrupted: canceled wp-login redirect to make the POST
-    if (isLoading && ([error code] != -999) && [error code] != 102)
+    if (self.isLoading && ([error code] != -999) && [error code] != 102)
         [[NSNotificationCenter defaultCenter] postNotificationName:@"OpenWebPageFailed" object:error userInfo:nil];
     [self setLoading:NO];
 }
@@ -594,14 +578,14 @@
 - (void)webViewDidFinishLoad:(UIWebView *)aWebView {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
     [self setLoading:NO];
-    if ( !hasLoadedContent && ([aWebView.request.URL.absoluteString rangeOfString:kMobileReaderDetailURL].location == NSNotFound || self.detailContent)) {
+    if ( !self.hasLoadedContent && ([aWebView.request.URL.absoluteString rangeOfString:kMobileReaderDetailURL].location == NSNotFound || self.detailContent)) {
         [aWebView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Reader2.set_loaded_items(%@);", self.readerAllItems]];
         [aWebView stringByEvaluatingJavaScriptFromString:[NSString stringWithFormat:@"Reader2.show_article_details(%@);", self.detailContent]];
         if (IS_IPAD) {
             if(self.navigationController.navigationBarHidden == NO) {
                 self.title = [self getDocumentTitle];
             } else {
-                [iPadNavBar.topItem setTitle:[self getDocumentTitle]];
+                [self.iPadNavBar.topItem setTitle:[self getDocumentTitle]];
             }
         }
         else
@@ -621,9 +605,9 @@
             self.forwardButton.enabled = YES;
         
         
-        hasLoadedContent = YES;
+        self.hasLoadedContent = YES;
     }
-    if (shouldScrollToBottom == YES) {
+    if (self.shouldScrollToBottom == YES) {
         self.shouldScrollToBottom = NO;
         CGPoint bottomOffset = CGPointMake(0, self.scrollView.contentSize.height - self.scrollView.bounds.size.height);
         [self.scrollView setContentOffset:bottomOffset animated:YES];

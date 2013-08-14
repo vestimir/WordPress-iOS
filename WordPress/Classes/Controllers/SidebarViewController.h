@@ -11,18 +11,12 @@
 
 @class Post;
 
-@interface SidebarViewController : UIViewController <UIActionSheetDelegate, SidebarSectionHeaderViewDelegate, UITableViewDataSource, UITableViewDelegate> {
-    IBOutlet UITableView *tableView;
-    IBOutlet UIButton *settingsButton;
-    IBOutlet UIView *utililtyView;
-    NSUInteger openSectionIdx;
-    NSIndexPath *currentIndexPath;
-    BOOL restoringView;
-}
+@interface SidebarViewController : UIViewController <UIActionSheetDelegate, SidebarSectionHeaderViewDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) IBOutlet UITableView *tableView;
 @property (nonatomic, strong) IBOutlet UIButton *settingsButton;
 @property (nonatomic, strong) IBOutlet UIView *utililtyView;
+@property (nonatomic, assign) BOOL restoringView;
 
 - (IBAction)showSettings:(id)sender;
 - (void)processRowSelectionAtIndexPath:(NSIndexPath *)indexPath;

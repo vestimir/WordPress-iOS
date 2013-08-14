@@ -12,7 +12,7 @@
 @interface WPTableViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, NSFetchedResultsControllerDelegate, UIAlertViewDelegate, SettingsViewControllerDelegate>
 
 @property (nonatomic, strong) Blog *blog;
-@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, weak) UITableView *tableView;
 @property (nonatomic, assign) BOOL incrementalLoadingSupported;
 @property (nonatomic, assign) BOOL isScrolling;
 
@@ -36,7 +36,7 @@
 /**
  The noResultsView is made available to subclasses so they can customize its content.
  */
-@property (nonatomic, readonly, strong) UIView *noResultsView;
+@property (nonatomic, weak) UIView *noResultsView;
 
 /**
  Sync content with the server

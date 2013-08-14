@@ -24,14 +24,12 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
 
 @property (nonatomic, strong, readonly) UIView *swipeView;
 @property (nonatomic, strong) UITableViewCell *swipeCell;
-@property (nonatomic, strong) UIView *noResultsView;
+@property (nonatomic, weak) EGORefreshTableHeaderView *refreshHeaderView;
 
 @end
 
 @implementation WPTableViewController {
-    EGORefreshTableHeaderView *_refreshHeaderView;
     EditSiteViewController *editSiteViewController;
-    UIView *noResultsView;
     NSIndexPath *_indexPathSelectedBeforeUpdates;
     NSIndexPath *_indexPathSelectedAfterUpdates;
     UISwipeGestureRecognizer *_leftSwipeGestureRecognizer;
@@ -69,18 +67,18 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
 {
     [super viewDidLoad];
 	
-	self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+	UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+    self.tableView = tableView;
 	self.tableView.delegate = self;
 	self.tableView.dataSource = self;
 	self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[self.view addSubview:self.tableView];
     
-    if (_refreshHeaderView == nil) {
-		_refreshHeaderView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.tableView.frame.size.width, self.tableView.bounds.size.height)];
-		_refreshHeaderView.delegate = self;
-		[self.tableView addSubview:_refreshHeaderView];
-    }
-	
+    EGORefreshTableHeaderView *refreshView = [[EGORefreshTableHeaderView alloc] initWithFrame:CGRectMake(0.0f, 0.0f - self.tableView.bounds.size.height, self.tableView.frame.size.width, self.tableView.bounds.size.height)];
+    self.refreshHeaderView = refreshView;
+    self.refreshHeaderView.delegate = self;
+    [self.tableView addSubview:_refreshHeaderView];
+    
 	//  update the last update date
 	[_refreshHeaderView refreshLastUpdatedDate];
 
@@ -456,7 +454,7 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView *)view{
     didTriggerRefresh = YES;
 	[self syncItemsWithUserInteraction:YES];
-    [noResultsView removeFromSuperview];
+    [self.noResultsView removeFromSuperview];
 }
 
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView *)view{

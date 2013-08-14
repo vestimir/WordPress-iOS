@@ -37,17 +37,17 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 }
 
 @property (nonatomic, strong) ReaderPost *post;
-@property (nonatomic, strong) ReaderPostDetailView *headerView;
+@property (nonatomic, weak) ReaderPostDetailView *headerView;
 @property (nonatomic, strong) ReaderCommentFormView *readerCommentFormView;
 @property (nonatomic, strong) ReaderReblogFormView *readerReblogFormView;
 @property (nonatomic) BOOL infiniteScrollEnabled;
-@property (nonatomic, strong) UITableView *tableView;
-@property (nonatomic, strong) UIActivityIndicatorView *activityFooter;
-@property (nonatomic, strong) UINavigationBar *navBar;
+@property (nonatomic, weak) UITableView *tableView;
+@property (nonatomic, weak) UIActivityIndicatorView *activityFooter;
+@property (nonatomic, weak) UINavigationBar *navBar;
 @property (nonatomic, strong) UIBarButtonItem *commentButton;
 @property (nonatomic, strong) UIBarButtonItem *likeButton;
 @property (nonatomic, strong) UIBarButtonItem *reblogButton;
-@property (nonatomic, strong) UIBarButtonItem *shareButton;
+@property (nonatomic, weak) UIBarButtonItem *shareButton;
 @property (nonatomic, strong) UIActionSheet *linkOptionsActionSheet;
 @property (nonatomic, strong) NSMutableArray *comments;
 @property (nonatomic, strong) NSFetchedResultsController *resultsController;
@@ -95,7 +95,8 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 - (void)viewDidLoad {
 	[super viewDidLoad];
 
-	self.tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+	UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds];
+    self.tableView = tableView;
 	_tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	_tableView.dataSource = self;
 	_tableView.delegate = self;
@@ -224,7 +225,9 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 #pragma mark - Instance Methods
 
 - (void)buildHeader{
-	self.headerView = [[ReaderPostDetailView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.tableView.frame.size.width, 190.0f) post:self.post delegate:self];
+
+	ReaderPostDetailView *header = [[ReaderPostDetailView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.tableView.frame.size.width, 190.0f) post:self.post delegate:self];
+    self.headerView = header;
 	_headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	_headerView.backgroundColor = [UIColor whiteColor];
 	[self.tableView setTableHeaderView:_headerView];
@@ -237,6 +240,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 
 - (void)buildTopToolbar {
 	// Top Navigation bar and Sharing.
+    UIBarButtonItem *shareButton;
 	if ([[UIButton class] respondsToSelector:@selector(appearance)]) {
 		UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
 		
@@ -250,19 +254,21 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 		[btn setBackgroundImage:backgroundImage forState:UIControlStateHighlighted];
 		btn.frame = CGRectMake(0.0f, 0.0f, 44.0f, 30.0f);
 		[btn addTarget:self action:@selector(handleShareButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
-		
-		self.shareButton = [[UIBarButtonItem alloc] initWithCustomView:btn];
+    
+		shareButton = [[UIBarButtonItem alloc] initWithCustomView:btn];
 	} else {
-		self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+		shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
 																		 target:self
 																		 action:@selector(handleShareButtonTapped:)];
 	}
 	
+    self.shareButton = shareButton;
 	self.navigationItem.rightBarButtonItem = _shareButton;
 	
 	if(IS_IPAD) {
 		
-		self.navBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, 44.0f)];
+		UINavigationBar *navBar = [[UINavigationBar alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.view.frame.size.width, 44.0f)];
+        self.navBar = navBar;
 		_navBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 		[_navBar pushNavigationItem:self.navigationItem animated:NO];
 		[self.view addSubview:_navBar];
@@ -814,7 +820,9 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 - (void)enableInfiniteScrolling {
     if (_activityFooter == nil) {
         CGRect rect = CGRectMake(145.0f, 10.0f, 30.0f, 30.0f);
-        _activityFooter = [[UIActivityIndicatorView alloc] initWithFrame:rect];
+        
+        UIActivityIndicatorView *activityFooter = [[UIActivityIndicatorView alloc] initWithFrame:rect];
+        self.activityFooter = activityFooter;
         _activityFooter.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
         _activityFooter.hidesWhenStopped = YES;
         _activityFooter.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin;

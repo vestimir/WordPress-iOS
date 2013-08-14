@@ -20,7 +20,7 @@
 
 @interface AddUsersBlogsViewController() <CreateWPComBlogViewControllerDelegate>
 
-@property (nonatomic, strong) UIView *noblogsView;
+@property (nonatomic, weak) UIView *noblogsView;
 
 - (void)showNoBlogsView;
 - (void)hideNoBlogsView;
@@ -463,7 +463,8 @@
         CGFloat height = 160.0f;
         CGFloat x = (self.view.frame.size.width / 2.0f) - (width / 2.0f);
         CGFloat y = (self.view.frame.size.height / 2.0f) - (height / 2.0f);
-        self.noblogsView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+        UIView *noBlogsView = [[UIView alloc] initWithFrame:CGRectMake(x, y, width, height)];
+        self.noblogsView = noBlogsView;
         self.noblogsView.backgroundColor = [UIColor clearColor];
 
         self.noblogsView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin |

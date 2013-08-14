@@ -11,28 +11,27 @@
 #import "PanelNavigationController.h"
 
 @interface WPChromelessWebViewController ()
-@property (nonatomic, strong) WPWebView *webView;
+@property (nonatomic, weak) WPWebView *webView;
 @end
 
 @implementation WPChromelessWebViewController
-
-@synthesize webView, path=_path;
 
 #pragma mark -
 #pragma mark Lifecycle Methods
 
 - (void)dealloc {
     self.path = nil;
-    webView.delegate = nil;
+    self.webView.delegate = nil;
 }
 
 - (void)loadView {
     [super loadView];
     
     CGRect frame = self.view.bounds;
-    self.webView = [[WPWebView alloc] initWithFrame:frame];
-    webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    webView.delegate = self;
+    WPWebView *webView = [[WPWebView alloc] initWithFrame:frame];
+    self.webView = webView;
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    self.webView.delegate = self;
     [self.view addSubview:webView];
 }
 
@@ -41,7 +40,7 @@
     [super viewDidAppear:animated];
 
     if (self.path != nil) {
-        [webView loadPath:self.path];
+        [self.webView loadPath:self.path];
     }
 }
 
@@ -53,7 +52,7 @@
         _path = path;
         NSLog(@"Path is: %@", self.path);
         if ([self isViewLoaded]) {
-            [webView loadPath:self.path];
+            [self.webView loadPath:self.path];
         }
         
     }

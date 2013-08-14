@@ -11,7 +11,7 @@
 
 @interface QuickPhotoButtonView : UIView
 
-@property (nonatomic, strong) id<QuickPhotoButtonViewDelegate>delegate;
+@property (nonatomic, weak) id<QuickPhotoButtonViewDelegate>delegate;
 
 - (void)showSuccess;
 - (void)showProgress:(BOOL)show animated:(BOOL)animated;
