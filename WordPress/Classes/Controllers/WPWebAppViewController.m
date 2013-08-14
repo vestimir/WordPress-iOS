@@ -38,6 +38,15 @@
     [super didReceiveMemoryWarning];
 }
 
+- (void)loadView {
+    UIView *view = [[UIView alloc] initWithFrame:CGRectZero];
+    view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    self.webView = [[UIWebView alloc] initWithFrame:CGRectZero];
+    self.webView.delegate = self;
+    self.webView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    [view addSubview:self.webView];
+    [self setView:view];
+}
 
 - (void)viewDidLoad {
     WPFLogMethod();
