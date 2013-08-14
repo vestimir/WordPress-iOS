@@ -52,7 +52,6 @@
     BOOL changingContentForSelectedSection;
 }
 
-@property (nonatomic, weak) UITableView *tableView;
 @property (nonatomic, strong) Post *currentQuickPost;
 @property (nonatomic, strong) QuickPhotoButtonView *quickPhotoButton;
 @property (nonatomic, strong) UIActionSheet *quickPhotoActionSheet;
@@ -95,6 +94,7 @@
 @synthesize utililtyView;
 @synthesize currentIndexPath;
 @synthesize quickPhotoActionSheet;
+@synthesize tableView;
 
 - (void)dealloc {
     self.resultsController.delegate = nil;
@@ -103,14 +103,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    UITableView *tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStylePlain];
-    self.tableView = tableView;
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.tableView.showsVerticalScrollIndicator = NO;
-    
-    self.tableView.backgroundColor = [UIColor purpleColor];
     
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"sidebar_bg"]];
 
@@ -142,8 +138,6 @@
     self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
     self.settingsButton.titleLabel.shadowOffset = CGSizeMake(0, -1.0f);
     [settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-    
-    [self.view addSubview:self.settingsButton];
 
     if ([[self.resultsController fetchedObjects] count] > 0) {
         [self setupQuickPhotoButton];

@@ -14,6 +14,7 @@
 #import "WPAvatarSource.h"
 #import "NSString+Helpers.h"
 #import "WordPressDataModel.h"
+#import "WPAccount.h"
 
 NSInteger const ReaderTopicEndpointIndex = 3;
 NSInteger const ReaderPostSummaryLength = 150;
