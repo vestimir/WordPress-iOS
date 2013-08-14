@@ -93,7 +93,7 @@
 		if ([post avatar] != nil) {
 			[self.avatarImageView setImageWithURL:[NSURL URLWithString:[post avatar]] placeholderImage:[UIImage imageNamed:@"gravatar.jpg"]];
 		} else {
-			NSString *img = ([post isWPCom]) ? @"wpcom_blavatar.png" : @"wporg_blavatar.png";
+			NSString *img = ([post isWPCom]) ? @"wpcom_blavatar" : @"wporg_blavatar";
 			[self.avatarImageView setImageWithURL:[self.avatarImageView blavatarURLForHost:[[NSURL URLWithString:post.blogURL] host]] placeholderImage:[UIImage imageNamed:img]];
 		}
 		
@@ -532,7 +532,7 @@
 			frame.size.height = image.size.height * (width / image.size.width);
 			
 		} else {
-			image = [UIImage imageNamed:@"wp_img_placeholder.png"];
+			image = [UIImage imageNamed:@"wp_img_placeholder"];
 
 			frame.size.width = width;
 			frame.size.height = width * 0.66f;

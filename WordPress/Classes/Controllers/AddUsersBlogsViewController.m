@@ -65,7 +65,7 @@
 	// Setup WP logo table header
 	NSString *logoFile = @"logo_wporg";
 	if(isWPcom == YES) {
-        logoFile = @"logo_wpcom@2x.png";
+        logoFile = @"logo_wpcom@2x";
 	}
     
     UIImageView *logoImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:logoFile]];
@@ -95,7 +95,7 @@
 		self.tableView.backgroundView = nil;
 	
     self.tableView.backgroundColor = [UIColor clearColor];
-	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern.png"]];
+	self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern"]];
     
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(cancelAddWPcomBlogs) 
 												 name:@"didCancelWPcomLogin" object:nil];
@@ -503,12 +503,12 @@
             [button setTitleColor:textColor forState:UIControlStateNormal];
             [button setTitleShadowColor:[UIColor whiteColor] forState:UIControlStateNormal];
             button.titleLabel.shadowOffset = CGSizeMake(0.0f, 1.0f);
-            [button setImage:[UIImage imageNamed:@"welcome_button_asterisk.png"] forState:UIControlStateNormal];
+            [button setImage:[UIImage imageNamed:@"welcome_button_asterisk"] forState:UIControlStateNormal];
             [button setContentEdgeInsets:UIEdgeInsetsMake(0.0f, 15.0f, 0.0f, 0.0f)];
             [button setTitleEdgeInsets:UIEdgeInsetsMake(0.0f, 10.0f, 0.0f, 0.0f)];
             [button setContentHorizontalAlignment:UIControlContentHorizontalAlignmentLeft];
             [button setBackgroundImage:[UIImage imageNamed:@"welcome_button_bg_full"] forState:UIControlStateNormal];
-            [button setBackgroundImage:[UIImage imageNamed:@"welcome_button_bg_full_highlighted.png"] forState:UIControlStateHighlighted];
+            [button setBackgroundImage:[UIImage imageNamed:@"welcome_button_bg_full_highlighted"] forState:UIControlStateHighlighted];
             [button setTitle:NSLocalizedString(@"Create WordPress.com Blog", @"") forState:UIControlStateNormal];
             [button addTarget:self action:@selector(handleCreateBlogTapped:) forControlEvents:UIControlEventTouchUpInside];
 

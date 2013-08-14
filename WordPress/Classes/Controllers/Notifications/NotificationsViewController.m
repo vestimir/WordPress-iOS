@@ -69,8 +69,8 @@ NSString * const NotificationsLastSyncDateKey = @"NotificationsLastSyncDate";
             if ([[UIButton class] respondsToSelector:@selector(appearance)]) {
                 
                 UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
-                [btn setImage:[UIImage imageNamed:@"navbar_settings.png"] forState:UIControlStateNormal];
-                [btn setImage:[UIImage imageNamed:@"navbar_settings.png"] forState:UIControlStateHighlighted];
+                [btn setImage:[UIImage imageNamed:@"navbar_settings"] forState:UIControlStateNormal];
+                [btn setImage:[UIImage imageNamed:@"navbar_settings"] forState:UIControlStateHighlighted];
                 
                 UIImage *backgroundImage = [[UIImage imageNamed:@"navbar_button_bg"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
                 [btn setBackgroundImage:backgroundImage forState:UIControlStateNormal];
@@ -89,7 +89,7 @@ NSString * const NotificationsLastSyncDateKey = @"NotificationsLastSyncDate";
             }
         } else {
             //iPad
-            self.settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings.png"]
+            self.settingsButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"settings"]
                                                                    style:UIBarButtonItemStylePlain
                                                                   target:self
                                                                   action:@selector(showNotificationsSettings)];

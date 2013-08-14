@@ -21,7 +21,7 @@
 #define DATE_LABEL_HEIGHT       15.0f
 #define VERTICAL_OFFSET         2.0f
 
-#define POST_LOCK_IMAGE         @"lock.png"
+#define POST_LOCK_IMAGE         @"lock"
 
 @interface PostTableViewCell : UITableViewCell {
     AbstractPost *__weak post;

@@ -31,7 +31,7 @@ CGFloat const AboutViewPortraitButtonsY = 90.0f;
     [super viewDidLoad];
 	
     self.navigationItem.title = NSLocalizedString(@"About", @"About this app (information page title)");
-    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern.png"]];
+    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern"]];
     self.versionLabel.text = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
     
     if([self.navigationController.viewControllers count] == 1)

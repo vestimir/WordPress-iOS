@@ -29,8 +29,8 @@
 #define URL_LABEL_HEIGHT            15
 #define POST_LABEL_HEIGHT           15
 
-#define CHECK_BUTTON_CHECKED_ICON   @"check.png"
-#define CHECK_BUTTON_UNCHECKED_ICON @"uncheck.png"
+#define CHECK_BUTTON_CHECKED_ICON   @"check"
+#define CHECK_BUTTON_UNCHECKED_ICON @"uncheck"
 
 #define GRAVATAR_WIDTH              47
 #define GRAVATAR_HEIGHT             47

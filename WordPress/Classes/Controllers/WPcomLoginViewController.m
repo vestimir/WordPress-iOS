@@ -68,9 +68,9 @@
 	// Setup WPcom table header
 	CGRect headerFrame = CGRectMake(0, 0, 320, 70);
 	CGRect logoFrame = CGRectMake(40, 20, 229, 43);
-	NSString *logoFile = @"logo_wpcom.png";
+	NSString *logoFile = @"logo_wpcom";
 	if(IS_IPAD == YES) {
-		logoFile = @"logo_wpcom@2x.png";
+		logoFile = @"logo_wpcom@2x";
 		logoFrame = CGRectMake(150, 20, 229, 43);
 	}
 

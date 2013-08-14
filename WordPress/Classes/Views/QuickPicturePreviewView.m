@@ -91,7 +91,7 @@
             imageFrame.origin.y -= QPP_FRAME_WIDTH;
             frameLayer.frame = imageFrame;
             
-            paperClipImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"paperclip.png"]];
+            paperClipImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"paperclip"]];
             paperClipImageView.frame = CGRectMake(3.0f, -8.0f, 15.0f, 41.0f);
             [paperClipImageView setHidden:NO];
             [imageView addSubview:paperClipImageView];

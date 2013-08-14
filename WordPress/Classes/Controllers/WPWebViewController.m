@@ -76,8 +76,8 @@
         if ([[UIButton class] respondsToSelector:@selector(appearance)]) {
             UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
             
-            [btn setImage:[UIImage imageNamed:@"navbar_actions.png"] forState:UIControlStateNormal];
-            [btn setImage:[UIImage imageNamed:@"navbar_actions.png"] forState:UIControlStateHighlighted];
+            [btn setImage:[UIImage imageNamed:@"navbar_actions"] forState:UIControlStateNormal];
+            [btn setImage:[UIImage imageNamed:@"navbar_actions"] forState:UIControlStateHighlighted];
             
             UIImage *backgroundImage = [[UIImage imageNamed:@"navbar_button_bg"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
             [btn setBackgroundImage:backgroundImage forState:UIControlStateNormal];
@@ -160,8 +160,8 @@
     } else {
         //do not set the timer on the detailsView
         //change the arrows to up/down icons
-        [backButton setImage:[UIImage imageNamed:@"previous.png"]];
-        [forwardButton setImage:[UIImage imageNamed:@"next.png"]];
+        [self.backButton setImage:[UIImage imageNamed:@"previous"]];
+        [self.forwardButton setImage:[UIImage imageNamed:@"next"]];
         
         // Replace refresh button with options button
         backButton.width = (toolbar.frame.size.width / 2.0f) - 10.0f;

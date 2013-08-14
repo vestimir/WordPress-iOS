@@ -208,7 +208,7 @@
 	
 	_dateLabel.text = [comment shortDate];
 	_authorLabel.text = comment.author;
-	[self.cellImageView setImageWithURL:[NSURL URLWithString:comment.authorAvatarURL] placeholderImage:[UIImage imageNamed:@"blavatar-wpcom.png"]];
+	[self.cellImageView setImageWithURL:[NSURL URLWithString:comment.authorAvatarURL] placeholderImage:[UIImage imageNamed:@"blavatar-wpcom"]];
 
 	if (!comment.attributedContent) {
 		comment.attributedContent = [[self class] convertHTMLToAttributedString:comment.content withOptions:nil];

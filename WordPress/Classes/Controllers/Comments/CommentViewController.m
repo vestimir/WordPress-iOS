@@ -72,14 +72,14 @@ static NSString *const KVO_BLOG_REACHABLE = @"reachable";
     if ([[UIToolbar class] respondsToSelector:@selector(appearance)]) {
         segmentedControl = [[UISegmentedControl alloc] initWithItems:
                             [NSArray arrayWithObjects:
-                             [UIImage imageNamed:@"up_dim.png"],
-                             [UIImage imageNamed:@"down_dim.png"],
+                             [UIImage imageNamed:@"up_dim"],
+                             [UIImage imageNamed:@"down_dim"],
                              nil]];
     } else {
         segmentedControl = [[UISegmentedControl alloc] initWithItems:
                             [NSArray arrayWithObjects:
-                             [UIImage imageNamed:@"up.png"],
-                             [UIImage imageNamed:@"down.png"],
+                             [UIImage imageNamed:@"up"],
+                             [UIImage imageNamed:@"down"],
                              nil]];        
     }
     

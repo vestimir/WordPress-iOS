@@ -240,8 +240,8 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 	if ([[UIButton class] respondsToSelector:@selector(appearance)]) {
 		UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
 		
-		[btn setImage:[UIImage imageNamed:@"navbar_actions.png"] forState:UIControlStateNormal];
-		[btn setImage:[UIImage imageNamed:@"navbar_actions.png"] forState:UIControlStateHighlighted];
+		[btn setImage:[UIImage imageNamed:@"navbar_actions"] forState:UIControlStateNormal];
+		[btn setImage:[UIImage imageNamed:@"navbar_actions"] forState:UIControlStateHighlighted];
 		
 		UIImage *backgroundImage = [[UIImage imageNamed:@"navbar_button_bg"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
 		[btn setBackgroundImage:backgroundImage forState:UIControlStateNormal];

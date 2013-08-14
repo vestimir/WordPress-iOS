@@ -223,9 +223,9 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
     }
 
     _swipeView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.tableView.bounds.size.width, kCellHeight)];
-    _swipeView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background.png"]];
+    _swipeView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"background"]];
     
-    UIImage *shadow = [[UIImage imageNamed:@"inner-shadow.png"] stretchableImageWithLeftCapWidth:0 topCapHeight:0];
+    UIImage *shadow = [[UIImage imageNamed:@"inner-shadow"] stretchableImageWithLeftCapWidth:0 topCapHeight:0];
     UIImageView *shadowImageView = [[UIImageView alloc] initWithFrame:_swipeView.frame];
     shadowImageView.alpha = 0.5;
     shadowImageView.image = shadow;

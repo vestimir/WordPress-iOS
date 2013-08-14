@@ -125,7 +125,7 @@
 											   NSDictionary *thumb = [thumbs objectAtIndex:3];
 											   NSString *url = [thumb objectForKey:@"url"];
 											   [selfRef setImageWithURL:[NSURL URLWithString:url]
-													   placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder.png"]
+													   placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder"]
 																success:success
 																failure:failure];
 											   
@@ -146,7 +146,7 @@
 
     url = [NSURL URLWithString:path];
     [self setImageWithURL:url
-            placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder.png"]
+            placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder"]
                      success:success
                      failure:failure];
 }
@@ -167,7 +167,7 @@
 											 selfRef.title = [dict objectForKey:@"title"];
 											 NSString *url = [dict objectForKey:@"thumbnail_large"];
 											 [selfRef setImageWithURL:[NSURL URLWithString:url]
-													 placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder.png"]
+													 placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder"]
 															  success:success
 															  failure:failure];
 											 
@@ -192,7 +192,7 @@
 												   NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:responseObject options:0 error:nil];
 												   NSString *url = [dict objectForKey:@"thumbnail_large_url"];
 												   [selfRef setImageWithURL:[NSURL URLWithString:url]
-														   placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder.png"]
+														   placeholderImage:[UIImage imageNamed:@"wp_vid_placeholder"]
 																	success:success
 																	failure:failure];
 												   

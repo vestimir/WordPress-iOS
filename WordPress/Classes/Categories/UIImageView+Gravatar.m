@@ -16,9 +16,9 @@ NSInteger const GravatarDefaultSize = 160;
 NSString *const BlavatarBaseUrl = @"http://gravatar.com/blavatar";
 NSString *const GravatarBaseUrl = @"http://gravatar.com/avatar";
 
-NSString *const BlavatarDefaultWporg = @"blavatar-wporg.png";
-NSString *const BlavatarDefaultWpcom = @"blavatar-wpcom.png";
-NSString *const GravatarDefault = @"gravatar.png";
+NSString *const BlavatarDefaultWporg = @"blavatar-wporg";
+NSString *const BlavatarDefaultWpcom = @"blavatar-wpcom";
+NSString *const GravatarDefault = @"gravatar";
 
 @implementation UIImageView (Gravatar)
 

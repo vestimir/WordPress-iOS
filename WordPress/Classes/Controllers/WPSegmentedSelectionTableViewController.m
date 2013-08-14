@@ -167,7 +167,7 @@
     if (indentationLevel == 0) {
         cell.imageView.image = nil;
     } else {
-        cell.imageView.image = [UIImage imageNamed:@"category_child.png"];
+        cell.imageView.image = [UIImage imageNamed:@"category_child"];
     }
 
     cell.textLabel.text = [[[objects objectAtIndex:indexPath.row] valueForKey:@"categoryName"] stringByDecodingXMLCharacters];
