@@ -18,7 +18,12 @@
 #import "SidebarViewController.h"
 #import <objc/runtime.h>
 
-@interface NotificationsManager (AuthAPI)
+NSString *const WordPressComApiNotificationPreferencesKey = @"notification_preferences";
+NSString *const WordPressComApiUnseenNotesNotification = @"WordPressComUnseenNotes";
+NSString *const WordPressComApiNotesUserInfoKey = @"notes";
+NSString *const WordPressComApiUnseenNoteCountInfoKey = @"note_count";
+
+@interface NotificationsManager (WPXMLRPCAPI_Private)
 
 - (void)registerTokenWithAccount:(WPAccount*)account
                      deviceToken:(NSString*)token
@@ -73,6 +78,10 @@
     [[UIApplication sharedApplication] unregisterForRemoteNotifications];
 }
 
++ (void)syncPushNotificationSettings {
+    [[NotificationsManager sharedInstance] fetchNotificationSettingsWithSuccess:nil failure:nil];
+}
+
 - (void)didRegisterForRemoteNotifications:(NSData *)deviceToken {
     // Send the deviceToken to our server...
 	NSString *myToken = [[[[deviceToken description]
@@ -102,10 +111,10 @@
     WPAccount *account = [WPAccount defaultWordPressComAccount];
 	if (account) {
         [self registerTokenWithAccount:account deviceToken:token success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            WPFLog(@"Registered token %@, sending blogs list", token);
-            [[WordPressComApi sharedApi] syncPushNotificationInfo];
+            [self fetchNotificationSettingsWithSuccess:nil failure:nil];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey]; //Remove the token from Preferences, otherwise the token is never re-sent to the server on the next startup
+            //Remove the token from Preferences, otherwise the token is never re-sent to the server on the next startup
+            [[NSUserDefaults standardUserDefaults] removeObjectForKey:kApnsDeviceTokenPrefKey]; 
             WPFLog(@"Couldn't register token: %@", [error localizedDescription]);
         }];
 	}
@@ -164,8 +173,8 @@
     switch (state) {
         // Application is already in the foreground when we received the notification
         case UIApplicationStateActive:
-            [[WordPressComApi sharedApi] checkForNewUnseenNotifications];
-            [[WordPressComApi sharedApi] syncPushNotificationInfo];
+            [[NotificationsManager sharedInstance] checkForUnseenNotifications];
+            [NotificationsManager syncPushNotificationSettings];
 //            [SoundUtil playNotificationSound];
             break;
             
@@ -191,13 +200,13 @@
 
 @end
 
-@implementation NotificationsManager (WPComXMLRPCApi)
+@implementation NotificationsManager (WPXMLRPCAPI_Private)
 
 - (void)registerTokenWithAccount:(WPAccount *)account
                      deviceToken:(NSString *)token
                          success:(void (^)(AFHTTPRequestOperation *, id))successBlock
                          failure:(void (^)(AFHTTPRequestOperation *, NSError *error))failureBlock {
-    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
+//    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
     
     [self.authClient callMethod:@"wpcom.mobile_push_register_token"
                      parameters:@[account.username, account.password, token, [[UIDevice currentDevice] wordpressIdentifier], @"apple", self.useAPNSSandbox]
@@ -208,11 +217,69 @@
                        deviceToken:(NSString *)token
                            success:(void (^)(AFHTTPRequestOperation *, id))successBlock
                            failure:(void (^)(AFHTTPRequestOperation *, NSError *error))failureBlock {
-    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
+//    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
     
     [self.authClient callMethod:@"wpcom.mobile_push_unregister_token"
                      parameters:@[account.username, account.password, token, [[UIDevice currentDevice] wordpressIdentifier], @"apple", self.useAPNSSandbox]
                         success:successBlock failure:failureBlock];
+}
+
+@end
+
+@implementation NotificationsManager (WordPressComApi)
+
+- (void)saveNotificationSettings:(NSDictionary*)settings success:(void (^)())success failure:(void (^)(NSError *error))failure {
+    WPAccount *account = [WPAccount defaultWordPressComAccount];
+    NSString *token = [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey];
+    [[NSUserDefaults standardUserDefaults] setObject:settings forKey:WordPressComApiNotificationPreferencesKey];
+    if (account && token) {
+        [[WordPressComApi sharedApi] saveNotificationSettingsForUsername:account.username password:account.password deviceToken:token notificationSettings:settings success:^{
+            if (success) {
+                success();
+            }
+        } failure:^(NSError *error) {
+            if (failure) {
+                failure(error);
+            }
+        }];
+    } else {
+        WPLog(@"No active default account and no token. Not saving notification settings to server.");
+    }
+}
+
+- (void)fetchNotificationSettingsWithSuccess:(void(^)())success failure:(void(^)(NSError *error))failure {
+    WPAccount *account = [WPAccount defaultWordPressComAccount];
+    NSString *token = [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey];
+    if (account && token) {
+        [[WordPressComApi sharedApi] fetchNotificationSettingsWithUsername:account.username password:account.password deviceToken:token success:^(NSDictionary *notificationSettings) {
+            // Save the preferences
+            [[NSUserDefaults standardUserDefaults] setObject:notificationSettings forKey:WordPressComApiNotificationPreferencesKey];
+            [[NSUserDefaults standardUserDefaults] synchronize];
+            if (success) {
+                success();
+            }
+        } failure:^(NSError *error) {
+            if (failure) {
+                failure(error);
+            }
+        }];
+    } else {
+        WPLog(@"No active default account and no token. Will not fetch notification settings.");
+    }
+}
+
+- (void)checkForUnseenNotifications {
+    [[WordPressComApi sharedApi] fetchUnseenNotificationsWithSuccess:^(NSArray *unseenNotes) {
+            NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+            [nc postNotificationName:WordPressComApiUnseenNotesNotification
+                              object:self
+                            userInfo:@{
+                WordPressComApiNotesUserInfoKey: unseenNotes,
+                WordPressComApiUnseenNoteCountInfoKey: [NSNumber numberWithInteger:[unseenNotes count]]
+             }];
+    } failure:^(NSError *error) {
+        WPLog(@"Checking for unseen notifications failed with error %@", error);
+    }];
 }
 
 @end

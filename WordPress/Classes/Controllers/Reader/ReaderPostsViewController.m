@@ -43,21 +43,10 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
     CGFloat _lastOffset;
 }
 
-//@property (nonatomic, strong) NSFetchedResultsController *resultsController;
 @property (nonatomic, strong) ReaderReblogFormView *readerReblogFormView;
 @property (nonatomic, strong) WPFriendFinderNudgeView *friendFinderNudgeView;
 @property (nonatomic, strong) UINavigationBar *navBar;
 @property (nonatomic) BOOL isShowingReblogForm;
-
-- (void)configureTableHeader;
-- (void)fetchBlogsAndPrimaryBlog;
-- (void)handleReblogButtonTapped:(id)sender;
-- (void)showReblogForm;
-- (void)hideReblogForm;
-- (void)syncItemsWithSuccess:(void (^)())success failure:(void (^)(NSError *))failure;
-- (void)onSyncSuccess:(AFHTTPRequestOperation *)operation response:(id)responseObject;
-- (void)handleKeyboardDidShow:(NSNotification *)notification;
-- (void)handleKeyboardWillHide:(NSNotification *)notification;
 
 @end
 
@@ -621,15 +610,15 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 - (void)syncItemsWithUserInteraction:(BOOL)userInteraction success:(void (^)())success failure:(void (^)(NSError *))failure {
     
     // if needs auth.
-    if([WPCookie hasCookieForURL:[NSURL URLWithString:@"https://wordpress.com"] andUsername:[[WordPressComApi sharedApi] username]]) {
-       [self syncItemsWithSuccess:success failure:failure];
+    if([WPCookie hasCookieForURL:[NSURL URLWithString:@"https://wordpress.com"] andUsername:[WPAccount defaultWordPressComAccount].username]) {
+        [self syncItemsWithSuccess:success failure:failure];
         return;
     }
     
-    //
+    // Get a cookie from wordpress.com
     [UserAgent useDefaultUserAgent];
-    NSString *username = [[WordPressComApi sharedApi] username];
-    NSString *password = [[WordPressComApi sharedApi] password];
+    NSString *username = [WPAccount defaultWordPressComAccount].username;
+    NSString *password = [WPAccount defaultWordPressComAccount].password;
     NSMutableURLRequest *mRequest = [[NSMutableURLRequest alloc] init];
     NSString *requestBody = [NSString stringWithFormat:@"log=%@&pwd=%@&redirect_to=http://wordpress.com",
                              [username stringByUrlEncoding],
@@ -640,7 +629,6 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
     [mRequest setValue:[NSString stringWithFormat:@"%d", [requestBody length]] forHTTPHeaderField:@"Content-Length"];
     [mRequest addValue:@"*/*" forHTTPHeaderField:@"Accept"];
     [mRequest setHTTPMethod:@"POST"];
-    
     
     AFHTTPRequestOperation *authRequest = [[AFHTTPRequestOperation alloc] initWithRequest:mRequest];
     [authRequest setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {

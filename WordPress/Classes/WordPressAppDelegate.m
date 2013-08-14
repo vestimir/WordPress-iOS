@@ -200,6 +200,7 @@
 
 - (void)applicationWillEnterForeground:(UIApplication *)application {
     [MediaManager cleanUnusedFiles];
+    [[NotificationsManager sharedInstance] checkForUnseenNotifications];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {
@@ -227,7 +228,7 @@
     
     // Clear notifications badge and update server
     [self setAppBadge];
-    [[WordPressComApi sharedApi] syncPushNotificationInfo];
+    [NotificationsManager syncPushNotificationSettings];
 }
 
 - (void)application:(UIApplication *)application didChangeStatusBarFrame:(CGRect)oldStatusBarFrame {
@@ -235,7 +236,7 @@
 	//but seems that the notification is never sent.
 	//we are using a custom notification
     
-    // NOT USED ?
+    // TODO Remove and remove constant as well. NOT USED
 	[[NSNotificationCenter defaultCenter] postNotificationName:DidChangeStatusBarFrame object:nil];
 }
 
@@ -457,16 +458,15 @@
     
     [Crashlytics startWithAPIKey:[WordPressComApiCredentials crashlyticsApiKey]];
     [[Crashlytics sharedInstance] setDelegate:self];
-    
-    BOOL hasCredentials = [[WordPressComApi sharedApi] hasCredentials];
+
     [self setCommonCrashlyticsParameters];
     
-    if (hasCredentials && [WordPressComApi sharedApi].username != nil) {
-        [Crashlytics setUserName:[WordPressComApi sharedApi].username];
+    if ([WPAccount defaultWordPressComAccount].username) {
+        [Crashlytics setUserName:[WPAccount defaultWordPressComAccount].username];
     }
     
     void (^wpcomLoggedInBlock)(NSNotification *) = ^(NSNotification *note) {
-        [Crashlytics setUserName:[WordPressComApi sharedApi].username];
+        [Crashlytics setUserName:[WPAccount defaultWordPressComAccount].username];
         [self setCommonCrashlyticsParameters];
     };
     void (^wpcomLoggedOutBlock)(NSNotification *) = ^(NSNotification *note) {
@@ -479,8 +479,8 @@
 
 - (void)setCommonCrashlyticsParameters
 {
-    [Crashlytics setObjectValue:[NSNumber numberWithBool:[[WordPressComApi sharedApi] hasCredentials]] forKey:@"logged_in"];
-    [Crashlytics setObjectValue:@([[WordPressComApi sharedApi] hasCredentials]) forKey:@"connected_to_dotcom"];
+    [Crashlytics setObjectValue:[NSNumber numberWithBool:[WPAccount defaultWordPressComAccount].isWpComAuthenticated] forKey:@"logged_in"];
+    [Crashlytics setObjectValue:@([WPAccount defaultWordPressComAccount].isWpComAuthenticated) forKey:@"connected_to_dotcom"];
     [Crashlytics setObjectValue:@([Blog countWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]]) forKey:@"number_of_blogs"];
 }
 

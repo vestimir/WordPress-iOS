@@ -11,7 +11,9 @@
 
 @class Blog;
 
-extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
+extern NSString *const WPAccountDefaultWordPressComAccountChangedNotification;
+extern NSString *const WordPressComApiDidLoginNotification;
+extern NSString *const WordPressComApiDidLogoutNotification;
 
 @interface WPAccount : NSManagedObject
 
@@ -25,7 +27,6 @@ extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
 @property (nonatomic, retain) NSSet *blogs;
 @property (nonatomic, retain) NSSet *jetpackBlogs;
 
-@property (nonatomic, strong) NSString *authToken;
 @property (nonatomic, assign) BOOL isWpComAuthenticated;
 
 /**
@@ -127,7 +128,10 @@ extern NSString * const WPAccountDefaultWordPressComAccountChangedNotification;
 
 @interface WPAccount (WordPressComApi)
 
+/// Sign in and on success create the local WPAccount
 + (void)signInWithUsername:(NSString *)username password:(NSString *)password
-                   success:(void (^)())successBlock failure:(void (^)(NSError *error))failureBlock;
+                   success:(void (^)())success failure:(void (^)(NSError *error))failure;
+
+- (void)refreshTokenWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
 
 @end

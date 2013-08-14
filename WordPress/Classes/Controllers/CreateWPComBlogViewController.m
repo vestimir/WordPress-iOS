@@ -18,6 +18,7 @@
 #import "ReachabilityUtils.h"
 #import "WPAccount.h"
 #import "Blog.h"
+#import "NotificationsManager.h"
 
 @interface CreateWPComBlogViewController () <
     SelectWPComBlogVisibilityViewControllerDelegate,
@@ -341,13 +342,15 @@ NSUInteger const CreateBlogBlogUrlFieldTag = 1;
     blog.geolocationEnabled = _geolocationEnabled;
 	[blog dataSave];
     [blog syncBlogWithSuccess:^{
-        if( ! [blog isWPcom] )
-            [[WordPressComApi sharedApi] syncPushNotificationInfo];
+        if( ![blog isWPcom] ) {
+            [NotificationsManager syncPushNotificationSettings];
+        }
     }
                       failure:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"BlogsRefreshNotification" object:nil];
     
-    [[WordPressComApi sharedApi] syncPushNotificationInfo];
+    // TODO does this have an effect if the blog hasn't been synced yet?
+    [NotificationsManager syncPushNotificationSettings];
 }
 
 - (void)displayCreationError:(NSError *)error

@@ -15,6 +15,7 @@
 #import "Blog.h"
 #import "NSString+Helpers.h"
 #import "UserAgent.h"
+#import "WPAccount.h"
 
 // General
 NSString *const StatsEventAppOpened = @"Application Opened";
@@ -268,12 +269,12 @@ NSString *const StatsEventAddBlogsClickedAddSelected = @"Add Blogs - Clicked Add
 {
     [Mixpanel sharedInstanceWithToken:[WordPressComApiCredentials mixpanelAPIToken]];
     NSDictionary *properties = @{
-                                 @"connected_to_dotcom": @([[WordPressComApi sharedApi] hasCredentials]),
+                                 @"connected_to_dotcom": @([WPAccount defaultWordPressComAccount].isWpComAuthenticated),
                                  @"number_of_blogs" : @([Blog countWithContext:[[WordPressDataModel sharedDataModel] managedObjectContext]]) };
     [[Mixpanel sharedInstance] registerSuperProperties:properties];
     
-    NSString *username = [WordPressComApi sharedApi].username;
-    if ([[WordPressComApi sharedApi] hasCredentials] && [username length] > 0) {
+    NSString *username = [WPAccount defaultWordPressComAccount].username;
+    if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated && [username length] > 0) {
         [[Mixpanel sharedInstance] identify:username];
         [[Mixpanel sharedInstance].people increment:@"Application Opened" by:@(1)];
         [[Mixpanel sharedInstance].people set:@{ @"$username": username, @"$first_name" : username }];
@@ -369,7 +370,7 @@ NSString *const StatsEventAddBlogsClickedAddSelected = @"Add Blogs - Clicked Add
 
 - (BOOL)connectedToWordPressDotCom
 {
-    return [[WordPressComApi sharedApi] hasCredentials];
+    return [WPAccount defaultWordPressComAccount].isWpComAuthenticated;
 }
 
 - (void)trackEventForSelfHostedAndWPCom:(NSString *)event

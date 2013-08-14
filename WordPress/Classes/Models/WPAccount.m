@@ -16,6 +16,9 @@
 
 #import <SFHFKeychainUtils/SFHFKeychainUtils.h>
 
+NSString *const WordPressComApiDidLoginNotification = @"WordPressComApiDidLogin";
+NSString *const WordPressComApiDidLogoutNotification = @"WordPressComApiDidLogout";
+
 static NSString * const DefaultDotcomAccountDefaultsKey = @"AccountDefaultDotcom";
 static NSString * const DotcomXmlrpcKey = @"https://wordpress.com/xmlrpc.php";
 static WPAccount *__defaultDotcomAccount = nil;
@@ -24,6 +27,7 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 @interface WPAccount ()
 @property (nonatomic, retain) NSString *xmlrpc;
 @property (nonatomic, retain) NSString *username;
+@property (nonatomic, strong) NSString *authToken;
 @property (nonatomic) BOOL isWpcom;
 @end
 
@@ -189,12 +193,12 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 @implementation WPAccount (WordPressComApi)
 
 + (void)signInWithUsername:(NSString *)username password:(NSString *)password
-                   success:(void (^)())successBlock failure:(void (^)(NSError *))failureBlock {
+                   success:(void (^)())success failure:(void (^)(NSError *))failure {
     [[WordPressComApi sharedApi] signInWithUsername:username password:password success:^(NSString *token){
         if (token == nil) {
             NSString *localizedDescription = NSLocalizedString(@"Error authenticating", @"");
             NSError *error = [NSError errorWithDomain:WordPressComApiErrorDomain code:WordPressComApiErrorNoAccessToken userInfo:@{NSLocalizedDescriptionKey: localizedDescription}];
-            failureBlock(error);
+            if (failure) failure(error);
             return;
         }
         
@@ -203,8 +207,9 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
         
         NSError *error = nil;
         [SFHFKeychainUtils storeUsername:username andPassword:password forServiceName:@"WordPress.com" updateExisting:YES error:&error];
+        [SFHFKeychainUtils storeUsername:username andPassword:token forServiceName:WordPressComApiOauthServiceName updateExisting:YES error:&error];
         if (error) {
-            failureBlock(error);
+            if (failure) failure(error);
         } else {
             [[NSUserDefaults standardUserDefaults] setObject:username forKey:@"wpcom_username_preference"];
             [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"wpcom_authenticated_flag"];
@@ -212,10 +217,23 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
             account.isWpComAuthenticated = YES;
             [NotificationsManager registerForRemotePushNotifications];
             [[NSNotificationCenter defaultCenter] postNotificationName:WordPressComApiDidLoginNotification object:username];
-            successBlock();
+            if (success) success();
         }
+    } failure:failure];
+}
+
+// TODO Do we need this? Only called from one place
+- (void)refreshTokenWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure {
+    [[WordPressComApi sharedApi] signInWithUsername:self.username password:self.password success:^(NSString *token) {
+        self.authToken = token;
+        self.isWpComAuthenticated = YES;
+        [SFHFKeychainUtils storeUsername:self.username andPassword:self.password forServiceName:@"WordPress.com" updateExisting:YES error:nil];
+        [SFHFKeychainUtils storeUsername:self.username andPassword:token forServiceName:WordPressComApiOauthServiceName updateExisting:YES error:nil];
+        if (success) success();
     } failure:^(NSError *error) {
-        failureBlock(error);
+        self.isWpComAuthenticated = NO;
+        self.authToken = nil;
+        if (failure) failure(error);
     }];
 }
 

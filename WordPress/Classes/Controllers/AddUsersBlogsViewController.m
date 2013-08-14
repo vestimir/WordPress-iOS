@@ -16,6 +16,7 @@
 #import "WPAccount.h"
 #import "WordPressDataModel.h"
 #import "HelpViewController.h"
+#import "NotificationsManager.h"
 
 @interface AddUsersBlogsViewController() <CreateWPComBlogViewControllerDelegate>
 
@@ -482,7 +483,7 @@
         label.shadowColor = [UIColor whiteColor];
         label.textAlignment = NSTextAlignmentCenter;
 
-        if ([WordPressComApi sharedApi].username) {
+        if ([WPAccount defaultWordPressComAccount].username) {
             label.text = NSLocalizedString(@"You do not seem to have any blogs. Would you like to create one now?", @"");
         } else {
             label.text = NSLocalizedString(@"You do not seem to have any blogs.", @"");
@@ -491,7 +492,7 @@
         label.frame = CGRectMake(0.0, 0.0, width, 38.0);
         [self.noblogsView addSubview:label];
         
-        if ([WordPressComApi sharedApi].username) {            
+        if ([WPAccount defaultWordPressComAccount].username) {
             width = 282.0f;
             height = 44.0f;
             x = (noblogsView.frame.size.width / 2.0f) - (width / 2.0f);
@@ -582,7 +583,7 @@
 
 - (void)didSaveSelectedBlogsInBackground {
     [self.navigationController popToRootViewControllerAnimated:YES];
-    [[WordPressComApi sharedApi] syncPushNotificationInfo];
+    [NotificationsManager syncPushNotificationSettings];
 }
 
 - (void)createBlog:(NSDictionary *)blogInfo {
@@ -592,7 +593,7 @@
 	[blog dataSave];
     [blog syncBlogWithSuccess:^{
         if( ! [blog isWPcom] )
-            [[WordPressComApi sharedApi] syncPushNotificationInfo];
+            [NotificationsManager syncPushNotificationSettings];
         }
                       failure:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"BlogsRefreshNotification" object:nil];

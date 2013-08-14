@@ -18,21 +18,7 @@
 #import <WPXMLRPC/WPXMLRPC.h>
 #import <SVProgressHUD/SVProgressHUD.h>
 #import <NSObject-SafeExpectations/NSObject+SafeExpectations.h>
-
-@interface EditSiteViewController (PrivateMethods)
-
-- (void)validateFields;
-- (void)validationSuccess:(NSString *)xmlrpc;
-- (void)validationDidFail:(id)wrong;
-- (void)handleKeyboardDidShow:(NSNotification *)notification;
-- (void)handleKeyboardWillHide:(NSNotification *)notification;
-- (void)handleViewTapped;
-- (void)configureTextField:(UITextField *)textField asPassword:(BOOL)asPassword;
-- (NSString *)getURLToValidate;
-- (void)enableDisableSaveButton;
-- (void)reloadNotificationSettings;
-- (BOOL)getBlogPushNotificationsSetting;
-@end
+#import "NotificationsManager.h"
 
 @implementation EditSiteViewController {
     UIAlertView *failureAlertView;
@@ -66,7 +52,7 @@
 			self.tableView.backgroundView = nil;
 			self.tableView.backgroundColor = [UIColor clearColor];
 		}
-        self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern.png"]];
+        self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern"]];
         
         self.url = blog.url;
         self.username = blog.username;
@@ -78,11 +64,10 @@
         self.geolocationEnabled = blog.geolocationEnabled;
         
         _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:@"notification_preferences"] mutableCopy];
-        if (_notificationPreferences) {
-            
-        } else {
-            [[WordPressComApi sharedApi] fetchNotificationSettings:^{
+        if (!_notificationPreferences) {
+            [[NotificationsManager sharedInstance] fetchNotificationSettingsWithSuccess:^{
                 [self reloadNotificationSettings];
+
             } failure:^(NSError *error) {
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", @"")
                                                                 message:error.localizedDescription
@@ -142,7 +127,8 @@
 		case 0:
             return 3;	// URL, username, password
 		case 1: // Settings: Geolocation, [ Push Notifications ]
-            if (blog && ( [blog isWPcom] || [blog hasJetpack] ) && [[WordPressComApi sharedApi] hasCredentials] && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey])
+            if (blog && ( [blog isWPcom] || [blog hasJetpack] ) && [WPAccount defaultWordPressComAccount].isWpComAuthenticated
+                && [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey] != nil)
                 return 2;
             else
                 return 1;	
@@ -677,8 +663,9 @@
                     [mutedBlogsArray setObject:updatedPreference atIndexedSubscript:i];
                     [mutedBlogsDictionary setValue:mutedBlogsArray forKey:@"value"];
                     [_notificationPreferences setValue:mutedBlogsDictionary forKey:@"muted_blogs"];
-                    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:@"notification_preferences"];
-                    [[WordPressComApi sharedApi] saveNotificationSettings:nil failure:nil];
+                    
+                    // TODO Alert the user the settings failed to save? What if we're offline?
+                    [[NotificationsManager sharedInstance] saveNotificationSettings:_notificationPreferences success:nil failure:nil];
                 }
             }
         }
@@ -731,7 +718,7 @@
 
 
 - (void)reloadNotificationSettings {
-    _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:@"notification_preferences"] mutableCopy];
+    _notificationPreferences = [[NSUserDefaults standardUserDefaults] objectForKey:WordPressComApiNotificationPreferencesKey];
     if (_notificationPreferences) {
         [self.tableView reloadData];
     }

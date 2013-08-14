@@ -20,6 +20,7 @@
 #import "Blog.h"
 #import "WPAccount.h"
 #import "WPNUXUtility.h"
+#import "NotificationsManager.h"
 
 @interface NewAddUsersBlogViewController () <
     UITableViewDelegate,
@@ -381,7 +382,7 @@ CGFloat const AddUsersBlogBottomBackgroundHeight = 64;
 	[blog dataSave];
     [blog syncBlogWithSuccess:^{
         if( ! [blog isWPcom] )
-            [[WordPressComApi sharedApi] syncPushNotificationInfo];
+            [NotificationsManager syncPushNotificationSettings];
     }
                       failure:nil];
 	[[NSNotificationCenter defaultCenter] postNotificationName:@"BlogsRefreshNotification" object:nil];

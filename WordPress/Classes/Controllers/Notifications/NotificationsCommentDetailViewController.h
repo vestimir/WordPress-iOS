@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import "Note.h"
-#import "WordPressComApi.h"
 #import "NoteCommentPostBanner.h"
 #import "FollowButton.h"
 

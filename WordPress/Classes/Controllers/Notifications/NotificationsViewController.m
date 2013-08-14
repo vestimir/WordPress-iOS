@@ -10,7 +10,7 @@
 #import "NotificationsCommentDetailViewController.h"
 #import "NotificationsFollowDetailViewController.h"
 #import "WordPressAppDelegate.h"
-#import "WordPressComApi.h"
+#import "WPAccount.h"
 #import "EGORefreshTableHeaderView.h"
 #import "NotificationsTableViewCell.h"
 #import "NotificationSettingsViewController.h"
@@ -62,12 +62,9 @@ NSString * const NotificationsLastSyncDateKey = @"NotificationsLastSyncDate";
     
     self.panelNavigationController.delegate = self;
     self.infiniteScrollEnabled = YES;
-    // -[UITableView registerClass:forCellReuseIdentifier:] available in iOS 6.0 and later
-    if ([self.tableView respondsToSelector:@selector(registerClass:forCellReuseIdentifier:)]) {
-        [self.tableView registerClass:[NotificationsTableViewCell class] forCellReuseIdentifier:NotificationsTableViewNoteCellIdentifier];
-    }
+    [self.tableView registerClass:[NotificationsTableViewCell class] forCellReuseIdentifier:NotificationsTableViewNoteCellIdentifier];
     
-    if([[WordPressComApi sharedApi] hasCredentials] && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey]) {
+    if([WPAccount defaultWordPressComAccount].isWpComAuthenticated && [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey] != nil) {
         if(IS_IPHONE) {
             if ([[UIButton class] respondsToSelector:@selector(appearance)]) {
                 

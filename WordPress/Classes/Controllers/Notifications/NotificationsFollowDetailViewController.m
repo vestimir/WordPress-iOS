@@ -17,6 +17,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import "NSURL+Util.h"
 #import "PanelNavigationController.h"
+#import "WPAccount.h"
 
 @interface NotificationsFollowDetailViewController ()
 
@@ -317,8 +318,8 @@
             
             WPWebViewController *webViewController = [[WPWebViewController alloc] init];
             if ([blogURL isWordPressComURL]) {
-                [webViewController setUsername:[WordPressComApi sharedApi].username];
-                [webViewController setPassword:[WordPressComApi sharedApi].password];
+                [webViewController setUsername:[WPAccount defaultWordPressComAccount].username];
+                [webViewController setPassword:[WPAccount defaultWordPressComAccount].password];
                 [webViewController setUrl:[blogURL ensureSecureURL]];
             } else {
                 [webViewController setUrl:blogURL];

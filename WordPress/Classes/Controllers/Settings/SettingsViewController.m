@@ -185,7 +185,7 @@ typedef enum {
 
 
 - (void)checkCloseButton {
-    if ([[self.resultsController fetchedObjects] count] == 0 && ![[WordPressComApi sharedApi] hasCredentials]) {
+    if ([[self.resultsController fetchedObjects] count] == 0 && ![WPAccount defaultWordPressComAccount].isWpComAuthenticated) {
         GeneralWalkthroughViewController *walkthroughViewController = [[GeneralWalkthroughViewController alloc] init];
         self.navigationController.navigationBar.hidden = YES;
         [self.navigationController pushViewController:walkthroughViewController animated:YES];
@@ -242,13 +242,13 @@ typedef enum {
             return 1;
             
         case SettingsSectionWpcom:
-            return ([WordPressComApi sharedApi].username && [[WordPressComApi sharedApi] hasCredentials]) ? 2 : 1;
+            return ([WPAccount defaultWordPressComAccount].username && [WPAccount defaultWordPressComAccount].isWpComAuthenticated) ? 2 : 1;
             
         case SettingsSectionMedia:
             return [mediaSettingsArray count];
 			
         case SettingsSectionNotifications:
-            if ([[WordPressComApi sharedApi] hasCredentials] && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey])
+            if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated && [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey] != nil)
                 return 1;
             else
                 return 0;
@@ -286,11 +286,11 @@ typedef enum {
         return NSLocalizedString(@"Media", @"Title label for the media settings section in the app settings");
 		
     } else if (section == SettingsSectionNotifications) {
-        if ([[WordPressComApi sharedApi] hasCredentials] && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey])
+        if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated && [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey] != nil) {
             return NSLocalizedString(@"Notifications", @"");
-        else
+        } else {
             return nil;
-    
+        }
     } else if (section == SettingsSectionSounds) {
         return NSLocalizedString(@"Sounds", @"Title label for the sounds section in the app settings.");
         
@@ -326,10 +326,10 @@ typedef enum {
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
     } else if (indexPath.section == SettingsSectionWpcom) {
-        if ([[WordPressComApi sharedApi] hasCredentials]) {
+        if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated) {
             if (indexPath.row == 0) {
                 cell.textLabel.text = NSLocalizedString(@"Username:", @"");
-                cell.detailTextLabel.text = [WordPressComApi sharedApi].username;
+                cell.detailTextLabel.text = [WPAccount defaultWordPressComAccount].username;
                 cell.detailTextLabel.textColor = [UIColor colorFromHex:0x888888];
                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
             } else {
@@ -369,7 +369,7 @@ typedef enum {
         cell.accessoryView = aSwitch;
 
     } else if (indexPath.section == SettingsSectionNotifications) {
-        if ([[WordPressComApi sharedApi] hasCredentials] && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey]) {
+        if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated && nil != [[NSUserDefaults standardUserDefaults] objectForKey:kApnsDeviceTokenPrefKey]) {
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             cell.textLabel.text = NSLocalizedString(@"Manage Notifications", @"");
         }
@@ -407,7 +407,7 @@ typedef enum {
             break;
             
         case SettingsSectionWpcom:
-            if ([[WordPressComApi sharedApi] hasCredentials] && indexPath.row == 0) {
+            if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated && indexPath.row == 0) {
                 cellIdentifier = @"WpcomUsernameCell";
                 cellStyle = UITableViewCellStyleValue1;
             } else {
@@ -492,20 +492,20 @@ typedef enum {
     } else if (indexPath.section == SettingsSectionBlogsAdd) {
         [WPMobileStats trackEventForWPCom:StatsEventSettingsClickedAddBlog];
 
-        // Looks like this is either old/not well named, or new NUX views take care of this.
+        // TODO Looks like this is either old/not well named, or new NUX views take care of this.
 //        WelcomeViewController *welcomeViewController;
 //        welcomeViewController = [[WelcomeViewController alloc] initWithNibName:@"WelcomeViewController" bundle:nil]; 
 //        welcomeViewController.title = NSLocalizedString(@"Add a Blog", @"");
 //        [self.navigationController pushViewController:welcomeViewController animated:YES];
         
     } else if (indexPath.section == SettingsSectionWpcom) {
-        if ([[WordPressComApi sharedApi] hasCredentials]) {
+        if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated) {
             if (indexPath.row == 1) {
                 [WPMobileStats trackEventForWPCom:StatsEventSettingsClickedSignOutOfDotCom];
 
                 // Present the Sign out ActionSheet
                 NSString *signOutTitle = NSLocalizedString(@"You are logged in as %@", @"");
-                signOutTitle = [NSString stringWithFormat:signOutTitle, [WordPressComApi sharedApi].username];
+                signOutTitle = [NSString stringWithFormat:signOutTitle, [WPAccount defaultWordPressComAccount].username];
                 UIActionSheet *actionSheet;
                 actionSheet = [[UIActionSheet alloc] initWithTitle:signOutTitle 
                                                           delegate:self 

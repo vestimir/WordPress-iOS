@@ -11,9 +11,9 @@
 #import "NotificationSettingsViewController.h"
 #import "EGORefreshTableHeaderView.h"
 #import "WordPressAppDelegate.h"
-#import "WordPressComApi.h"
 #import "NSString+XMLExtensions.h"
 #import "DateUtils.h"
+#import "NotificationsManager.h"
 
 @interface NotificationSettingsViewController () <EGORefreshTableHeaderDelegate, UIActionSheetDelegate>
 
@@ -59,7 +59,7 @@ BOOL hasChanges;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     hasChanges = NO;
-    _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:@"notification_preferences"] mutableCopy];
+    _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:WordPressComApiNotificationPreferencesKey] mutableCopy];
     if (_notificationPreferences) {
         [self reloadNotificationSettings];
     } else {
@@ -72,15 +72,15 @@ BOOL hasChanges;
 }
 
 - (void)getNotificationSettings {
-    [[WordPressComApi sharedApi] fetchNotificationSettings:^{
-        [self notificationsDidFinishRefreshingWithError: nil];
+    [[NotificationsManager sharedInstance] fetchNotificationSettingsWithSuccess:^{
+        [self notificationsDidFinishRefreshingWithError:nil];
     } failure:^(NSError *error) {
-        [self notificationsDidFinishRefreshingWithError: error];
+        [self notificationsDidFinishRefreshingWithError:error];
     }];
 }
 
 - (void)reloadNotificationSettings {
-    _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:@"notification_preferences"] mutableCopy];
+    _notificationPreferences = [[[NSUserDefaults standardUserDefaults] objectForKey:WordPressComApiNotificationPreferencesKey] mutableCopy];
     if (_notificationPreferences) {
         _notificationPrefArray = [[_notificationPreferences allKeys] mutableCopy];
         if ([_notificationPrefArray indexOfObject:@"muted_blogs"] != NSNotFound) {
@@ -158,7 +158,7 @@ BOOL hasChanges;
             [_notificationPreferences setValue:mutedBlogsDictionary forKey:@"muted_blogs"];
         }
         
-        [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:@"notification_preferences"];
+        [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:WordPressComApiNotificationPreferencesKey];
         hasChanges = true;
         [self reloadNotificationSettings];
     }
@@ -175,7 +175,7 @@ BOOL hasChanges;
     [updatedPreference setValue:[NSNumber numberWithBool:cellSwitch.on] forKey:@"value"];
     
     [_notificationPreferences setValue:updatedPreference forKey:[_notificationPrefArray objectAtIndex:cellSwitch.tag]];
-    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:@"notification_preferences"];
+    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:WordPressComApiNotificationPreferencesKey];
 }
 
 - (void)trackNotificationEnabledStatusStat:(NSString *)notificationType enabled:(BOOL)enabled
@@ -248,15 +248,10 @@ BOOL hasChanges;
 
 - (void)viewWillDisappear:(BOOL)animated {
     self.navigationController.toolbarHidden = YES;
-    if (hasChanges)
-        [[WordPressComApi sharedApi] saveNotificationSettings:nil failure:nil];
+    if (hasChanges) {
+        [[NotificationsManager sharedInstance] saveNotificationSettings:_notificationPreferences success:nil failure:nil];
+    }
     [super viewWillDisappear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -319,7 +314,7 @@ BOOL hasChanges;
                     hasChanges = YES;
                     [_notificationMutePreferences removeObjectForKey:@"value"];
                     [_notificationPreferences setValue:_notificationMutePreferences forKey:@"mute_until"];
-                    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:@"notification_preferences"];
+                    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:WordPressComApiNotificationPreferencesKey];
                     cell.detailTextLabel.text = NSLocalizedString(@"On", @"");
                 }
             }
@@ -488,7 +483,7 @@ BOOL hasChanges;
     }
     
     [_notificationPreferences setValue:muteDictionary forKey:@"mute_until"];
-    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:@"notification_preferences"];
+    [[NSUserDefaults standardUserDefaults] setValue:_notificationPreferences forKey:WordPressComApiNotificationPreferencesKey];
     [self reloadNotificationSettings];
 }
 

@@ -16,6 +16,7 @@
 #import "ReachabilityUtils.h"
 #import "NSString+Helpers.h"
 #import "PanelNavigationController.h"
+#import "WPAccount.h"
 
 @interface StatsWebViewController () <SettingsViewControllerDelegate> {
     BOOL loadStatsWhenViewAppears;

@@ -32,6 +32,7 @@
 #import "HelpViewController.h"
 #import "GeneralWalkthroughViewController.h"
 #import "WPRestNetworkManager.h"
+#import "NotificationsManager.h"
 
 @interface GeneralWalkthroughViewController () <UIScrollViewDelegate, UITextFieldDelegate> {
     UIScrollView *_scrollView;
@@ -1294,7 +1295,8 @@ CGFloat const GeneralWalkthroughSignInButtonHeight = 41.0;
 {
     [SVProgressHUD setStatus:NSLocalizedString(@"Synchronizing Blog", nil)];
     void (^successBlock)() = ^{
-        [[WordPressComApi sharedApi] syncPushNotificationInfo];
+        [NotificationsManager syncPushNotificationSettings];
+        
         [SVProgressHUD dismiss];
         [WPMobileStats trackEventForSelfHostedAndWPCom:StatsEventNUXFirstWalkthroughUserSignedInToBlogWithJetpack];
         if ([_blog hasJetpack]) {
