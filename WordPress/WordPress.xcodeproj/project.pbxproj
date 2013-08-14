@@ -280,7 +280,6 @@
 		C5E3CEAE17B93BDB00981839 /* WPImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8217B93BDA00981839 /* WPImageViewController.m */; };
 		C5E3CEAF17B93BDB00981839 /* WPSegmentedSelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8417B93BDA00981839 /* WPSegmentedSelectionTableViewController.m */; };
 		C5E3CEB017B93BDB00981839 /* WPSelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8617B93BDA00981839 /* WPSelectionTableViewController.m */; };
-		C5E3CEB117B93BDB00981839 /* WPWebAppViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8817B93BDA00981839 /* WPWebAppViewController.m */; };
 		C5E3CEB217B93BDB00981839 /* WPWebVideoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8A17B93BDA00981839 /* WPWebVideoViewController.m */; };
 		C5E3CEB317B93BDB00981839 /* WPWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8C17B93BDA00981839 /* WPWebViewController.m */; };
 		C5E3CEB417B93BDB00981839 /* WordPress-1-2.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = C5E3CD8F17B93BDA00981839 /* WordPress-1-2.xcmappingmodel */; };
@@ -788,8 +787,6 @@
 		C5E3CD8417B93BDA00981839 /* WPSegmentedSelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPSegmentedSelectionTableViewController.m; sourceTree = "<group>"; };
 		C5E3CD8517B93BDA00981839 /* WPSelectionTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPSelectionTableViewController.h; sourceTree = "<group>"; };
 		C5E3CD8617B93BDA00981839 /* WPSelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPSelectionTableViewController.m; sourceTree = "<group>"; };
-		C5E3CD8717B93BDA00981839 /* WPWebAppViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPWebAppViewController.h; sourceTree = "<group>"; };
-		C5E3CD8817B93BDA00981839 /* WPWebAppViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPWebAppViewController.m; sourceTree = "<group>"; };
 		C5E3CD8917B93BDA00981839 /* WPWebVideoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPWebVideoViewController.h; sourceTree = "<group>"; };
 		C5E3CD8A17B93BDA00981839 /* WPWebVideoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPWebVideoViewController.m; sourceTree = "<group>"; };
 		C5E3CD8B17B93BDA00981839 /* WPWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPWebViewController.h; sourceTree = "<group>"; };
@@ -1515,8 +1512,6 @@
 				C5E3CD8417B93BDA00981839 /* WPSegmentedSelectionTableViewController.m */,
 				C5E3CD8517B93BDA00981839 /* WPSelectionTableViewController.h */,
 				C5E3CD8617B93BDA00981839 /* WPSelectionTableViewController.m */,
-				C5E3CD8717B93BDA00981839 /* WPWebAppViewController.h */,
-				C5E3CD8817B93BDA00981839 /* WPWebAppViewController.m */,
 				C5E3CD8917B93BDA00981839 /* WPWebVideoViewController.h */,
 				C5E3CD8A17B93BDA00981839 /* WPWebVideoViewController.m */,
 				C5E3CD8B17B93BDA00981839 /* WPWebViewController.h */,
@@ -2427,7 +2422,6 @@
 				C5E3CEAE17B93BDB00981839 /* WPImageViewController.m in Sources */,
 				C5E3CEAF17B93BDB00981839 /* WPSegmentedSelectionTableViewController.m in Sources */,
 				C5E3CEB017B93BDB00981839 /* WPSelectionTableViewController.m in Sources */,
-				C5E3CEB117B93BDB00981839 /* WPWebAppViewController.m in Sources */,
 				C5E3CEB217B93BDB00981839 /* WPWebVideoViewController.m in Sources */,
 				C5E3CEB317B93BDB00981839 /* WPWebViewController.m in Sources */,
 				C5E3CEB417B93BDB00981839 /* WordPress-1-2.xcmappingmodel in Sources */,

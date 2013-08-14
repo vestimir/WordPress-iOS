@@ -180,9 +180,7 @@
     [super viewWillDisappear:animated];
 }
 
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
+- (void)didReceiveMemoryWarning {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];  
     self.webView.delegate = nil;
     self.webView = nil;

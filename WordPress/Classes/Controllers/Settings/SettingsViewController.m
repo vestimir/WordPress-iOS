@@ -82,6 +82,10 @@ typedef enum {
 #pragma mark LifeCycle Methods
 
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -105,13 +109,6 @@ typedef enum {
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"settings_bg"]];
     [self setupMedia];
 }
-
-
-- (void)viewDidUnload {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super viewDidUnload];
-}
-
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];

@@ -159,14 +159,13 @@
 	}
 }
 
-- (void)viewDidUnload {
-    [super viewDidUnload];
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
     
     self.tableView = nil;
     self.buttonAddSelected = nil;
     self.buttonSelectAll = nil;
     self.topAddSelectedButton = nil;
-    self.noblogsView = nil;
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation

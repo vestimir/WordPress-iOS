@@ -53,14 +53,15 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
 @synthesize infiniteScrollEnabled = _infiniteScrollEnabled;
 @synthesize swipeView = _swipeView;
 @synthesize swipeCell = _swipeCell;
-@synthesize noResultsView;
 
 - (void)dealloc
 {
-    if([self.tableView observationInfo])
+    if([self.tableView observationInfo]) {
         [self.tableView removeObserver:self forKeyPath:@"contentOffset"];
-
-    _resultsController.delegate = nil;
+    }
+    
+    self.tableView.delegate = nil;
+	self.tableView.dataSource = nil;
     editSiteViewController.delegate = nil;
 }
 
@@ -98,24 +99,6 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
     [self.tableView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld context:nil];
     
     [self configureNoResultsView];
-}
-
-- (void)viewDidUnload
-{
-    if([self.tableView observationInfo])
-        [self.tableView removeObserver:self forKeyPath:@"contentOffset"];
-    
-    [super viewDidUnload];
-
-	self.tableView.delegate = nil;
-	self.tableView.dataSource = nil;
-	self.tableView =  nil;
-     _refreshHeaderView = nil;
-    
-    if (self.swipeActionsEnabled) {
-        [self disableSwipeGestureRecognizer];
-    }
-
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -592,25 +575,23 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
     
     if (self.resultsController && [[_resultsController fetchedObjects] count] == 0 && !self.isSyncing) {
         // Show no results view.
-
-		if (self.noResultsView == nil) {
-			self.noResultsView = [self createNoResultsView];
-		}
-
         [self.tableView addSubview:self.noResultsView];
     }
 }
 
-- (UIView *)createNoResultsView {
-	NSString *ttl = NSLocalizedString(@"No %@ yet", @"A string format. The '%@' will be replaced by the relevant type of object, posts, pages or comments.");
-	ttl = [NSString stringWithFormat:ttl, [self.title lowercaseString]];
-	
-	NSString *msg = @"";
-	if ([self userCanCreateEntity]) {
-		msg = NSLocalizedString(@"Why not create one?", @"A call to action to create a post or page.");
-	}
-	
-	return [WPInfoView WPInfoViewWithTitle:ttl message:msg cancelButton:nil];
+- (UIView *)noResultsView {
+    if (!_noResultsView) {
+        NSString *ttl = NSLocalizedString(@"No %@ yet", @"A string format. The '%@' will be replaced by the relevant type of object, posts, pages or comments.");
+        ttl = [NSString stringWithFormat:ttl, [self.title lowercaseString]];
+        
+        NSString *msg = @"";
+        if ([self userCanCreateEntity]) {
+            msg = NSLocalizedString(@"Why not create one?", @"A call to action to create a post or page.");
+        }
+        
+        _noResultsView = [WPInfoView WPInfoViewWithTitle:ttl message:msg cancelButton:nil];
+    }
+	return _noResultsView;
 }
 
 - (void)hideRefreshHeader {

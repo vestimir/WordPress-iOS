@@ -41,26 +41,23 @@
 @synthesize startingBlog;
 @synthesize popController;
 
-
 - (void)dealloc {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
     self.photoImageView.delegate = nil;
     self.popController.delegate = nil;
+    self.blogSelector.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-#if !__has_feature(objc_arc)
-//stackoverflow.com/questions/945082/uiwebview-in-multithread-viewcontroller
-- (oneway void)release {
-    if (![NSThread isMainThread]) {
-        [self performSelectorOnMainThread:@selector(release) withObject:nil waitUntilDone:NO];
-    } else {
-        [super release];
-    }
-}
-#endif
 
 - (void)didReceiveMemoryWarning {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
+    self.photoImageView = nil;
+    self.titleTextField = nil;
+    self.contentTextView = nil;
+    self.postButtonItem = nil;
+    self.blogSelector = nil;
+    self.popController = nil;
+    
     [super didReceiveMemoryWarning];
 }
 
@@ -109,24 +106,6 @@
     } else {
         self.photoImageView.image = self.photo;
     }
-}
-
-- (void)viewDidUnload {
-    [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-    [super viewDidUnload];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-    self.photoImageView.delegate = nil;
-    self.photoImageView = nil;
-    self.titleTextField = nil;
-    self.contentTextView = nil;
-    self.postButtonItem = nil;
-    self.blogSelector.delegate = nil;
-    self.blogSelector = nil;
-
-    self.popController.delegate = nil;
-    self.popController = nil;
 }
 
 - (NSUInteger)supportedInterfaceOrientations {

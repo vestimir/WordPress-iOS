@@ -162,45 +162,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveUnseenNotesNotification)
 												 name:@"WordPressComUnseenNotes" object:nil];
     
-    if (currentIndexPath) {
+    if (_currentIndexPath) {
         // If we are restoring the view after a memory warning we want to try to set the tableview back to the selected row and section
         // Since controllerDidChangeContent will be triggered after the view is recreated, we want to restore our place from there, 
         // and not here. 
-        restoringView = YES;
+        _restoringView = YES;
     }
-}
-
-- (void)viewDidUnload {
-    [super viewDidUnload];
-
-    self.tableView = nil;
-    self.settingsButton = nil;
-    self.utililtyView = nil;
-    self.quickPhotoButton.delegate = nil;
-    self.quickPhotoButton = nil;
-    self.quickPhotoActionSheet = nil;
-    
-//    self.sectionInfoArray = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    // In iOS 5, the first detailViewController that we load during launch does not
-    // see its viewWillAppear and viewDidAppear methods fire. As a work around, we can
-    // present our content with a slight delay, and then the events fire.
-    // Need to find a true fix and remove this workaround.
-    // See http://ios.trac.wordpress.org/ticket/1114 and #1135
-    
-    // TODO Remove: RP May not need this since project is iOS 6+ now
-//    if (IS_IPHONE && !( [[self.resultsController fetchedObjects] count] == 0 && ![WPAccount defaultWordPressComAccount] )) {
-//        // Don't delay presentation on iPhone, or the sidebar is briefly visible after launch
-//        [self presentContent];
-//    } else {
-//        [self performSelector:@selector(presentContent) withObject:self afterDelay:0.01];
-//    }
-    
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -238,6 +205,14 @@
         // due to the rotation. Just represent it.
         [self quickPhotoButtonViewTapped:nil];
     }
+}
+
+- (void)didReceiveMemoryWarning {
+    self.settingsButton = nil;
+    self.utililtyView = nil;
+    self.quickPhotoActionSheet = nil;
+    
+    [super didReceiveMemoryWarning];
 }
 
 #pragma mark - Custom methods

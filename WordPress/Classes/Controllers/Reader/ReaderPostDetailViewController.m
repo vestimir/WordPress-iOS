@@ -56,34 +56,6 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 @property (nonatomic) BOOL isShowingReblogForm;
 @property (nonatomic) BOOL canUseFullScreen;
 
-- (void)buildHeader;
-- (void)buildTopToolbar;
-- (void)buildBottomToolbar;
-- (void)buildForms;
-- (void)prepareComments;
-- (void)showStoredComment;
-- (void)updateToolbar;
-- (BOOL)isReplying;
-- (BOOL)canComment;
-- (void)showCommentForm;
-- (void)hideCommentForm;
-- (void)showReblogForm;
-- (void)hideReblogForm;
-- (void)enableInfiniteScrolling;
-- (void)disableInfiniteScrolling;
-
-- (void)handleCommentButtonTapped:(id)sender;
-- (void)handleLikeButtonTapped:(id)sender;
-- (void)handleReblogButtonTapped:(id)sender;
-- (void)handleShareButtonTapped:(id)sender;
-- (void)handleDismissForm:(id)sender;
-- (BOOL)setMFMailFieldAsFirstResponder:(UIView*)view mfMailField:(NSString*)field;
-
-- (void)syncWithUserInteraction:(BOOL)userInteraction;
-- (void)loadMoreWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
-- (void)handleKeyboardDidShow:(NSNotification *)notification;
-- (void)handleKeyboardWillHide:(NSNotification *)notification;
-
 @end
 
 @implementation ReaderPostDetailViewController
@@ -95,6 +67,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 - (void)dealloc {
 	_resultsController.delegate = nil;
     _tableView.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
@@ -209,8 +182,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 }
 
 
-- (void)viewDidUnload {
-	[super viewDidUnload];
+- (void)didReceiveMemoryWarning {
 
 	self.activityFooter = nil;
 	self.tableView = nil;
@@ -223,7 +195,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 	self.reblogButton = nil;
 	self.shareButton = nil;
 	
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [super didReceiveMemoryWarning];
 }
 
 

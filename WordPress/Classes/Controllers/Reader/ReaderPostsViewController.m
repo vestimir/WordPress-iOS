@@ -66,6 +66,7 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 
 - (void)dealloc {
     _featuredImageSource.delegate = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 
@@ -194,13 +195,12 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 }
 
 
-- (void)viewDidUnload {
-	[super viewDidUnload];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)didReceiveMemoryWarning {
 	self.readerReblogFormView = nil;
 	self.friendFinderNudgeView = nil;
 	self.navBar = nil;
+    
+    [super didReceiveMemoryWarning];
 }
 
 
@@ -507,7 +507,7 @@ NSString *const WPReaderViewControllerDisplayedNativeFriendFinder = @"DisplayedN
 }
 
 
-- (UIView *)createNoResultsView {	
+- (UIView *)noResultsView {
 	return [WPInfoView WPInfoViewWithTitle:[self noResultsPrompt] message:nil cancelButton:nil];
 }
 

@@ -170,16 +170,6 @@
  */
 - (void)removeSwipeView:(BOOL)animated;
 
-
-/**
- Create a custom view to display to the user when there are no results to show.
- 
- Optional. If a subclass does not override this method a default view is constructed.
- @return The view to use for the no results view.
- */
-- (UIView *)createNoResultsView;
-
-
 /**
  Returns the row animation style the tableview should use.
  

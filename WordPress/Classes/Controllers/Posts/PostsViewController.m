@@ -24,6 +24,9 @@
     return self;
 }
 
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
 
 - (void)viewDidLoad {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
@@ -104,13 +107,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.panelNavigationController.delegate = nil;
-}
-
-- (void)viewDidUnload {
-    [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-	[super viewDidUnload];
-    
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
