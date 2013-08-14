@@ -207,7 +207,6 @@
     NSError *error = nil;
     if (![[self managedObjectContext] save:&error]) {
         WPFLog(@"Unresolved Core Data Save error %@, %@", error, [error userInfo]);
-        exit(-1);
     }
 }
 
