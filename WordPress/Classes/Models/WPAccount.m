@@ -99,6 +99,9 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:DefaultDotcomAccountDefaultsKey];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_username_preference"];
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_authenticated_flag"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_users_blogs"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_user_id"];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"wpcom_users_preference_blog_id"];
     [[NSUserDefaults standardUserDefaults] synchronize];
     
     // Remove authorization header and cookies for the current instance of the API
