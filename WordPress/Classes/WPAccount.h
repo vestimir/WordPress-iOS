@@ -1,10 +1,11 @@
-//
-//  WPAccount.h
-//  WordPress
-//
-//  Created by Jorge Bernal on 4/23/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * WPAccount.h
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
@@ -34,7 +35,14 @@ extern NSString *const WordPressComApiDidLogoutNotification;
  
  Note that the password is stored using the keychain, not core data
  */
-@property (nonatomic, retain) NSString *password;
+@property (nonatomic, weak) NSString *password;
+
+/**
+ The current auth token for the account
+ 
+ Also stored in keychain
+ */
+@property (nonatomic, weak, readonly) NSString *authToken;
 
 ///------------------------------------
 /// @name Default WordPress.com account

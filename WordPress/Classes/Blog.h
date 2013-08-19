@@ -1,9 +1,11 @@
-//
-//  Blog.h
-//  WordPress
-//
-//  Created by Gareth Townsend on 24/06/09.
-//
+/*
+ * Blog.h
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <Foundation/Foundation.h>
 #import <CommonCrypto/CommonDigest.h>
@@ -100,5 +102,7 @@
 #pragma mark -
 #pragma mark Class methods
 + (NSInteger)countWithContext:(NSManagedObjectContext *)moc;
+
++ (Blog *)createFromDictionary:(NSDictionary*)blogInfo inContext:(NSManagedObjectContext*)context;
 
 @end

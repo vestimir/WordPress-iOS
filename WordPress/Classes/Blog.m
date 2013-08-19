@@ -1,9 +1,11 @@
-//
-//  Blog.m
-//  WordPress
-//
-//  Created by Gareth Townsend on 24/06/09.
-//
+/*
+ * Blog.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "Blog.h"
 #import "Post.h"
@@ -95,6 +97,18 @@
         count = 0;
     }
     return count;
+}
+
++ (Blog *)createFromDictionary:(NSDictionary *)blogInfo inContext:(NSManagedObjectContext *)context {
+    Blog *blog = [[self alloc] initWithEntity:[NSEntityDescription entityForName:NSStringFromClass(self)
+                                                          inManagedObjectContext:context]
+               insertIntoManagedObjectContext:context];
+    blog.blogID = [NSNumber numberWithInt:[blogInfo[@"blogid"] intValue]];
+    blog.blogName = [blogInfo[@"blogName"] stringByDecodingXMLCharacters];
+    blog.url = blogInfo[@"url"];
+    blog.xmlrpc = blogInfo[@"xmlrpc"];
+    blog.isAdmin = [NSNumber numberWithInt:[blogInfo[@"isAdmin"] intValue]];
+    return blog;
 }
 
 - (NSString *)blavatarUrl {

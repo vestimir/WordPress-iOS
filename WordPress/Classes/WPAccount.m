@@ -1,10 +1,11 @@
-//
-//  WPAccount.m
-//  WordPress
-//
-//  Created by Jorge Bernal on 4/23/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * WPAccount.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "WPAccount.h"
 #import "Blog.h"
@@ -27,7 +28,6 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 @interface WPAccount ()
 @property (nonatomic, retain) NSString *xmlrpc;
 @property (nonatomic, retain) NSString *username;
-@property (nonatomic, strong) NSString *authToken;
 @property (nonatomic) BOOL isWpcom;
 @end
 
@@ -38,7 +38,6 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 @dynamic isWpcom;
 @dynamic blogs;
 @dynamic jetpackBlogs;
-@synthesize authToken;
 @synthesize isWpComAuthenticated;
 
 #pragma mark - Default WordPress.com account
@@ -148,32 +147,26 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 
 #pragma mark - Blog creation
 
-// TODO move to blog model and pass in account
 - (Blog *)findOrCreateBlogFromDictionary:(NSDictionary *)blogInfo {
-    NSString *blogUrl = [[blogInfo objectForKey:@"url"] stringByReplacingOccurrencesOfString:@"http://" withString:@""];
-	if([blogUrl hasSuffix:@"/"])
-		blogUrl = [blogUrl substringToIndex:blogUrl.length-1];
-	blogUrl= [blogUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-    
+    NSString *blogUrl = [self stripBlogUrl:blogInfo[@"url"]];
     NSSet *foundBlogs = [self.blogs filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"url like %@", blogUrl]];
     if ([foundBlogs count]) {
         return [foundBlogs anyObject];
     }
     
-    Blog *blog = [[Blog alloc] initWithEntity:[NSEntityDescription entityForName:@"Blog"
-                                                          inManagedObjectContext:self.managedObjectContext]
-               insertIntoManagedObjectContext:self.managedObjectContext];
-    blog.account = self;
-    
+    Blog *blog = [Blog createFromDictionary:blogInfo inContext:self.managedObjectContext];
     blog.url = blogUrl;
-    blog.blogID = [NSNumber numberWithInt:[[blogInfo objectForKey:@"blogid"] intValue]];
-    blog.blogName = [[blogInfo objectForKey:@"blogName"] stringByDecodingXMLCharacters];
-    blog.xmlrpc = [blogInfo objectForKey:@"xmlrpc"];
-    blog.isAdmin = [NSNumber numberWithInt:[[blogInfo objectForKey:@"isAdmin"] intValue]];
-    
+    blog.account = self;
     return blog;
 }
 
+- (NSString*)stripBlogUrl:(NSString*)originalUrl {
+    NSString *blogUrl = [originalUrl stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+	if([blogUrl hasSuffix:@"/"]) {
+		blogUrl = [blogUrl substringToIndex:blogUrl.length-1];
+	}
+    return [blogUrl stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+}
 
 #pragma mark - Custom accessors
 
@@ -189,6 +182,18 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
                           updateExisting:YES
                                    error:nil];
     }
+}
+
+- (NSString *)authToken {
+    return [SFHFKeychainUtils getPasswordForUsername:self.username andServiceName:WordPressComApiOauthServiceName error:nil];
+}
+
+- (void)setAuthToken:(NSString *)authToken {
+    [SFHFKeychainUtils storeUsername:self.username
+                         andPassword:authToken
+                      forServiceName:WordPressComApiOauthServiceName
+                      updateExisting:YES
+                               error:nil];
 }
 
 @end
