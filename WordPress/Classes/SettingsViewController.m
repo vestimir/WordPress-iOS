@@ -33,7 +33,7 @@
 #import "SettingsViewController.h"
 #import "WordPressAppDelegate.h"
 #import "EditSiteViewController.h"
-//#import "WelcomeViewController.h"
+#import "WelcomeViewController.h"
 #import "WPcomLoginViewController.h"
 #import "UIImageView+Gravatar.h"
 #import "WordPressComApi.h"
@@ -488,12 +488,11 @@ typedef enum {
 
     } else if (indexPath.section == SettingsSectionBlogsAdd) {
         [WPMobileStats trackEventForWPCom:StatsEventSettingsClickedAddBlog];
-
-        // TODO Looks like this is either old/not well named, or new NUX views take care of this.
-//        WelcomeViewController *welcomeViewController;
-//        welcomeViewController = [[WelcomeViewController alloc] initWithNibName:@"WelcomeViewController" bundle:nil]; 
-//        welcomeViewController.title = NSLocalizedString(@"Add a Blog", @"");
-//        [self.navigationController pushViewController:welcomeViewController animated:YES];
+        
+        WelcomeViewController *welcomeViewController;
+        welcomeViewController = [[WelcomeViewController alloc] initWithNibName:@"WelcomeViewController" bundle:nil]; 
+        welcomeViewController.title = NSLocalizedString(@"Add a Blog", @"");
+        [self.navigationController pushViewController:welcomeViewController animated:YES];
         
     } else if (indexPath.section == SettingsSectionWpcom) {
         if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated) {

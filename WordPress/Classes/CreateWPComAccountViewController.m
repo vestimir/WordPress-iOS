@@ -1,12 +1,14 @@
-//
-//  CreateWPComAccountViewController.m
-//  WordPress
-//
-//  Created by Sendhil Panchadsaram on 4/5/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * CreateWPComAccountViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "CreateWPComAccountViewController.h"
+#import "WPAccount.h"
 #import "WordPressComApi.h"
 #import "ReachabilityUtils.h"
 #import "UITableViewActivityCell.h"
@@ -410,10 +412,10 @@ CGSize const CreateAccountHeaderSize = { 320.0, 70.0 };
             [self processErrorDuringRemoteConnection:error];
         };
         
-        [[WordPressComApi sharedApi] signInWithUsername:_usernameTextField.text
-                                               password:_passwordTextField.text
-                                                success:signInSuccess
-                                                failure:signInFailure];
+        [WPAccount signInWithUsername:_usernameTextField.text
+                             password:_passwordTextField.text
+                              success:signInSuccess
+                              failure:signInFailure];
     }];
     
     WPAsyncBlockOperation *blogCreation = [WPAsyncBlockOperation operationWithBlock:^(WPAsyncBlockOperation *operation){

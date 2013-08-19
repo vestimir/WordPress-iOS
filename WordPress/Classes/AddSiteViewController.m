@@ -1,8 +1,11 @@
-//
-//  AddSiteViewController.m
-//  WordPress
-//
-//  Created by Chris Boyd on 7/23/10.
+/*
+ * AddSiteViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "AddSiteViewController.h"
 #import "AddUsersBlogsViewController.h"
@@ -10,6 +13,7 @@
 #import "JetpackSettingsViewController.h"
 #import "WPAccount.h"
 #import <SVProgressHUD/SVProgressHUD.h>
+#import "NotificationsManager.h"
 
 @interface EditSiteViewController (PrivateMethods)
 - (void)validationDidFail:(id)wrong;
@@ -106,7 +110,7 @@ CGSize const AddSiteLogoSize = { 320.0, 70.0 };
 - (void)synchronizeNewlyAddedBlog
 {
     void (^successBlock)() = ^{
-        [[WordPressComApi sharedApi] syncPushNotificationInfo];
+        [NotificationsManager syncPushNotificationSettings];
         if (![self.blog isWPcom] && [self.blog hasJetpack]) {
             [self connectToJetpack];
         } else {
@@ -122,8 +126,8 @@ CGSize const AddSiteLogoSize = { 320.0, 70.0 };
 
 - (void)connectToJetpack
 {
-    NSString *wpcomUsername = [WordPressComApi sharedApi].username;
-    NSString *wpcomPassword = [WordPressComApi sharedApi].password;
+    NSString *wpcomUsername = [WPAccount defaultWordPressComAccount].username;
+    NSString *wpcomPassword = [WPAccount defaultWordPressComAccount].password;
     if ((wpcomUsername != nil) && (wpcomPassword != nil)) {
         // Try with a known WordPress.com username first
         [SVProgressHUD showWithStatus:NSLocalizedString(@"Connecting to Jetpack", @"") maskType:SVProgressHUDMaskTypeBlack];
@@ -140,7 +144,7 @@ CGSize const AddSiteLogoSize = { 320.0, 70.0 };
 - (void)dismiss {
     [SVProgressHUD dismiss];
     if (IS_IPAD) {
-        [self dismissModalViewControllerAnimated:YES];
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
     else {
         [self.navigationController popToRootViewControllerAnimated:YES];
@@ -153,7 +157,7 @@ CGSize const AddSiteLogoSize = { 320.0, 70.0 };
     JetpackSettingsViewController *jetpackSettingsViewController = [[JetpackSettingsViewController alloc] initWithBlog:self.blog];
     jetpackSettingsViewController.canBeSkipped = YES;
     [jetpackSettingsViewController setCompletionBlock:^(BOOL didAuthenticate) {
-        [self.presentingViewController dismissModalViewControllerAnimated:YES];
+        [self.presentingViewController dismissViewControllerAnimated:YES completion:nil];
     }];
     [self.navigationController pushViewController:jetpackSettingsViewController animated:YES];
 }

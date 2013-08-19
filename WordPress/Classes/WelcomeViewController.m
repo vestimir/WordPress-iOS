@@ -1,12 +1,13 @@
-//
-//  WelcomeViewController.m
-//  WordPress
-//
-//  Created by Dan Roundhill on 5/5/10.
-//
+/*
+ * WelcomeViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "WelcomeViewController.h"
-#import "WordPressAppDelegate.h"
 #import "AboutViewController.h"
 #import "AddUsersBlogsViewController.h"
 #import "CreateWPComBlogViewController.h"
@@ -16,12 +17,12 @@
 #import "WPcomLoginViewController.h"
 #import "WordPressComApi.h"
 #import "WPAccount.h"
+#import "WordPressDataModel.h"
 
 @interface WelcomeViewController () <
     WPcomLoginViewControllerDelegate,
     CreateWPComAccountViewControllerDelegate,
     CreateWPComBlogViewControllerDelegate> {
-    WordPressAppDelegate *__weak appDelegate;
 }
 
 @property (nonatomic, weak) WordPressAppDelegate *appDelegate;
@@ -58,7 +59,7 @@
 	appDelegate = (WordPressAppDelegate *)[[UIApplication sharedApplication] delegate];
     self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"welcome_bg_pattern.png"]];
     // If there are blogs, this is being shown in the Settings.
-    if ([Blog countWithContext:[WordPressAppDelegate sharedWordPressApplicationDelegate].managedObjectContext] > 0) {
+    if ([Blog countWithContext:[WordPressDataModel sharedDataModel].managedObjectContext] > 0) {
         // Hide the Logo View on the iPhone, there isn't enough room for that and the navigation bar.
         if (IS_IPHONE) {
             self.logoView.hidden = YES;
@@ -85,7 +86,8 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-    if (([Blog countWithContext:[WordPressAppDelegate sharedWordPressApplicationDelegate].managedObjectContext] <= 0 && ( ![[WordPressComApi sharedApi] hasCredentials] )) || isFirstRun) {
+    if (([Blog countWithContext:[WordPressDataModel sharedDataModel].managedObjectContext] <= 0
+         && (![WPAccount defaultWordPressComAccount].isWpComAuthenticated)) || isFirstRun) {
         isFirstRun = YES;
         [self.navigationController setNavigationBarHidden:YES animated:animated];
     }
@@ -100,7 +102,7 @@
 
 - (NSUInteger)supportedInterfaceOrientations {
     if (IS_IPHONE) {
-        if ([Blog countWithContext:[WordPressAppDelegate sharedWordPressApplicationDelegate].managedObjectContext] == 0) {
+        if ([Blog countWithContext:[WordPressDataModel sharedDataModel].managedObjectContext] == 0) {
             return UIInterfaceOrientationMaskPortrait;
         }
         return UIInterfaceOrientationMaskAllButUpsideDown;
@@ -113,7 +115,7 @@
 {
     if (IS_IPAD || interfaceOrientation == UIDeviceOrientationPortrait)  
         return YES;
-    else if (IS_IPHONE && [Blog countWithContext:[WordPressAppDelegate sharedWordPressApplicationDelegate].managedObjectContext] > 0)
+    else if (IS_IPHONE && [Blog countWithContext:[WordPressDataModel sharedDataModel].managedObjectContext] > 0)
         return YES;
     else
         return NO;
@@ -139,7 +141,7 @@
 - (IBAction)handleAddBlogTapped:(id)sender {
     [WPMobileStats trackEventForWPCom:StatsEventWelcomeViewControllerClickedAddWordpressDotComBlog];
 
-    if(appDelegate.isWPcomAuthenticated) {
+    if([WPAccount defaultWordPressComAccount].isWpComAuthenticated) { // TODO It might be too strong with wpcom authenticated. what about self-hosted?
         AddUsersBlogsViewController *addUsersBlogsView = [[AddUsersBlogsViewController alloc] initWithAccount:[WPAccount defaultWordPressComAccount]];
         addUsersBlogsView.isWPcom = YES;
         [self.navigationController pushViewController:addUsersBlogsView animated:YES];
@@ -154,7 +156,7 @@
 - (IBAction)handleCreateBlogTapped:(id)sender {
     [WPMobileStats trackEventForWPCom:StatsEventWelcomeViewControllerClickedCreateWordpressDotComBlog];
     
-    if ([WordPressComApi sharedApi].hasCredentials) {
+    if ([WPAccount defaultWordPressComAccount].isWpComAuthenticated) {
         CreateWPComBlogViewController *viewController = [[CreateWPComBlogViewController alloc] initWithStyle:UITableViewStyleGrouped];
         viewController.delegate = self;
         [self.navigationController pushViewController:viewController animated:YES];
@@ -190,12 +192,12 @@
 
 - (void)blogsRefreshNotificationReceived:(NSNotification *)notification {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:@"BlogsRefreshNotification" object:nil];
-    [super dismissModalViewControllerAnimated:YES];
+    [super dismissViewControllerAnimated:YES completion:nil];
 }
 
 
 - (IBAction)cancel:(id)sender {
-	[super dismissModalViewControllerAnimated:YES];
+	[super dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)showAboutView {
@@ -203,7 +205,7 @@
 	aboutViewController.modalTransitionStyle = UIModalTransitionStyleFlipHorizontal;
     UINavigationController *nc = [[UINavigationController alloc] initWithRootViewController:aboutViewController];
     nc.modalPresentationStyle = UIModalPresentationFormSheet;
-    [self.navigationController presentModalViewController:nc animated:YES];
+    [self.navigationController presentViewController:nc animated:YES completion:nil];
 	[self.navigationController setNavigationBarHidden:YES];
 }
 
