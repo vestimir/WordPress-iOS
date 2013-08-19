@@ -792,6 +792,7 @@
 		C5E3D5C417C296B000981839 /* BetaUIWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5C117C296B000981839 /* BetaUIWindow.m */; };
 		C5E3D5C517C296B000981839 /* BetaFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5C317C296B000981839 /* BetaFeedbackViewController.m */; };
 		C5E3D5CC17C2AABF00981839 /* CreateWPComAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5CB17C2AABF00981839 /* CreateWPComAccountViewController.m */; };
+		C5E3D5CF17C2C26D00981839 /* UIAlertView+Singular.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */; };
 		C5FB8B9A179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */; };
 		C5FB8B9B179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */; };
 		C5FB8E3517A1BEF30064BB92 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8E3417A1BEF30064BB92 /* EGORefreshTableHeaderView.m */; };
@@ -1826,6 +1827,8 @@
 		C5E3D5C317C296B000981839 /* BetaFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BetaFeedbackViewController.m; sourceTree = "<group>"; };
 		C5E3D5CA17C2AABF00981839 /* CreateWPComAccountViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CreateWPComAccountViewController.h; sourceTree = "<group>"; };
 		C5E3D5CB17C2AABF00981839 /* CreateWPComAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateWPComAccountViewController.m; sourceTree = "<group>"; };
+		C5E3D5CD17C2C26C00981839 /* UIAlertView+Singular.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+Singular.h"; sourceTree = "<group>"; };
+		C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+Singular.m"; sourceTree = "<group>"; };
 		C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISegmentBarBlackButtonHighlighted.png; sourceTree = "<group>"; };
 		C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISegmentBarBlackButtonHighlighted@2x.png"; sourceTree = "<group>"; };
 		C5FB8E3317A1BEF30064BB92 /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
@@ -2852,6 +2855,8 @@
 				C5E3D48717C27B8200981839 /* UIViewController+Rotation.m */,
 				C5E3D48817C27B8200981839 /* UIViewController+Styled.h */,
 				C5E3D48917C27B8200981839 /* UIViewController+Styled.m */,
+				C5E3D5CD17C2C26C00981839 /* UIAlertView+Singular.h */,
+				C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -4188,6 +4193,7 @@
 				C5E3D5C417C296B000981839 /* BetaUIWindow.m in Sources */,
 				C5E3D5C517C296B000981839 /* BetaFeedbackViewController.m in Sources */,
 				C5E3D5CC17C2AABF00981839 /* CreateWPComAccountViewController.m in Sources */,
+				C5E3D5CF17C2C26D00981839 /* UIAlertView+Singular.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

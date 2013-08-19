@@ -452,8 +452,6 @@ NSLog(@"%@", self.sectionInfoArray);
         [actionSheet showInView:self.panelNavigationController.view];        
     }
     self.quickPhotoActionSheet = actionSheet;
-    
-//    [appDelegate setAlertRunning:YES];
 }
 
 - (void)showQuickPhoto:(UIImagePickerControllerSourceType)sourceType {

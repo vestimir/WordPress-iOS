@@ -892,10 +892,6 @@ NSString *const EditPostViewControllerAutosaveDidFailNotification = @"EditPostVi
     } else {
         [actionSheet showInView:self.view];
     }
-
-    WordPressAppDelegate *appDelegate = (WordPressAppDelegate *)[[UIApplication sharedApplication] delegate];
-//    [appDelegate setAlertRunning:YES];
-    
 }
 
 //code to append http:// if protocol part is not there as part of urlText.
@@ -966,13 +962,10 @@ NSString *const EditPostViewControllerAutosaveDidFailNotification = @"EditPostVi
 #pragma mark AlertView Delegate Methods
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    WordPressAppDelegate *delegate = (WordPressAppDelegate*)[[UIApplication sharedApplication] delegate];
-	
     if (alertView.tag == EditPostViewControllerAlertTagLinkHelper) {
         isShowingLinkAlert = NO;
         if (buttonIndex == 1) {
             if ((urlField.text == nil) || ([urlField.text isEqualToString:@""])) {
-//                [delegate setAlertRunning:NO];
                 return;
             }
 			
@@ -1003,7 +996,6 @@ NSString *const EditPostViewControllerAutosaveDidFailNotification = @"EditPostVi
             [self incrementCharactersChangedForAutosaveBy:MAX(oldRange.length, aTagText.length)];
         }
 		
-//        [delegate setAlertRunning:NO];
         [textView touchesBegan:nil withEvent:nil];
         _linkHelperAlertView = nil;
     } else if (alertView.tag == EditPostViewControllerAlertTagFailedMedia) {
@@ -1058,9 +1050,6 @@ NSString *const EditPostViewControllerAutosaveDidFailNotification = @"EditPostVi
 			}
         }
     }
-    
-    WordPressAppDelegate *appDelegate = (WordPressAppDelegate *)[[UIApplication sharedApplication] delegate];
-//    [appDelegate setAlertRunning:NO];
 }
 
 #pragma mark - TextView delegate

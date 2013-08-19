@@ -204,8 +204,6 @@ static NSString *const KVO_BLOG_REACHABLE = @"reachable";
 		}
 	}
     
-//    WordPressAppDelegate *appDelegate = (WordPressAppDelegate*)[[UIApplication sharedApplication] delegate];
-//    [appDelegate setAlertRunning:NO];
     isShowingActionSheet = NO;
 }
 
@@ -302,9 +300,6 @@ static NSString *const KVO_BLOG_REACHABLE = @"reachable";
             [actionSheet showInView:editCommentViewController.view];
 	}
 	isShowingActionSheet = YES;
-//    WordPressAppDelegate *appDelegate = (WordPressAppDelegate*)[[UIApplication sharedApplication] delegate];
-//    [appDelegate setAlertRunning:YES];
-	
 }
 
 - (void)launchEditComment {
@@ -381,14 +376,12 @@ static NSString *const KVO_BLOG_REACHABLE = @"reachable";
                                                         otherButtonTitles:NSLocalizedString(@"Cancel", @""), nil];
         actionSheet.tag = 501;
         actionSheet.actionSheetStyle = UIActionSheetStyleAutomatic;
-        if (IS_IPAD)
+        if (IS_IPAD) {
             [actionSheet showFromBarButtonItem:[[toolbar items] objectAtIndex: 2] animated:YES];
-        else 
+        } else {
             [actionSheet showInView:self.view];
+        }
         isShowingActionSheet = YES;
-//        WordPressAppDelegate *appDelegate = (WordPressAppDelegate*)[[UIApplication sharedApplication] delegate];
-//        [appDelegate setAlertRunning:YES];
-        
     }
 }
 
