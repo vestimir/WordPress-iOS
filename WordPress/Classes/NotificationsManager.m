@@ -206,7 +206,7 @@ NSString *const WordPressComApiUnseenNoteCountInfoKey = @"note_count";
                      deviceToken:(NSString *)token
                          success:(void (^)(AFHTTPRequestOperation *, id))successBlock
                          failure:(void (^)(AFHTTPRequestOperation *, NSError *error))failureBlock {
-//    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
+    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
     
     [self.authClient callMethod:@"wpcom.mobile_push_register_token"
                      parameters:@[account.username, account.password, token, [[UIDevice currentDevice] wordpressIdentifier], @"apple", self.useAPNSSandbox]
@@ -217,7 +217,7 @@ NSString *const WordPressComApiUnseenNoteCountInfoKey = @"note_count";
                        deviceToken:(NSString *)token
                            success:(void (^)(AFHTTPRequestOperation *, id))successBlock
                            failure:(void (^)(AFHTTPRequestOperation *, NSError *error))failureBlock {
-//    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
+    [self.authClient setAuthorizationHeaderWithToken:account.authToken];
     
     [self.authClient callMethod:@"wpcom.mobile_push_unregister_token"
                      parameters:@[account.username, account.password, token, [[UIDevice currentDevice] wordpressIdentifier], @"apple", self.useAPNSSandbox]

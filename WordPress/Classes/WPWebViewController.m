@@ -213,10 +213,10 @@
 
 - (void)setStatusTimer:(NSTimer *)timer
 {
-	if (self.statusTimer && timer != self.statusTimer) {
-		[self.statusTimer invalidate];
+	if (_statusTimer && timer != _statusTimer) {
+		[_statusTimer invalidate];
 	}
-	self.statusTimer = timer;
+	_statusTimer = timer;
 }
 
 
@@ -275,10 +275,6 @@
     }
     
     return @"";
-}
-
-- (void)loadURL:(NSURL *)webURL {
-    
 }
 
 - (void)refreshWebView {
@@ -340,9 +336,9 @@
 
 - (void)setUrl:(NSURL *)theURL {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-    if (self.url != theURL) {
-        self.url = theURL;
-        if (self.url && self.webView) {
+    if (_url != theURL) {
+        _url = theURL;
+        if (_url && self.webView) {
             [self refreshWebView];
         }
     }
