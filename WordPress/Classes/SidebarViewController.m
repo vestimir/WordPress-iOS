@@ -997,7 +997,7 @@ NSLog(@"%@", self.sectionInfoArray);
 
     NSError *error = nil;
     if (![_resultsController performFetch:&error]) {
-        WPFLog(@"Couldn't fecth blogs: %@", [error localizedDescription]);
+        WPFLog(@"Couldn't fetch blogs: %@", [error localizedDescription]);
         _resultsController = nil;
     }
     
