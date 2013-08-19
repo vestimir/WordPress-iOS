@@ -1,3 +1,12 @@
+/*
+ * WordPressAppDelegate.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
+
 #import <Crashlytics/Crashlytics.h>
 #import "WordPressAppDelegate.h"
 #import "WordPressComApi.h"
@@ -22,20 +31,19 @@
 @interface WordPressAppDelegate () <CrashlyticsDelegate>
 
 @property (nonatomic, assign) BOOL listeningForBlogChanges;
+@property (nonatomic, assign) UIBackgroundTaskIdentifier bgTask;
 
 @end
 
 @implementation WordPressAppDelegate
 
-#pragma mark -
-#pragma mark Class Methods
+#pragma mark - Class Methods
 
 + (WordPressAppDelegate *)sharedWordPressApplicationDelegate {
     return (WordPressAppDelegate *)[[UIApplication sharedApplication] delegate];
 }
 
-#pragma mark -
-#pragma mark UIApplicationDelegate Methods
+#pragma mark - UIApplicationDelegate Methods
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     [self configureCrashlytics];
@@ -48,14 +56,6 @@
     
     [UserAgent setupAppUserAgent];
     [WPMobileStats initializeStats];
-    
-    // WP Authenticated 
-//    if([[NSUserDefaults standardUserDefaults] objectForKey:@"wpcom_authenticated_flag"] != nil) {
-//        NSString *tempIsAuthenticated = (NSString *)[[NSUserDefaults standardUserDefaults] objectForKey:@"wpcom_authenticated_flag"];
-//        if([tempIsAuthenticated isEqualToString:@"1"])
-//            self.isWPcomAuthenticated = YES;
-//    }
-    
     
     [[AFNetworkActivityIndicatorManager sharedManager] setEnabled:YES];
     [ReachabilityUtils startReachabilityNotifier];
@@ -164,7 +164,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
-    [self setAppBadge];
+    [self resetAppBadge];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {
@@ -173,27 +173,25 @@
     [WPMobileStats trackEventForWPComWithSavedProperties:StatsEventAppClosed];
     [WPMobileStats resetStatsRelatedVariables];
     
-    // RP ** Photo uploader should handle this.
-    
     // Keep the app alive in the background if we are uploading a post, currently only used for quick photo posts
-//    if (!isUploadingPost) {
-//        if (bgTask != UIBackgroundTaskInvalid) {
-//            [application endBackgroundTask:bgTask];
-//            bgTask = UIBackgroundTaskInvalid;
-//        }
-//    }
-//    
-//    bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
-//        // Synchronize the cleanup call on the main thread in case
-//        // the task actually finishes at around the same time.
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            if (bgTask != UIBackgroundTaskInvalid)
-//            {
-//                [application endBackgroundTask:bgTask];
-//                bgTask = UIBackgroundTaskInvalid;
-//            }
-//        });
-//    }];
+    if (!_isUploadingPost) {
+        if (_bgTask != UIBackgroundTaskInvalid) {
+            [application endBackgroundTask:_bgTask];
+            _bgTask = UIBackgroundTaskInvalid;
+        }
+    }
+    
+    _bgTask = [application beginBackgroundTaskWithExpirationHandler:^{
+        // Synchronize the cleanup call on the main thread in case
+        // the task actually finishes at around the same time.
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (_bgTask != UIBackgroundTaskInvalid)
+            {
+                [application endBackgroundTask:_bgTask];
+                _bgTask = UIBackgroundTaskInvalid;
+            }
+        });
+    }];
     
     [[WordPressDataModel sharedDataModel] saveContext];
 }
@@ -227,7 +225,7 @@
     }
     
     // Clear notifications badge and update server
-    [self setAppBadge];
+    [self resetAppBadge];
     [NotificationsManager syncPushNotificationSettings];
 }
 
@@ -370,7 +368,7 @@
     [[UISegmentedControl appearance] setTitleTextAttributes:titleTextAttributesForStateHighlighted forState:UIControlStateHighlighted];
 }
 
-- (void)setAppBadge {
+- (void)resetAppBadge {
     [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
 }
 
@@ -424,26 +422,6 @@
 
     [[NotificationsManager sharedInstance] handleRemoteNotification:userInfo applicationState:application.applicationState];
 }
-
-#pragma mark - UIAlertViewDelegate
-
-// TODO Put in pushmanager
-//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-//	[self setAlertRunning:NO];
-//	
-//    if (alertView.tag == kNotificationNewComment) {
-//        if (buttonIndex == 1) {
-//            [self openNotificationScreenWithOptions:lastNotificationInfo];
-//            lastNotificationInfo = nil;
-//        }
-//    } else if (alertView.tag == kNotificationNewSocial) {
-//        if (buttonIndex == 1) {
-//            if( self.panelNavigationController )
-//                [self.panelNavigationController showNotificationsView:YES];
-//            lastNotificationInfo = nil;
-//        }
-//    }
-//}
 
 #pragma mark - Crashlytics
 
