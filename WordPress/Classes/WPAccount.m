@@ -84,6 +84,10 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 
 + (void)removeDefaultWordPressComAccount {    
     [SFHFKeychainUtils deleteItemForUsername:__defaultDotcomAccount.username andServiceName:WordPressComApiOauthServiceName error:nil];
+    [SFHFKeychainUtils deleteItemForUsername:__defaultDotcomAccount.username andServiceName:__defaultDotcomAccount.xmlrpc error:nil];
+    
+    [[WordPressComApi sharedApi] cancelAllHTTPOperationsWithMethod:nil path:nil];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:DefaultDotcomAccountDefaultsKey];
     __defaultDotcomAccount = nil;
     
     // TODO: Form a relationship for Account and Note so Notes are deleted when the account is deleted
