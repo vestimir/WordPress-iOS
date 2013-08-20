@@ -106,6 +106,9 @@
     blog.blogID = [NSNumber numberWithInt:[blogInfo[@"blogid"] intValue]];
     blog.blogName = [blogInfo[@"blogName"] stringByDecodingXMLCharacters];
     blog.url = blogInfo[@"url"];
+    if (![blog.url hasPrefix:@"http"]) {
+        blog.url = [@"http://" stringByAppendingString:blog.url];
+    }
     blog.xmlrpc = blogInfo[@"xmlrpc"];
     blog.isAdmin = [NSNumber numberWithInt:[blogInfo[@"isAdmin"] intValue]];
     return blog;
@@ -142,10 +145,6 @@
     }
     
     return result;
-}
-
-- (NSString *)hostURL {
-    return [self displayURL];
 }
 
 - (NSString *)hostname {
@@ -284,7 +283,7 @@
 }
 
 - (void)remove {
-    WPFLog(@"<Blog:%@> remove", self.hostURL);
+    WPFLog(@"<Blog:%@> remove", self.displayURL);
     [self.api cancelAllHTTPOperations];
     _reachability.reachableBlock = nil;
     _reachability.unreachableBlock = nil;
@@ -504,7 +503,7 @@
     WPFLogMethod();
     WPXMLRPCClient *api = [WPXMLRPCClient clientWithXMLRPCEndpoint:[NSURL URLWithString:[NSString stringWithFormat: @"%@", kWPcomXMLRPCUrl]]];
     [api callMethod:@"wpcom.getActivationStatus"
-         parameters:[NSArray arrayWithObjects:[self hostURL], nil]
+         parameters:[NSArray arrayWithObjects:[self displayURL], nil]
             success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 NSString *returnData = responseObject;
                 if ([returnData isKindOfClass:[NSString class]]) {

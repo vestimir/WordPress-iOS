@@ -80,7 +80,7 @@
 	[cell.contentView addSubview:asyncImage];
 	
     cell.textLabel.text = [blog blogName];
-    cell.detailTextLabel.text = [blog hostURL];
+    cell.detailTextLabel.text = [blog displayURL];
     
     if ([blog isEqual:self.selectedBlog]) {
         cell.accessoryType = UITableViewCellAccessoryCheckmark;

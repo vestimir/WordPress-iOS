@@ -153,13 +153,12 @@ NSString * const WPAccountDefaultWordPressComAccountChangedNotification = @"WPAc
 
 - (Blog *)findOrCreateBlogFromDictionary:(NSDictionary *)blogInfo {
     NSString *blogUrl = [self stripBlogUrl:blogInfo[@"url"]];
-    NSSet *foundBlogs = [self.blogs filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"url like %@", blogUrl]];
+    NSSet *foundBlogs = [self.blogs filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"displayURL like %@", blogUrl]];
     if ([foundBlogs count]) {
         return [foundBlogs anyObject];
     }
     
     Blog *blog = [Blog createFromDictionary:blogInfo inContext:self.managedObjectContext];
-    blog.url = blogUrl;
     blog.account = self;
     return blog;
 }

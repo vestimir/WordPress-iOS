@@ -56,11 +56,10 @@
 // User to display the blog url to the user (IDN decoded, no http:)
 // wp.koke.me/sub
 @property (weak, readonly) NSString *displayURL;
-// alias of displayURL
-// kept for compatibilty, used as a key to store passwords
-@property (weak, readonly) NSString *hostURL;
+
 // http://wp.koke.me/sub
 @property (nonatomic, strong) NSString *url;
+
 // Used for reachability checks (IDN encoded)
 // wp.koke.me
 @property (weak, readonly) NSString *hostname;

@@ -156,7 +156,7 @@
         [blavatarImageView setImageWithBlavatarUrl:activeBlog.blavatarUrl isWPcom:activeBlog.isWPcom];
         blogTitleLabel.text = activeBlog.blogName;
         if ([blogTitleLabel.text isEqualToString:@""]) {
-            blogTitleLabel.text = activeBlog.hostURL;
+            blogTitleLabel.text = activeBlog.displayURL;
         }
     }
 }

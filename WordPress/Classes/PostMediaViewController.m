@@ -1523,7 +1523,7 @@
                                                       initWithFetchRequest:fetchRequest
                                                       managedObjectContext:[[WordPressDataModel sharedDataModel] managedObjectContext]                                                      sectionNameKeyPath:nil
                                                       cacheName:[NSString stringWithFormat:@"Media-%@-%@",
-                                                                 self.apost.blog.hostURL,
+                                                                 self.apost.blog.displayURL,
                                                                  self.apost.postID]];
     resultsController.delegate = self;
     

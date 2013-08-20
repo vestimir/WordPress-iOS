@@ -73,10 +73,11 @@ CGFloat const BadgeHeight = 24.f;
         
         //set the title of the blog        
         NSString *blogName = blog.blogName;
-        if (blogName != nil && ! [@"" isEqualToString: [blogName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]])
+        if (blogName != nil && ![@"" isEqualToString:[blogName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]]) {
             label.text = blogName;
-        else
-            label.text = [blog hostURL];            
+        } else {
+            label.text = [blog displayURL];
+        }
         
         label.font = [UIFont systemFontOfSize:17.0];
         label.textColor = [UIColor colorWithRed:220.0/255.0 green:220.0/255.0 blue:220.0/255.0 alpha:1.0];

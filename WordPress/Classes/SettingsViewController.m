@@ -81,6 +81,9 @@ typedef enum {
 #pragma mark -
 #pragma mark LifeCycle Methods
 
+- (id)init {
+    return [super initWithStyle:UITableViewStyleGrouped];
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
@@ -305,7 +308,7 @@ typedef enum {
     if (indexPath.section == SettingsSectionBlogs) {
         Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.row inSection:0]];
         cell.textLabel.text = blog.blogName;
-        cell.detailTextLabel.text = blog.hostURL;
+        cell.detailTextLabel.text = blog.displayURL;
         [cell.imageView setImageWithBlavatarUrl:blog.blavatarUrl isWPcom:blog.isWPcom];
         
         if (indexPath.row == 0) {
