@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <MessageUI/MFMailComposeViewController.h>
 
+@class Blog;
+
 @interface WPWebViewController : UIViewController <UIWebViewDelegate, UIActionSheetDelegate, MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSURL *url;
@@ -36,6 +38,8 @@
 @property (nonatomic, strong) NSString *readerAllItems;
 @property (nonatomic, assign) BOOL shouldScrollToBottom;
 @property (nonatomic, assign) BOOL isLoading, needsLogin, hasLoadedContent;
+
+- (id)initWithBlog:(Blog*)blog;
 
 - (void) showCloseButton;
 - (IBAction) showLinkOptions;

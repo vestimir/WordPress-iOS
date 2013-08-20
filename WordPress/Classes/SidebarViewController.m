@@ -1,10 +1,11 @@
-//
-//  SidebarViewController.m
-//  WordPress
-//
-//  Created by Jorge Bernal on 5/21/12.
-//  Copyright (c) 2012 WordPress. All rights reserved.
-//
+/*
+ * SidebarViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -30,18 +31,18 @@
 #import "ReaderPostsViewController.h"
 #import "GeneralWalkthroughViewController.h"
 #import "WordPressDataModel.h"
-#import "ViewAdminButton.h"
 
 // Height for reader/notification/blog cells
-#define SIDEBAR_CELL_HEIGHT 51.0f
+NSUInteger const SIDEBAR_CELL_HEIGHT = 51.0f;
 // Height for secondary cells (posts/pages/comments/... inside a blog)
-#define SIDEBAR_CELL_SECONDARY_HEIGHT 48.0f
+NSUInteger const SIDEBAR_CELL_SECONDARY_HEIGHT = 48.0f;
 // Max width for right view (currently : size of the sidebar_comment_bubble image)
-#define SIDEBAR_CELL_ACCESSORY_MAX_WIDTH 54.f
-#define SIDEBAR_BGCOLOR [UIColor colorWithWhite:0.921875f alpha:1.0f];
-#define HEADER_HEIGHT 42.f
-#define DEFAULT_ROW_HEIGHT 48
-#define NUM_ROWS 6
+NSUInteger const SIDEBAR_CELL_ACCESSORY_MAX_WIDTH = 54.0f;
+NSUInteger const HEADER_HEIGHT = 42.0f;
+NSUInteger const DEFAULT_ROW_HEIGHT = 48;
+NSUInteger const NUM_ROWS = 6;
+
+NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDictionary";
 
 @interface SidebarViewController () <NSFetchedResultsControllerDelegate, QuickPhotoButtonViewDelegate>
 
@@ -51,6 +52,7 @@
 @property (nonatomic, strong) NSFetchedResultsController *resultsController;
 @property (nonatomic, weak) SectionInfo *openSection;
 @property (nonatomic, strong) NSMutableArray *sectionInfoArray;
+@property (nonatomic, strong) NSArray *sidebarItems;
 @property (readonly) NSInteger topSectionRowCount;
 @property (nonatomic, strong) NSIndexPath *currentIndexPath;
 @property (nonatomic, assign) NSUInteger openSectionIdx;
@@ -63,6 +65,26 @@
 @end
 
 @implementation SidebarViewController
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Section 0 and 1 sidebar items
+        self.sidebarItems = @[// Section 0
+                              @[@{@"title": NSLocalizedString(@"Reader", @"Menu item to view the Reader for WordPress.com blogs"), @"icon": @"sidebar_read"},
+                                @{@"title": NSLocalizedString(@"Notifications", @"Menu item to view Notifications"), @"icon": @"sidebar_notifications"},],
+                              
+                              // Section 1
+                              @[@{@"title": NSLocalizedString(@"Posts", @"Menu item to view posts"), @"icon": @"sidebar_posts"},
+                                @{@"title": NSLocalizedString(@"Pages", @"Menu item to view pages"), @"icon": @"sidebar_pages"},
+                                @{@"title": NSLocalizedString(@"Comments", @"Menu item to view comments"), @"icon": @"sidebar_comments"},
+                                @{@"title": NSLocalizedString(@"Stats", @"Menu item to view Jetpack stats associated with a blog"), @"icon": @"sidebar_stats"},
+                                @{@"title": NSLocalizedString(@"View Site", @"Menu item to view the site in a an in-app web view"), @"icon": @"sidebar_view"},
+                                @{@"title": NSLocalizedString(@"View Admin", @"Menu item to load the dashboard in a an in-app web view"), @"icon": @"sidebar_dashboard"}]
+                              ];
+    }
+    return self;
+}
 
 - (void)dealloc {
     self.resultsController.delegate = nil;
@@ -86,31 +108,7 @@
     self.utililtyView.layer.shadowOffset = CGSizeMake(0.0f, 5.0f);
     self.utililtyView.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:self.utililtyView.bounds cornerRadius:PANEL_CORNER_RADIUS] CGPath];
     
-    // create the sectionInfoArray, stores data for collapsing/expanding sections in the tableView
-	if (self.sectionInfoArray == nil) {
-        self.sectionInfoArray = [[NSMutableArray alloc] initWithCapacity:[[self.resultsController fetchedObjects] count]];
-        // For each play, set up a corresponding SectionInfo object to contain the default height for each row.
-		for (Blog *blog in [self.resultsController fetchedObjects]) {
-            [self addSectionInfoForBlog:blog];
-		}
-	}
-    
-    self.settingsButton.backgroundColor = [UIColor clearColor];
-    [self.settingsButton setBackgroundImage:[[UIImage imageNamed:@"SidebarToolbarButton"] stretchableImageWithLeftCapWidth:14.0 topCapHeight:0.0] forState:UIControlStateNormal];
-    [self.settingsButton setBackgroundImage:[[UIImage imageNamed:@"SidebarToolbarButtonHighlighted"] stretchableImageWithLeftCapWidth:14.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
-    [self.settingsButton setTitle:NSLocalizedString(@"Settings", @"App settings") forState:UIControlStateNormal ];
-    self.settingsButton.titleLabel.lineBreakMode = NSLineBreakByClipping;
-    self.settingsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
-    self.settingsButton.titleLabel.minimumScaleFactor = 0.8;
-    self.settingsButton.titleEdgeInsets = UIEdgeInsetsMake (0.0f, 12.0f, 0.0f, 10.0f);
-    self.settingsButton.imageEdgeInsets = UIEdgeInsetsMake(0.0f, 8.0f, 0.0f, 0.0f);
-    self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
-    self.settingsButton.titleLabel.shadowOffset = CGSizeMake(0, -1.0f);
-    [self.settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
-
-    if ([[self.resultsController fetchedObjects] count] > 0) {
-        [self setupQuickPhotoButton];
-    }
+    [self setupSettingsButton];
     
     void (^wpcomNotificationBlock)(NSNotification *) = ^(NSNotification *note) {
         NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
@@ -122,8 +120,6 @@
     };
     [[NSNotificationCenter defaultCenter] addObserverForName:WPAccountDefaultWordPressComAccountChangedNotification object:nil queue:nil usingBlock:wpcomNotificationBlock];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleCameraPlusImages:) name:kCameraPlusImagesNotification object:nil];
-    //Crash Report Notification
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dismissCrashReporter:) name:@"CrashReporterIsFinished" object:nil];
     
     //WPCom notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(selectNotificationsRow)
@@ -136,6 +132,23 @@
         // Since controllerDidChangeContent will be triggered after the view is recreated, we want to restore our place from there, 
         // and not here. 
         _restoringView = YES;
+    }
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    // create the sectionInfoArray, stores data for collapsing/expanding sections in the tableView
+	if (self.sectionInfoArray == nil) {
+        self.sectionInfoArray = [[NSMutableArray alloc] initWithCapacity:[[self.resultsController fetchedObjects] count]];
+        // For each play, set up a corresponding SectionInfo object to contain the default height for each row.
+		for (Blog *blog in [self.resultsController fetchedObjects]) {
+            [self addSectionInfoForBlog:blog];
+		}
+	}
+    
+    if ([[self.resultsController fetchedObjects] count] > 0) {
+        [self setupQuickPhotoButton];
     }
 }
 
@@ -159,12 +172,6 @@
         });
     }
 }
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
-}
-
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
@@ -201,6 +208,8 @@
         return 0;
     }
 }
+
+#pragma mark - SectionInfo
 
 - (SectionInfo *)sectionInfoForBlog:(Blog *)blog {
     SectionInfo *sectionInfo = [[SectionInfo alloc] init];			
@@ -280,7 +289,6 @@
 }
 
 - (void)selectBlogWithSection:(NSUInteger)index {
-NSLog(@"%@", self.sectionInfoArray);
     SectionInfo *sectionInfo = [self.sectionInfoArray objectAtIndex:index - 1];
     if (!sectionInfo.open) {
         [sectionInfo.headerView toggleOpenWithUserAction:YES];
@@ -296,11 +304,9 @@ NSLog(@"%@", self.sectionInfoArray);
     
     for (Blog *tempBlog in [[[self.resultsController sections] objectAtIndex:0] objects]) {
         if ([blog isEqual:tempBlog]) {
-            NSLog(@"Selecting blog on sidebar: %@", blog.blogName);
-            
             [self selectBlogWithSection:currentBlog];
+            break;
         }
-        
         currentBlog++;
     }
 }
@@ -334,10 +340,11 @@ NSLog(@"%@", self.sectionInfoArray);
 - (IBAction)showSettings:(id)sender {
     [WPMobileStats incrementProperty:StatsPropertySidebarClickedSettings forEvent:StatsEventAppClosed];
     
-    SettingsViewController *settingsViewController = [[SettingsViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    SettingsViewController *settingsViewController = [[SettingsViewController alloc] init];
     UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:settingsViewController];
-    if (IS_IPAD)
+    if (IS_IPAD) {
         aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    }
     aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
     
     [self.panelNavigationController presentViewController:aNavigationController animated:YES completion:nil];
@@ -345,7 +352,7 @@ NSLog(@"%@", self.sectionInfoArray);
 
 
 - (void)restorePreservedSelection {
-    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:@"kSelectedSidebarIndexDictionary"];
+    NSDictionary *dict = [[NSUserDefaults standardUserDefaults] dictionaryForKey:kSelectedSidebarIndexDictionary];
     if (!dict) {
         return [self selectFirstAvailableItem];
     }
@@ -356,7 +363,7 @@ NSLog(@"%@", self.sectionInfoArray);
 
     if (preservedIndexPath.section >= [self numberOfSectionsInTableView:self.tableView] || preservedIndexPath.row >= numRows) {
         // preserved index path is not valid anymore
-        [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"kSelectedSidebarIndexDictionary"];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:kSelectedSidebarIndexDictionary];
         [self selectFirstAvailableItem];
         return;
     }
@@ -396,7 +403,7 @@ NSLog(@"%@", self.sectionInfoArray);
         return;
     }
     self.hasUnseenNotes = NO;
-    NSIndexPath *notificationsIndexPath = [NSIndexPath indexPathForRow: 1 inSection:0];
+    NSIndexPath *notificationsIndexPath = [NSIndexPath indexPathForRow:1 inSection:0];
     if (notificationsIndexPath) {
         [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:notificationsIndexPath] withRowAnimation:UITableViewRowAnimationFade];
         [self.tableView selectRowAtIndexPath:notificationsIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
@@ -404,11 +411,9 @@ NSLog(@"%@", self.sectionInfoArray);
     }
 }
 
-- (void)viewAdmin:(UIControl *)sender
+- (void)viewAdminForBlog:(Blog*)blog
 {
     [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedViewAdmin forEvent:StatsEventAppClosed];
-
-    Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:(sender.tag - 1) inSection:0]];
     NSString *dashboardUrl = [blog.xmlrpc stringByReplacingOccurrencesOfString:@"xmlrpc.php" withString:@"wp-admin/"];
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:dashboardUrl]];
 }
@@ -581,6 +586,21 @@ NSLog(@"%@", self.sectionInfoArray);
     self.settingsButton.frame = frame;
 }
 
+- (void)setupSettingsButton {
+    self.settingsButton.backgroundColor = [UIColor clearColor];
+    [self.settingsButton setBackgroundImage:[[UIImage imageNamed:@"SidebarToolbarButton"] stretchableImageWithLeftCapWidth:14.0 topCapHeight:0.0] forState:UIControlStateNormal];
+    [self.settingsButton setBackgroundImage:[[UIImage imageNamed:@"SidebarToolbarButtonHighlighted"] stretchableImageWithLeftCapWidth:14.0 topCapHeight:0.0] forState:UIControlStateHighlighted];
+    [self.settingsButton setTitle:NSLocalizedString(@"Settings", @"App settings") forState:UIControlStateNormal ];
+    self.settingsButton.titleLabel.lineBreakMode = NSLineBreakByClipping;
+    self.settingsButton.titleLabel.adjustsFontSizeToFitWidth = YES;
+    self.settingsButton.titleLabel.minimumScaleFactor = 0.8;
+    self.settingsButton.titleEdgeInsets = UIEdgeInsetsMake (0.0f, 12.0f, 0.0f, 10.0f);
+    self.settingsButton.imageEdgeInsets = UIEdgeInsetsMake(0.0f, 8.0f, 0.0f, 0.0f);
+    self.settingsButton.titleLabel.shadowColor = [UIColor colorFromHex:0x000000 alpha:0.45f];
+    self.settingsButton.titleLabel.shadowOffset = CGSizeMake(0, -1.0f);
+    [self.settingsButton.titleLabel setTextAlignment:NSTextAlignmentCenter];
+}
+
 - (void)handleCameraPlusImages:(NSNotification *)notification {
     NSDictionary *userInfo = notification.userInfo;
     UIImage *image = [userInfo objectForKey:@"image"];
@@ -650,91 +670,47 @@ NSLog(@"%@", self.sectionInfoArray);
 
 - (UITableViewCell *)tableView:(UITableView *)aTableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"SideBarCell";
+    static NSString *const CellIdentifier = @"SideBarCell";
     SidebarTableViewCell *cell = (SidebarTableViewCell *)[aTableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[SidebarTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     [[cell.contentView subviews] makeObjectsPerformSelector:@selector(removeFromSuperview)];
     
-    NSString *title = nil;
-      
     if (indexPath.section == 0) {
-        if (indexPath.row == 0) {
-            title = NSLocalizedString(@"Reader", @"Menu item to view the Reader for WordPress.com blogs, a way to read and follow blogs that interests you");
-            cell.imageView.image = [UIImage imageNamed:@"sidebar_read"];
-        } else if(indexPath.row == 1){
-            title = NSLocalizedString(@"Notifications", @"Menu item to view Notifications for WordPress.com and Jetpack-enabled blogs");
+        
+        cell.textLabel.text = self.sidebarItems[0][indexPath.row][@"title"];
+        cell.imageView.image = [UIImage imageNamed:self.sidebarItems[0][indexPath.row][@"icon"]];
+        
+        if (indexPath.row == 1) {
+            // Override cell image for unseen notifications
             cell.imageView.image = [UIImage imageNamed:(self.hasUnseenNotes) ? @"sidebar_notifications_highlighted" : @"sidebar_notifications"];
         }
     } else {
+        
+        cell.textLabel.text = self.sidebarItems[1][indexPath.row][@"title"];
+        cell.imageView.image = [UIImage imageNamed:self.sidebarItems[1][indexPath.row][@"icon"]];
+        
         switch (indexPath.row) {
             case 0:
-            {
-                title = NSLocalizedString(@"Posts", @"Menu item to view posts");
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_posts"];
-                UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SIDEBAR_CELL_ACCESSORY_MAX_WIDTH, SIDEBAR_CELL_SECONDARY_HEIGHT)];
-                [addButton setImage:[UIImage imageNamed:@"sidebar_icon_add"] forState:UIControlStateNormal];
-                [addButton addTarget:self action:@selector(quickAddNewPost:) forControlEvents:UIControlEventTouchUpInside];
-                cell.accessoryView = addButton;
-
-                break;
-            }
             case 1:
             {
-                title = NSLocalizedString(@"Pages", @"Menu item to view pages");
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_pages"];
                 UIButton *addButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, SIDEBAR_CELL_ACCESSORY_MAX_WIDTH, SIDEBAR_CELL_SECONDARY_HEIGHT)];
                 [addButton setImage:[UIImage imageNamed:@"sidebar_icon_add"] forState:UIControlStateNormal];
                 [addButton addTarget:self action:@selector(quickAddNewPost:) forControlEvents:UIControlEventTouchUpInside];
                 cell.accessoryView = addButton;
-
+                
                 break;
             }
             case 2:
             {
-                title = NSLocalizedString(@"Comments", @"Menu item to view comments");
                 Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:(indexPath.section - 1) inSection:0]];
                 cell.blog = blog;
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_comments"];
                 break;
             }
-            case 3:
-            {
-                title = NSLocalizedString(@"Stats", @"Menu item to view Jetpack stats associated with a blog");
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_stats"];
-                break;
-            }
-            case 4:
-            {
-                title = NSLocalizedString(@"View Site", @"Menu item to view the site in a an in-app web view");
-                cell.imageView.image = [UIImage imageNamed:@"sidebar_view"];
-                break;
-            }
-            case 5:
-            {
-                
-                ViewAdminButton *viewAdminButton = [[ViewAdminButton alloc] initWithFrame:CGRectMake(0.0f, 0.0f, SIDEBAR_WIDTH, DEFAULT_ROW_HEIGHT)];
-
-                [viewAdminButton setTitle:NSLocalizedString(@"View Admin", @"Menu item to load the dashboard in a an in-app web view") forState:UIControlStateNormal];
-                [viewAdminButton setTag:indexPath.section];
-                [viewAdminButton addTarget:self action:@selector(viewAdmin:) forControlEvents:UIControlEventTouchUpInside];
-
-                [cell.contentView addSubview:viewAdminButton];
-                
-                title = nil;
-                cell.imageView.image = nil;
-                break;
-            }
-            default:
-            {
-                break;
-            }
+            default:;
         }
     }
-    
-    cell.textLabel.text = title;
-    cell.textLabel.backgroundColor = SIDEBAR_BGCOLOR;
     
     return cell;
 }
@@ -808,10 +784,6 @@ NSLog(@"%@", self.sectionInfoArray);
     
 }
 
-
--(void)sectionHeaderView:(SidebarSectionHeaderView*)sectionHeaderView sectionClosed:(SectionInfo *)sectionClosed {    
-}
-
 - (void)didReceiveUnseenNotesNotification {
     NSIndexPath *notificationsIndexPath = [NSIndexPath indexPathForRow: 1 inSection:0];
     if (notificationsIndexPath && [notificationsIndexPath compare:self.currentIndexPath] != NSOrderedSame) {
@@ -838,13 +810,13 @@ NSLog(@"%@", self.sectionInfoArray);
         if ([indexPath compare:self.currentIndexPath] == NSOrderedSame && !_changingContentForSelectedSection) {
             if (IS_IPAD) {
                 [self.panelNavigationController showSidebar];
-            } else {
-                if ( closingSidebar )
-                    [self.panelNavigationController closeSidebar];
+            } else if (closingSidebar) {
+                [self.panelNavigationController closeSidebar];
             }
             return;
         }
     }
+
     
     UIViewController *detailViewController = nil;
     if (indexPath.section == 0) { // Reader & Notifications
@@ -863,30 +835,24 @@ NSLog(@"%@", self.sectionInfoArray);
         }
     } else {
         Blog *blog = [self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:(indexPath.section - 1) inSection:0]];
-        NSString *blogURL = @"";
-        
         Class controllerClass = nil;
         //did user select the same item, but for a different blog? If so then just update the data in the view controller.
         switch (indexPath.row) {
             case 0:
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedPosts forEvent:StatsEventAppClosed];
-                
                  controllerClass = [PostsViewController class];
                 break;
             case 1:
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedPages forEvent:StatsEventAppClosed];
-                
                 controllerClass = [PagesViewController class];
                 break;
             case 2:
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedComments forEvent:StatsEventAppClosed];
-                
                 controllerClass = [CommentsViewController class];
                 break;
             case 3:
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedStats forEvent:StatsEventAppClosed];
-                
-                controllerClass =  [StatsWebViewController class];//IS_IPAD ? [StatsWebViewController class] : [StatsTableViewController class];
+                controllerClass =  [StatsWebViewController class];
                 break;
             case 4 :
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedViewSite forEvent:StatsEventAppClosed];
@@ -910,21 +876,17 @@ NSLog(@"%@", self.sectionInfoArray);
                         [self.panelNavigationController closeSidebar];
                     }
                 } else {
-                    WPWebViewController *webViewController = [[WPWebViewController alloc] init];
-                    [webViewController setUrl:[NSURL URLWithString:blogURL]];
-                    if( [blog isPrivate] ) {
-                        [webViewController setUsername:blog.username];
-                        [webViewController setPassword:blog.password];
-                        [webViewController setWpLoginURL:[NSURL URLWithString:blog.loginUrl]];
-                    }
+                    WPWebViewController *webViewController = [[WPWebViewController alloc] initWithBlog:blog];
                     [self.panelNavigationController setDetailViewController:webViewController closingSidebar:closingSidebar];
                 }
+                
                 if (IS_IPAD) {
 //                    [SoundUtil playSwipeSound];
                 }
                 return;
 
             case 5:
+                [self viewAdminForBlog:blog];
                 break;
             default:
                 controllerClass = [PostsViewController class];
@@ -944,9 +906,8 @@ NSLog(@"%@", self.sectionInfoArray);
             [self.panelNavigationController.detailViewController performSelector:@selector(setBlog:) withObject:blog];
             if (IS_IPAD) {
                 [self.panelNavigationController showSidebar];
-            } else {
-                if ( closingSidebar )
-                    [self.panelNavigationController closeSidebar];
+            } else if (closingSidebar) {
+                [self.panelNavigationController closeSidebar];
             }
             [self.panelNavigationController popToRootViewControllerAnimated:NO];
             return;
@@ -959,10 +920,10 @@ NSLog(@"%@", self.sectionInfoArray);
     }
 
     self.currentIndexPath = indexPath;
-
-    NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithInteger:indexPath.row], @"row", [NSNumber numberWithInteger:indexPath.section], @"section", nil];
-    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:@"kSelectedSidebarIndexDictionary"];
-    [NSUserDefaults resetStandardUserDefaults];
+    NSDictionary *dict = @{@"row": @(indexPath.row), @"section":@(indexPath.section)};
+    
+    [[NSUserDefaults standardUserDefaults] setObject:dict forKey:kSelectedSidebarIndexDictionary];
+    [[NSUserDefaults standardUserDefaults] synchronize];
 
     if (detailViewController) {
         [self.panelNavigationController setDetailViewController:detailViewController closingSidebar:closingSidebar];
@@ -1058,7 +1019,7 @@ NSLog(@"%@", self.sectionInfoArray);
     switch (type) {
         case NSFetchedResultsChangeInsert:
         {
-            NSLog(@"Inserting row %d: %@", newIndexPath.row, anObject);
+            WPLog(@"Inserting row %d: %@", newIndexPath.row, anObject);
             NSIndexPath *openIndexPath = [self.tableView indexPathForSelectedRow];
             if (openIndexPath.section == (newIndexPath.row +1)) {
                 // We're swapping the content for the currently selected section and need to update accordingly.
@@ -1071,7 +1032,7 @@ NSLog(@"%@", self.sectionInfoArray);
         }
         case NSFetchedResultsChangeDelete:
         {
-            NSLog(@"Deleting row %d: %@", indexPath.row, anObject);
+            WPLog(@"Deleting row %d: %@", indexPath.row, anObject);
             NSIndexPath *openIndexPath = [self.tableView indexPathForSelectedRow];
             if (openIndexPath.section == (newIndexPath.row +1)) {
                 // We're swapping the content for the currently selected section and need to update accordingly.
@@ -1084,7 +1045,6 @@ NSLog(@"%@", self.sectionInfoArray);
             }
             [self.sectionInfoArray removeObjectAtIndex:indexPath.row];
             [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:indexPath.row + 1] withRowAnimation:UITableViewRowAnimationNone];
-            //[self showWelcomeScreenIfNeeded];
             break;
         }
     }

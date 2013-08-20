@@ -12,7 +12,8 @@
 #import "WPActivityDefaults.h"
 #import "NSString+Helpers.h"
 #import "WPCookie.h"
-#import "PanelNavigationController.h"
+#import "Blog.h"
+
 
 @class WPReaderDetailViewController;
 
@@ -24,6 +25,30 @@
 @end
 
 @implementation WPWebViewController
+
+- (id)initForViewBlogSiteWithBlog:(Blog *)blog {
+    self = [super init];
+    if (self) {
+        NSString *blogURL = blog.url;
+        
+        // Blog keeps the url property with http now, so this is unnecessary if there is a migration/in the future.
+        if (![blogURL hasPrefix:@"http"]) {
+            blogURL = [NSString stringWithFormat:@"http://%@", blogURL];
+            
+            // TODO When is this possible?
+        } else if ([blog isWPcom] && [blog.url rangeOfString:@"wordpress.com"].location == NSNotFound) {
+            blogURL = [blog.xmlrpc stringByReplacingOccurrencesOfString:@"xmlrpc.php" withString:@""];
+        }
+        
+        self.url = [NSURL URLWithString:blogURL]; // TODO may not have HTTP -- does it matter?
+        if ([blog isPrivate]) {
+            self.username = blog.username;
+            self.password = blog.password;
+            self.wpLoginURL = [NSURL URLWithString:blog.loginUrl];
+        }
+    }
+    return self;
+}
 
 - (void)dealloc
 {
