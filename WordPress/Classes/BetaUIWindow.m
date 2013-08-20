@@ -1,13 +1,13 @@
-    //
-//  BetaUIWindow.m
-//  WordPress
-//
-//  Created by Dan Roundhill on 2/10/11.
-//  Copyright 2011 WordPress. All rights reserved.
-//
+/*
+ * BetaUIWindow.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "BetaUIWindow.h"
-#import "PanelNavigationController.h"
 #import "WordPressAppDelegate.h"
 
 #define kStatusBarHeight 20
@@ -15,8 +15,6 @@
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 
 @implementation BetaUIWindow
-
-@synthesize betaFeedbackViewController;
 
 - (id)initWithFrame:(CGRect)frame {
     if ((self = [super initWithFrame:frame])) {
@@ -42,12 +40,12 @@
 }
 
 -(void)showBetaFeedbackForm:(id)sender {
-	betaFeedbackViewController = [[BetaFeedbackViewController alloc] init];
+	self.betaFeedbackViewController = [[BetaFeedbackViewController alloc] init];
 	WordPressAppDelegate *appDelegate = (WordPressAppDelegate *)[[UIApplication sharedApplication] delegate];
 	
-    betaFeedbackViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    betaFeedbackViewController.modalPresentationStyle = UIModalPresentationFormSheet;
-    [appDelegate.panelNavigationController presentViewController:betaFeedbackViewController animated:YES completion:nil];
+    self.betaFeedbackViewController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+    self.betaFeedbackViewController.modalPresentationStyle = UIModalPresentationFormSheet;
+    [appDelegate.panelNavigationController presentViewController:self.betaFeedbackViewController animated:YES completion:nil];
 }
 
 - (void)didChangeStatusBarFrame:(NSNotification *)notification {

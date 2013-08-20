@@ -8,7 +8,7 @@
 
 #import "WPImageViewController.h"
 #import "WordPressAppDelegate.h"
-#import "PanelNavigationController.h"
+
 
 @interface WPImageViewController ()<UIScrollViewDelegate>
 

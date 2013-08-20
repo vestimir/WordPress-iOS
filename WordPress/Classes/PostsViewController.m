@@ -1,9 +1,18 @@
+/*
+ * PostsViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "PostsViewController.h"
 #import "EditPostViewController.h"
 #import "PostTableViewCell.h"
 #import "WordPressAppDelegate.h"
 #import "Reachability.h"
+#import "Post.h"
 
 #define TAG_OFFSET 1010
 
@@ -107,15 +116,6 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     self.panelNavigationController.delegate = nil;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-//    WordPressAppDelegate *delegate = (WordPressAppDelegate*)[[UIApplication sharedApplication] delegate];
-
-//    if ([delegate isAlertRunning] == YES)
-//        return NO;
-    
-    return [super shouldAutorotateToInterfaceOrientation:interfaceOrientation];
 }
 
 - (NSString *)statsPropertyForViewOpening

@@ -1,18 +1,16 @@
-//
-//  BetaUIWindow.h
-//  WordPress
-//
-//  Created by Dan Roundhill on 2/10/11.
-//  Copyright 2011 WordPress. All rights reserved.
-//
+/*
+ * BetaUIWindow.h
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <UIKit/UIKit.h>
 #import "BetaFeedbackViewController.h"
 
-
-@interface BetaUIWindow : UIWindow {
-	BetaFeedbackViewController *betaFeedbackViewController;
-}
+@interface BetaUIWindow : UIWindow
 
 @property (nonatomic, strong) BetaFeedbackViewController *betaFeedbackViewController;
 

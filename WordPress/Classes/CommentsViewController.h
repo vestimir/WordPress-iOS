@@ -8,7 +8,7 @@
 #import "WPTableViewController.h"
 #import "Blog.h"
 #import "ReplyToCommentViewController.h"
-#import "PanelNavigationController.h"
+
 
 @protocol CommentsTableViewDelegate<UITableViewDelegate>
 - (void)tableView:(UITableView *)tableView didCheckRowAtIndexPath:(NSIndexPath *)indexPath;

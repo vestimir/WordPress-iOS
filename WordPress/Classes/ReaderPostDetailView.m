@@ -1,10 +1,11 @@
-//
-//  ReaderPostDetailView.m
-//  WordPress
-//
-//  Created by Eric J on 5/24/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * ReaderPostDetailView.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "ReaderPostDetailView.h"
 #import <DTCoreText/DTCoreText.h>
@@ -20,7 +21,6 @@
 #import "WPWebVideoViewController.h"
 #import "UIImageView+Gravatar.h"
 #import "UILabel+SuggestSize.h"
-#import "PanelNavigationController.h"
 
 #define ContentTextViewYOffset -20
 

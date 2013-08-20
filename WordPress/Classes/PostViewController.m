@@ -1,16 +1,17 @@
-//
-//  PostViewController.m
-//  WordPress
-//
-//  Created by Jorge Bernal on 12/30/10.
-//  Copyright 2010 WordPress. All rights reserved.
-//
+/*
+ * PostViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "PostViewController.h"
 #import "PostPreviewViewController.h"
 #import "NSString+XMLExtensions.h"
 #import "PanelNavigationConstants.h"
-#import "PanelNavigationController.h"
+#import "Post.h"
 
 static NSString *const KVO_POST_CONTENT = @"content";
 

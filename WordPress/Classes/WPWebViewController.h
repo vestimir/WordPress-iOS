@@ -39,7 +39,7 @@
 @property (nonatomic, assign) BOOL shouldScrollToBottom;
 @property (nonatomic, assign) BOOL isLoading, needsLogin, hasLoadedContent;
 
-- (id)initWithBlog:(Blog*)blog;
+- (id)initForViewBlogSiteWithBlog:(Blog*)blog;
 
 - (void) showCloseButton;
 - (IBAction) showLinkOptions;

@@ -1,8 +1,11 @@
-//
-//  StatsWebViewController.m
-//
-//  Created by Eric Johnson on 5/31/12.
-//
+/*
+ * StatsWebViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "StatsWebViewController.h"
 #import "Blog+Jetpack.h"
@@ -15,7 +18,6 @@
 #import "EditSiteViewController.h"
 #import "ReachabilityUtils.h"
 #import "NSString+Helpers.h"
-#import "PanelNavigationController.h"
 #import "WPAccount.h"
 
 @interface StatsWebViewController () <SettingsViewControllerDelegate> {
@@ -41,7 +43,6 @@
 
 @implementation StatsWebViewController
 
-@synthesize blog;
 @synthesize authRequest;
 @synthesize authed = authed;
 
@@ -115,7 +116,7 @@ static NSString *_lastAuthedName = nil;
 - (void)showAuthFailed {
     WPLog(@"Auth Failed, showing login screen");
     [self showBlogSettings];
-    if ([blog isWPcom]) {
+    if ([self.blog isWPcom]) {
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Authentication Error", @"")
                                                             message:NSLocalizedString(@"Invalid username/password. Please update your credentials try again.", @"")
                                                            delegate:nil
@@ -138,7 +139,7 @@ static NSString *_lastAuthedName = nil;
 
     UINavigationController *navController = nil;
     
-    if ([blog isWPcom]) {
+    if ([self.blog isWPcom]) {
         EditSiteViewController *controller = [[EditSiteViewController alloc] initWithNibName:nil bundle:nil];
         controller.delegate = self;
         controller.isCancellable = YES;
@@ -148,7 +149,7 @@ static NSString *_lastAuthedName = nil;
         navController.modalPresentationStyle = UIModalPresentationFormSheet;
         [self.panelNavigationController presentViewController:navController animated:YES completion:nil];
     } else {
-        JetpackSettingsViewController *controller = [[JetpackSettingsViewController alloc] initWithBlog:blog];
+        JetpackSettingsViewController *controller = [[JetpackSettingsViewController alloc] initWithBlog:self.blog];
         controller.ignoreNavigationController = YES;
         __weak JetpackSettingsViewController *safeController = controller;
         [controller setCompletionBlock:^(BOOL didAuthenticate) {
@@ -166,15 +167,14 @@ static NSString *_lastAuthedName = nil;
     }
 }
 
-
-- (void)setBlog:(Blog *)aBlog {
-    if ([blog isEqual:aBlog]) {
+- (void)setBlog:(Blog *)blog {
+    if ([_blog isEqual:blog]) {
         return;
     }
     
-    blog = aBlog;
-    if (blog) {
-        [FileLogger log:@"Loading Stats for the following blog: %@", [blog url]];
+    _blog = blog;
+    if (_blog) {
+        [FileLogger log:@"Loading Stats for the following blog: %@", [_blog url]];
 
         if(![ReachabilityUtils sharedInstance].connectionAvailable) {
             [self.webView hideRefreshingState];
@@ -195,7 +195,7 @@ static NSString *_lastAuthedName = nil;
 - (void)initStats {
     [FileLogger log:@"%@ %@", self, NSStringFromSelector(_cmd)];
     
-	if ([blog isWPcom]) {
+	if ([self.blog isWPcom]) {
 		[self loadStats];
 		return;
 	}
@@ -203,13 +203,13 @@ static NSString *_lastAuthedName = nil;
 	// Looking for a self-hosted blog with a jetpackClientId and good crednetials.
 	BOOL prompt = NO;
 	
-	if (![blog jetpackBlogID]) {
+	if (![self.blog jetpackBlogID]) {
 		// needs latest jetpack
 		prompt = YES;
 		
 	} else {
 		// Check for credentials.
-		if (![blog.jetpackUsername length] || ![blog.jetpackPassword length]) {
+		if (![self.blog.jetpackUsername length] || ![self.blog.jetpackPassword length]) {
 			prompt = YES;
 		}
 	}
@@ -255,14 +255,14 @@ static NSString *_lastAuthedName = nil;
     
     NSString *username = @"";
     NSString *password = @"";
-    if ([blog isWPcom]) {
+    if ([self.blog isWPcom]) {
         //use set username/pw for wpcom blogs
-        username = blog.username;
-        password = blog.password;
+        username = self.blog.username;
+        password = self.blog.password;
         
     } else {
-        username = blog.jetpackUsername;
-        password = blog.jetpackPassword;
+        username = self.blog.jetpackUsername;
+        password = self.blog.jetpackPassword;
     }
     
     // Skip the auth call to reduce loadtime if its the same username as before.
@@ -347,9 +347,9 @@ static NSString *_lastAuthedName = nil;
         return;
     }
     
-	NSNumber *blogID = [blog blogID];
-	if(![blog isWPcom]) {
-		blogID = [blog jetpackBlogID];
+	NSNumber *blogID = [self.blog blogID];
+	if(![self.blog isWPcom]) {
+		blogID = [self.blog jetpackBlogID];
 	}
 	
     NSString *pathStr = [NSString stringWithFormat:@"http://wordpress.com/?no-chrome#!/my-stats/?blog=%@&unit=1", blogID];

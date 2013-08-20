@@ -10,7 +10,6 @@
 #import "EGORefreshTableHeaderView.h" 
 #import "WordPressAppDelegate.h"
 #import "ReachabilityUtils.h"
-#import "PanelNavigationController.h"
 #import "WPWebViewController.h"
 #import "EditSiteViewController.h"
 #import "HelpViewController.h"

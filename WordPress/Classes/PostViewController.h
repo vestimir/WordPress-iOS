@@ -1,14 +1,16 @@
-//
-//  PostViewController.h
-//  WordPress
-//
-//  Created by Jorge Bernal on 12/30/10.
-//  Copyright 2010 WordPress. All rights reserved.
-//
+/*
+ * PostViewController.h
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <Foundation/Foundation.h>
 #import "EditPostViewController.h"
-#import "Post.h"
+
+@class Post;
 
 @interface PostViewController : UIViewController <UIGestureRecognizerDelegate, UITextFieldDelegate, UITextViewDelegate, UIWebViewDelegate, UIActionSheetDelegate> {
     BOOL isShowingActionSheet;

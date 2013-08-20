@@ -855,9 +855,10 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
                 controllerClass =  [StatsWebViewController class];
                 break;
             case 4 :
+            {
                 [WPMobileStats incrementProperty:StatsPropertySidebarSiteClickedViewSite forEvent:StatsEventAppClosed];
                 
-                blogURL = blog.url;
+                NSString *blogURL = blog.url;
                 if (![blogURL hasPrefix:@"http"]) {
                     blogURL = [NSString stringWithFormat:@"http://%@", blogURL];
                 } else if ([blog isWPcom] && [blog.url rangeOfString:@"wordpress.com"].location == NSNotFound) {
@@ -876,7 +877,7 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
                         [self.panelNavigationController closeSidebar];
                     }
                 } else {
-                    WPWebViewController *webViewController = [[WPWebViewController alloc] initWithBlog:blog];
+                    WPWebViewController *webViewController = [[WPWebViewController alloc] initForViewBlogSiteWithBlog:blog];
                     [self.panelNavigationController setDetailViewController:webViewController closingSidebar:closingSidebar];
                 }
                 
@@ -884,7 +885,7 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
 //                    [SoundUtil playSwipeSound];
                 }
                 return;
-
+            }
             case 5:
                 [self viewAdminForBlog:blog];
                 break;

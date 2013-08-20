@@ -8,7 +8,7 @@
 #import "WordPressAppDelegate.h"
 #import "WPWebViewController.h"
 #import "PanelNavigationConstants.h"
-#import "PanelNavigationController.h"
+
 
 @interface WPChromelessWebViewController ()
 @property (nonatomic, weak) WPWebView *webView;

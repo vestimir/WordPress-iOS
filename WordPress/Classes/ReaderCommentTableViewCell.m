@@ -1,17 +1,17 @@
-//
-//  ReaderCommentTableViewCell.m
-//  WordPress
-//
-//  Created by Eric J on 5/7/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * ReaderCommentTableViewCell.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "ReaderCommentTableViewCell.h"
 #import <DTCoreText/DTCoreText.h>
 #import "UIImageView+Gravatar.h"
 #import "WordPressAppDelegate.h"
 #import "WPWebViewController.h"
-#import "PanelNavigationController.h"
 
 #define RCTVCVerticalPadding 5.0f
 #define RCTVCIndentationWidth 10.0f

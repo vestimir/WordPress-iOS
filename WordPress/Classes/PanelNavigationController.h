@@ -1,10 +1,11 @@
-//
-//  PanelNavigationController.h
-//  WordPress
-//
-//  Created by Jorge Bernal on 5/21/12.
-//  Copyright (c) 2012 WordPress. All rights reserved.
-//
+/*
+ * PanelNavigationController.h
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <UIKit/UIKit.h>
 

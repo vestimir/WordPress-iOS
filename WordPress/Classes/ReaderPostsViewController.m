@@ -1,14 +1,14 @@
-//
-//  ReaderPostsViewController.m
-//  WordPress
-//
-//  Created by Eric J on 3/21/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * ReaderPostsViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import <DTCoreText/DTCoreText.h>
 #import "DTCoreTextFontDescriptor.h"
-
 #import "ReaderPostsViewController.h"
 #import "ReaderPostTableViewCell.h"
 #import "ReaderTopicsViewController.h"

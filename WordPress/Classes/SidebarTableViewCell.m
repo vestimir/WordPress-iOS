@@ -12,7 +12,7 @@
 
 - (void)receivedCommentsChangedNotification:(NSNotification*)aNotification;
 
-@end;
+@end
 
 @implementation SidebarTableViewCell
 
@@ -41,8 +41,7 @@
     blog = value;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
-    if ( blog ) { 
-        //do other stuff here
+    if ( blog ) {
         int numberOfPendingComments = [blog numberOfPendingComments];
         if( numberOfPendingComments > 0 ) {
             UIImage *img = [UIImage imageNamed:@"sidebar_comment_bubble"];
@@ -63,6 +62,8 @@
 	[super prepareForReuse];
     self.blog = nil;
     self.accessoryView = nil;
+    self.textLabel.text = nil;
+    self.imageView.image = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 

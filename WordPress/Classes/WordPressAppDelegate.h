@@ -7,7 +7,7 @@
  * Some rights reserved. See license.txt
  */
 
-#import "PanelNavigationController.h"
+
 
 @interface WordPressAppDelegate : NSObject <UIApplicationDelegate>
 

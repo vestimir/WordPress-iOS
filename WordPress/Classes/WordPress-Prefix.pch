@@ -20,15 +20,15 @@
     // 3rd Party
     #import <AFNetworking/AFNetworking.h>
     #import <NSObject+SafeExpectations.h>
-    //#import "NSObject+BlockObservation.h"
 
     // Project-specific
     #import "Constants.h"
     #import "NSString+Util.h"
     #import "FileLogger.h"
-    #import "WPError.h"
+    #import "UIAlertView+WPError.h"
+    #import "UIAlertView+Singular.h"
     #import "UIColor+Hexadecimal.h"
-    //#import "PanelNavigationController.h"
+    #import "PanelNavigationController.h"
     #import "WPMobileStats.h"
 
 

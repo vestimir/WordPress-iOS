@@ -1,16 +1,16 @@
-//
-//  ReaderUsersBlogsViewController.m
-//  WordPress
-//
-//  Created by Eric J on 6/6/13.
-//  Copyright (c) 2013 WordPress. All rights reserved.
-//
+/*
+ * ReaderUsersBlogsViewController.m
+ *
+ * Copyright (c) 2013 WordPress. All rights reserved.
+ *
+ * Licensed under GNU General Public License 2.0.
+ * Some rights reserved. See license.txt
+ */
 
 #import "ReaderUsersBlogsViewController.h"
 #import "AddUsersBlogCell.h"
 #import "WordPressAppDelegate.h"
 #import "WPNUXUtility.h"
-#import "PanelNavigationController.h"
 
 @interface ReaderUsersBlogsViewController ()<UITableViewDataSource, UITableViewDelegate>
 
