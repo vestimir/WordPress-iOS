@@ -16,7 +16,6 @@
 #import "UIImage+Resize.h"
 #import "NSURL+IDN.h"
 #import "NSString+XMLExtensions.h"
-#import "WPError.h"
 
 @interface Blog (PrivateMethods)
 - (WPXMLRPCRequestOperation *)operationForOptionsWithSuccess:(void (^)())success failure:(void (^)(NSError *error))failure;
@@ -575,6 +574,8 @@
         float version = [[self version] floatValue];
         if (version < [minimumVersion floatValue]) {
             if (self.lastUpdateWarning == nil || [self.lastUpdateWarning floatValue] < [minimumVersion floatValue]) {
+                [WordPressAppDelegate showHelpAlertWithTitle:NSLocalizedString(@"WordPress version too old", @"")
+                                            message:[NSString stringWithFormat:NSLocalizedString(@"The site at %@ uses WordPress %@. We recommend to update to the latest version, or at least %@", @""), [self hostname], [self version], minimumVersion]];
 //                [[WordPressAppDelegate sharedWordPressApplicationDelegate] showAlertWithTitle:NSLocalizedString(@"WordPress version too old", @"")
 //                                                                      message:[NSString stringWithFormat:NSLocalizedString(@"The site at %@ uses WordPress %@. We recommend to update to the latest version, or at least %@", @""), [self hostname], [self version], minimumVersion]];
                 self.lastUpdateWarning = minimumVersion;

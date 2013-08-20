@@ -17,4 +17,6 @@
 
 + (WordPressAppDelegate *)sharedWordPressApplicationDelegate;
 
++ (void)showHelpAlertWithTitle:(NSString*)title message:(NSString*)message;
+
 @end

@@ -8,10 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WPError : NSObject
+@interface UIAlertView (WPError) <UIAlertViewDelegate>
 
 + (void)showAlertWithError:(NSError *)error title:(NSString *)title;
-
 + (void)showAlertWithError:(NSError *)error;
+//+ (void)showHelpAlertWithTitle:(NSString *)title message:(NSString *)message;
 
 @end

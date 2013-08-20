@@ -28,6 +28,7 @@
 #import <UIDeviceHardware.h>
 #import "UIDevice+WordPressIdentifier.h"
 #import "NSString+Helpers.h"
+#import "HelpViewController.h"
 
 @interface WordPressAppDelegate () <CrashlyticsDelegate>
 
@@ -238,43 +239,35 @@
     [NotificationsManager syncPushNotificationSettings];
 }
 
-- (void)application:(UIApplication *)application didChangeStatusBarFrame:(CGRect)oldStatusBarFrame {
-	//The guide says: After calling this method, the application also posts a UIApplicationDidChangeStatusBarFrameNotification notification to give interested objects a chance to respond to the change.
-	//but seems that the notification is never sent.
-	//we are using a custom notification
-    
-    // TODO Remove and remove constant as well. NOT USED
-	[[NSNotificationCenter defaultCenter] postNotificationName:DidChangeStatusBarFrame object:nil];
-}
-
-
 #pragma mark -
 #pragma mark Public Methods
 
-//- (void)showAlertWithTitle:(NSString *)title message:(NSString *)message {
-//	WPLog(@"Showing alert with title: %@", message);
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
-//                                                    message:message
-//                                                   delegate:self
-//                                          cancelButtonTitle:NSLocalizedString(@"Need Help?", @"'Need help?' button label, links off to the WP for iOS FAQ.")
-//                                          otherButtonTitles:NSLocalizedString(@"OK", @"OK button label."), nil];
-//    [alert show];
-//}
-//
-//- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-//    HelpViewController *helpViewController = [[HelpViewController alloc] init];
-//    UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:helpViewController];
-//    if (IS_IPAD) {
-//        aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-//        aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-//    }
-//
-//    UIViewController *presenter = self.panelNavigationController;
-//    if (presenter.presentedViewController) {
-//        presenter = presenter.presentedViewController;
-//    }
-//    [presenter presentViewController:aNavigationController animated:YES completion:nil];
-//}
++ (void)showHelpAlertWithTitle:(NSString *)title message:(NSString *)message {
+	WPLog(@"Showing alert with title: %@", message);
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+                                                    message:message
+                                                   delegate:[WordPressAppDelegate sharedWordPressApplicationDelegate]
+                                          cancelButtonTitle:NSLocalizedString(@"OK", @"OK button label.")
+                                          otherButtonTitles:NSLocalizedString(@"Need Help?", @"'Need help?' button label, links off to the WP for iOS FAQ."), nil];
+    [alert show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+    if (buttonIndex == 1) {
+        HelpViewController *helpViewController = [[HelpViewController alloc] init];
+        UINavigationController *aNavigationController = [[UINavigationController alloc] initWithRootViewController:helpViewController];
+        if (IS_IPAD) {
+            aNavigationController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
+            aNavigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
+        UIViewController *presenter = self.panelNavigationController;
+        if (presenter.presentedViewController) {
+            presenter = presenter.presentedViewController;
+        }
+        [presenter presentViewController:aNavigationController animated:YES completion:nil];
+    }
+}
 
 //- (void)showNotificationErrorAlert:(NSNotification *)notification {
 //	NSString *cleanedErrorMsg = nil;

@@ -534,7 +534,6 @@
 		C5E3D32D17BE84D300981839 /* toolbarDelHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FA17BE84D300981839 /* toolbarDelHighlighted@2x.png */; };
 		C5E3D32E17BE84D300981839 /* toolbarDeliPad.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FB17BE84D300981839 /* toolbarDeliPad.png */; };
 		C5E3D32F17BE84D300981839 /* toolbarDeliPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FC17BE84D300981839 /* toolbarDeliPad@2x.png */; };
-		C5E3D33017BE84D300981839 /* toolbarItalic.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FD17BE84D300981839 /* toolbarItalic.png */; };
 		C5E3D33117BE84D300981839 /* toolbarItalic@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FE17BE84D300981839 /* toolbarItalic@2x.png */; };
 		C5E3D33217BE84D300981839 /* toolbarItalicHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FF17BE84D300981839 /* toolbarItalicHighlighted.png */; };
 		C5E3D33317BE84D300981839 /* toolbarItalicHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D10017BE84D300981839 /* toolbarItalicHighlighted@2x.png */; };
@@ -744,7 +743,6 @@
 		C5E3D56D17C27B8200981839 /* UpdateChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D48B17C27B8200981839 /* UpdateChecker.m */; };
 		C5E3D56E17C27B8200981839 /* UserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D48D17C27B8200981839 /* UserAgent.m */; };
 		C5E3D56F17C27B8200981839 /* VerticalAlignLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D48F17C27B8200981839 /* VerticalAlignLabel.m */; };
-		C5E3D57017C27B8200981839 /* ViewAdminButton.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D49117C27B8200981839 /* ViewAdminButton.m */; };
 		C5E3D57217C27B8200981839 /* WordPress-11-12.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D49317C27B8200981839 /* WordPress-11-12.xcmappingmodel */; };
 		C5E3D57317C27B8200981839 /* WordPress.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D49517C27B8200981839 /* WordPress.xcdatamodeld */; };
 		C5E3D57417C27B8200981839 /* WordPressAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4A317C27B8200981839 /* WordPressAppDelegate.m */; };
@@ -759,7 +757,7 @@
 		C5E3D57D17C27B8200981839 /* WPComLanguages.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4B517C27B8200981839 /* WPComLanguages.m */; };
 		C5E3D57E17C27B8200981839 /* WPcomLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4B717C27B8200981839 /* WPcomLoginViewController.m */; };
 		C5E3D57F17C27B8200981839 /* WPCookie.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4B917C27B8200981839 /* WPCookie.m */; };
-		C5E3D58017C27B8200981839 /* WPError.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4BB17C27B8200981839 /* WPError.m */; };
+		C5E3D58017C27B8200981839 /* UIAlertView+WPError.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4BB17C27B8200981839 /* UIAlertView+WPError.m */; };
 		C5E3D58117C27B8200981839 /* WPFriendFinderNudgeView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4BD17C27B8200981839 /* WPFriendFinderNudgeView.m */; };
 		C5E3D58317C27B8200981839 /* WPImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4C117C27B8200981839 /* WPImageSource.m */; };
 		C5E3D58417C27B8200981839 /* WPImageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D4C317C27B8200981839 /* WPImageViewController.m */; };
@@ -793,6 +791,8 @@
 		C5E3D5C517C296B000981839 /* BetaFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5C317C296B000981839 /* BetaFeedbackViewController.m */; };
 		C5E3D5CC17C2AABF00981839 /* CreateWPComAccountViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5CB17C2AABF00981839 /* CreateWPComAccountViewController.m */; };
 		C5E3D5CF17C2C26D00981839 /* UIAlertView+Singular.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */; };
+		C5E3D5D017C3C78600981839 /* toolbarItalic.png in Resources */ = {isa = PBXBuildFile; fileRef = C5E3D0FD17BE84D300981839 /* toolbarItalic.png */; };
+		C5E3D5D317C3DE7A00981839 /* UIColor+WordPress.m in Sources */ = {isa = PBXBuildFile; fileRef = C5E3D5D217C3DE7A00981839 /* UIColor+WordPress.m */; };
 		C5FB8B9A179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */; };
 		C5FB8B9B179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */; };
 		C5FB8E3517A1BEF30064BB92 /* EGORefreshTableHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = C5FB8E3417A1BEF30064BB92 /* EGORefreshTableHeaderView.m */; };
@@ -1722,8 +1722,6 @@
 		C5E3D48D17C27B8200981839 /* UserAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserAgent.m; sourceTree = "<group>"; };
 		C5E3D48E17C27B8200981839 /* VerticalAlignLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VerticalAlignLabel.h; sourceTree = "<group>"; };
 		C5E3D48F17C27B8200981839 /* VerticalAlignLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VerticalAlignLabel.m; sourceTree = "<group>"; };
-		C5E3D49017C27B8200981839 /* ViewAdminButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewAdminButton.h; sourceTree = "<group>"; };
-		C5E3D49117C27B8200981839 /* ViewAdminButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewAdminButton.m; sourceTree = "<group>"; };
 		C5E3D49317C27B8200981839 /* WordPress-11-12.xcmappingmodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcmappingmodel; path = "WordPress-11-12.xcmappingmodel"; sourceTree = "<group>"; };
 		C5E3D49417C27B8200981839 /* WordPress-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "WordPress-Prefix.pch"; path = "Classes/WordPress-Prefix.pch"; sourceTree = "<group>"; };
 		C5E3D49617C27B8200981839 /* WordPress 10.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "WordPress 10.xcdatamodel"; sourceTree = "<group>"; };
@@ -1762,8 +1760,8 @@
 		C5E3D4B717C27B8200981839 /* WPcomLoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPcomLoginViewController.m; sourceTree = "<group>"; };
 		C5E3D4B817C27B8200981839 /* WPCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPCookie.h; sourceTree = "<group>"; };
 		C5E3D4B917C27B8200981839 /* WPCookie.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPCookie.m; sourceTree = "<group>"; };
-		C5E3D4BA17C27B8200981839 /* WPError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPError.h; sourceTree = "<group>"; };
-		C5E3D4BB17C27B8200981839 /* WPError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPError.m; sourceTree = "<group>"; };
+		C5E3D4BA17C27B8200981839 /* UIAlertView+WPError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+WPError.h"; sourceTree = "<group>"; };
+		C5E3D4BB17C27B8200981839 /* UIAlertView+WPError.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+WPError.m"; sourceTree = "<group>"; };
 		C5E3D4BC17C27B8200981839 /* WPFriendFinderNudgeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPFriendFinderNudgeView.h; sourceTree = "<group>"; };
 		C5E3D4BD17C27B8200981839 /* WPFriendFinderNudgeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WPFriendFinderNudgeView.m; sourceTree = "<group>"; };
 		C5E3D4C017C27B8200981839 /* WPImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WPImageSource.h; sourceTree = "<group>"; };
@@ -1829,6 +1827,8 @@
 		C5E3D5CB17C2AABF00981839 /* CreateWPComAccountViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateWPComAccountViewController.m; sourceTree = "<group>"; };
 		C5E3D5CD17C2C26C00981839 /* UIAlertView+Singular.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIAlertView+Singular.h"; sourceTree = "<group>"; };
 		C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIAlertView+Singular.m"; sourceTree = "<group>"; };
+		C5E3D5D117C3DE7A00981839 /* UIColor+WordPress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIColor+WordPress.h"; sourceTree = "<group>"; };
+		C5E3D5D217C3DE7A00981839 /* UIColor+WordPress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIColor+WordPress.m"; sourceTree = "<group>"; };
 		C5FB8B98179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = UISegmentBarBlackButtonHighlighted.png; sourceTree = "<group>"; };
 		C5FB8B99179DA51A0064BB92 /* UISegmentBarBlackButtonHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "UISegmentBarBlackButtonHighlighted@2x.png"; sourceTree = "<group>"; };
 		C5FB8E3317A1BEF30064BB92 /* EGORefreshTableHeaderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EGORefreshTableHeaderView.h; sourceTree = "<group>"; };
@@ -2736,8 +2736,6 @@
 				C5E3D45D17C27B8200981839 /* SidebarSectionHeaderView.m */,
 				C5E3D48E17C27B8200981839 /* VerticalAlignLabel.h */,
 				C5E3D48F17C27B8200981839 /* VerticalAlignLabel.m */,
-				C5E3D49017C27B8200981839 /* ViewAdminButton.h */,
-				C5E3D49117C27B8200981839 /* ViewAdminButton.m */,
 				C5E3D4BC17C27B8200981839 /* WPFriendFinderNudgeView.h */,
 				C5E3D4BD17C27B8200981839 /* WPFriendFinderNudgeView.m */,
 				C5E3D4C417C27B8200981839 /* WPInfoView.h */,
@@ -2823,6 +2821,10 @@
 				C5E3D40417C27B8100981839 /* NSString+XMLExtensions.m */,
 				C5E3D40517C27B8100981839 /* NSURL+Util.h */,
 				C5E3D40617C27B8100981839 /* NSURL+Util.m */,
+				C5E3D5CD17C2C26C00981839 /* UIAlertView+Singular.h */,
+				C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */,
+				C5E3D4BA17C27B8200981839 /* UIAlertView+WPError.h */,
+				C5E3D4BB17C27B8200981839 /* UIAlertView+WPError.m */,
 				C5E3D46417C27B8200981839 /* UIBarButtonItem+Styled.h */,
 				C5E3D46517C27B8200981839 /* UIBarButtonItem+Styled.m */,
 				C5E3D46617C27B8200981839 /* UIColor+Hexadecimal.h */,
@@ -2855,8 +2857,8 @@
 				C5E3D48717C27B8200981839 /* UIViewController+Rotation.m */,
 				C5E3D48817C27B8200981839 /* UIViewController+Styled.h */,
 				C5E3D48917C27B8200981839 /* UIViewController+Styled.m */,
-				C5E3D5CD17C2C26C00981839 /* UIAlertView+Singular.h */,
-				C5E3D5CE17C2C26C00981839 /* UIAlertView+Singular.m */,
+				C5E3D5D117C3DE7A00981839 /* UIColor+WordPress.h */,
+				C5E3D5D217C3DE7A00981839 /* UIColor+WordPress.m */,
 			);
 			name = Categories;
 			sourceTree = "<group>";
@@ -2907,8 +2909,6 @@
 				C5E3D4B517C27B8200981839 /* WPComLanguages.m */,
 				C5E3D4B817C27B8200981839 /* WPCookie.h */,
 				C5E3D4B917C27B8200981839 /* WPCookie.m */,
-				C5E3D4BA17C27B8200981839 /* WPError.h */,
-				C5E3D4BB17C27B8200981839 /* WPError.m */,
 				C5E3D4C017C27B8200981839 /* WPImageSource.h */,
 				C5E3D4C117C27B8200981839 /* WPImageSource.m */,
 				C5E3D4D617C27B8200981839 /* WPSegmentedSelectionTableViewController.h */,
@@ -3836,7 +3836,6 @@
 				C5E3D32D17BE84D300981839 /* toolbarDelHighlighted@2x.png in Resources */,
 				C5E3D32E17BE84D300981839 /* toolbarDeliPad.png in Resources */,
 				C5E3D32F17BE84D300981839 /* toolbarDeliPad@2x.png in Resources */,
-				C5E3D33017BE84D300981839 /* toolbarItalic.png in Resources */,
 				C5E3D33117BE84D300981839 /* toolbarItalic@2x.png in Resources */,
 				C5E3D33217BE84D300981839 /* toolbarItalicHighlighted.png in Resources */,
 				C5E3D33317BE84D300981839 /* toolbarItalicHighlighted@2x.png in Resources */,
@@ -3918,6 +3917,7 @@
 				C5E3D37F17BE84D300981839 /* write.png in Resources */,
 				C5E3D38017BE84D300981839 /* write@2x.png in Resources */,
 				C5E3D5A217C27BCC00981839 /* license.txt in Resources */,
+				C5E3D5D017C3C78600981839 /* toolbarItalic.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4146,7 +4146,6 @@
 				C5E3D56D17C27B8200981839 /* UpdateChecker.m in Sources */,
 				C5E3D56E17C27B8200981839 /* UserAgent.m in Sources */,
 				C5E3D56F17C27B8200981839 /* VerticalAlignLabel.m in Sources */,
-				C5E3D57017C27B8200981839 /* ViewAdminButton.m in Sources */,
 				C5E3D57217C27B8200981839 /* WordPress-11-12.xcmappingmodel in Sources */,
 				C5E3D57317C27B8200981839 /* WordPress.xcdatamodeld in Sources */,
 				C5E3D57417C27B8200981839 /* WordPressAppDelegate.m in Sources */,
@@ -4161,7 +4160,7 @@
 				C5E3D57D17C27B8200981839 /* WPComLanguages.m in Sources */,
 				C5E3D57E17C27B8200981839 /* WPcomLoginViewController.m in Sources */,
 				C5E3D57F17C27B8200981839 /* WPCookie.m in Sources */,
-				C5E3D58017C27B8200981839 /* WPError.m in Sources */,
+				C5E3D58017C27B8200981839 /* UIAlertView+WPError.m in Sources */,
 				C5E3D58117C27B8200981839 /* WPFriendFinderNudgeView.m in Sources */,
 				C5E3D58317C27B8200981839 /* WPImageSource.m in Sources */,
 				C5E3D58417C27B8200981839 /* WPImageViewController.m in Sources */,
@@ -4194,6 +4193,7 @@
 				C5E3D5C517C296B000981839 /* BetaFeedbackViewController.m in Sources */,
 				C5E3D5CC17C2AABF00981839 /* CreateWPComAccountViewController.m in Sources */,
 				C5E3D5CF17C2C26D00981839 /* UIAlertView+Singular.m in Sources */,
+				C5E3D5D317C3DE7A00981839 /* UIColor+WordPress.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

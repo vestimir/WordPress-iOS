@@ -219,7 +219,7 @@
             if (error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled) {
                 return;
             }
-            [WPError showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
+            [UIAlertView showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
         }];
     } else if (media.remoteStatus == MediaRemoteStatusPushing) {
         [media cancelUpload];
@@ -1341,7 +1341,7 @@
         }
         [imageMedia save];
     } failure:^(NSError *error) {
-        [WPError showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
+        [UIAlertView showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
     }];
 	
 	isAddingMedia = NO;
@@ -1430,7 +1430,7 @@
             [[NSNotificationCenter defaultCenter] postNotificationName:@"ShouldInsertMediaBelow" object:videoMedia];
             [videoMedia save];
         } failure:^(NSError *error) {
-            [WPError showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
+            [UIAlertView showAlertWithError:error title:NSLocalizedString(@"Upload failed", @"")];
         }];
 		isAddingMedia = NO;
 		

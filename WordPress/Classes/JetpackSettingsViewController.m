@@ -116,7 +116,7 @@
                            } failure:^(NSError *error) {
                                [SVProgressHUD dismiss];
                                [self setAuthenticating:NO];
-                               [WPError showAlertWithError:error];
+                               [UIAlertView showAlertWithError:error];
                            }];
 }
 
@@ -326,7 +326,7 @@
         }
     } failure:^(NSError *error) {
         [SVProgressHUD dismiss];
-        [WPError showAlertWithError:error];
+        [UIAlertView showAlertWithError:error];
     }];
 }
 

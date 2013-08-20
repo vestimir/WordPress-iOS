@@ -6,13 +6,15 @@
 //  Copyright (c) 2012 WordPress. All rights reserved.
 //
 
-#import "WPError.h"
+#import "UIAlertView+WPError.h"
 #import "WordPressAppDelegate.h"
 #import "WPAccount.h"
 #import "WordPressComApi.h"
 #import "WPcomLoginViewController.h"
+#import "SidebarViewController.h"
+#import "WordPressAppDelegate.h"
 
-@implementation WPError
+@implementation UIAlertView (WPError)
 
 + (void)showAlertWithError:(NSError *)error title:(NSString *)title {
     NSString *message = nil;
@@ -86,12 +88,20 @@
             title = customTitle;
         }
     }
-    
-//    [[WordPressAppDelegate sharedWordPressApplicationDelegate] showAlertWithTitle:title message:message];
+    [WordPressAppDelegate showHelpAlertWithTitle:title message:message];
 }
 
 + (void)showAlertWithError:(NSError *)error {
     [self showAlertWithError:error title:nil];
 }
+
+//+ (void)showHelpAlertWithTitle:(NSString *)title message:(NSString *)message {
+//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:title
+//                                                    message:message
+//                                                   delegate:self
+//                                          cancelButtonTitle:NSLocalizedString(@"OK", @"OK button label.")
+//                                          otherButtonTitles:NSLocalizedString(@"Need Help?", @"'Need help?' button label, links off to the WP for iOS FAQ."), nil];
+//    [alert show];
+//}
 
 @end

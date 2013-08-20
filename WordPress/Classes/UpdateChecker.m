@@ -112,7 +112,6 @@ static UpdateChecker *instance = nil;
         statsDataString = [[statsDataString componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]] objectAtIndex:0];
         NSString *appversion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
         if ([statsDataString compare:appversion options:NSNumericSearch] > 0) {
-            NSLog(@"There's a new version: %@", statsDataString);
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Update Available", @"Popup title to highlight a new version of the app being available.")
                                                             message:NSLocalizedString(@"A new version of WordPress for iOS is now available", @"Generic popup message to highlight a new version of the app being available.")
                                                            delegate:self

@@ -15,7 +15,6 @@
 #import "HelpViewController.h"
 #import "WordPressDataModel.h"
 #import "WPInfoView.h"
-#import "WPError.h"
 
 NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
 
@@ -644,14 +643,14 @@ NSTimeInterval const WPTableViewControllerRefreshTimeout = 300; // 5 minutes
                 } else if (error.code == 425 && editSiteViewController == nil) {
                     [self promptForPasswordWithMessage:[error localizedDescription]];
                 } else if (userInteraction) {
-                    [WPError showAlertWithError:error title:NSLocalizedString(@"Couldn't sync", @"")];
+                    [UIAlertView showAlertWithError:error title:NSLocalizedString(@"Couldn't sync", @"")];
                 }
             } else {
-                [WPError showAlertWithError:error];
+                [UIAlertView showAlertWithError:error];
             }
         } else {
           // For non-blog tables (notifications), just show the error for now
-          [WPError showAlertWithError:error];
+          [UIAlertView showAlertWithError:error];
         }
     }];
 }

@@ -13,6 +13,7 @@
 #import "Media.h"
 #import "CameraPlusPickerManager.h"
 #import "WPPopoverBackgroundView.h"
+#import "ReachabilityUtils.h"
 
 @interface QuickPhotoViewController () {
     UIPopoverController *popController;
@@ -212,10 +213,11 @@
     }
     post.postFormat = @"image";
     
-    if( /*appDelegate.connectionAvailable ==*/ YES ) {
+    if([ReachabilityUtils isInternetReachable]) {
         [[NSNotificationCenter defaultCenter] addObserver:post selector:@selector(mediaDidUploadSuccessfully:) name:ImageUploadSuccessful object:media];
         [[NSNotificationCenter defaultCenter] addObserver:post selector:@selector(mediaUploadFailed:) name:ImageUploadFailed object:media];
         
+        // TODO
 //        appDelegate.isUploadingPost = YES;
         
         dispatch_async(dispatch_get_main_queue(), ^(void) {
