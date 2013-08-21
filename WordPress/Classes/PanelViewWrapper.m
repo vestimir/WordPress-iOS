@@ -25,7 +25,7 @@ static NSString *const KVO_VC_TOOLBARITEMS = @"toolbarItems";
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self.viewController removeObserver:self forKeyPath:@""];
+    [self.viewController removeObserver:self forKeyPath:KVO_VC_TOOLBARITEMS];
 }
 
 
