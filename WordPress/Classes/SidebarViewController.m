@@ -807,7 +807,11 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
     WPFLog(@"%@ %@ %@", self, NSStringFromSelector(_cmd), indexPath);
     
     if (self.currentIndexPath) {
-        if ([indexPath compare:self.currentIndexPath] == NSOrderedSame && !_changingContentForSelectedSection) {
+        if (indexPath.row == 5) { // View Admin pressed
+            [self viewAdminForBlog:[self.resultsController objectAtIndexPath:[NSIndexPath indexPathForRow:indexPath.section-1 inSection:0]]];
+            [self.tableView selectRowAtIndexPath:self.currentIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
+            return;
+        } else if ([indexPath compare:self.currentIndexPath] == NSOrderedSame && !_changingContentForSelectedSection) {
             if (IS_IPAD) {
                 [self.panelNavigationController showSidebar];
             } else if (closingSidebar) {
@@ -817,7 +821,6 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
         }
     }
 
-    
     UIViewController *detailViewController = nil;
     if (indexPath.section == 0) { // Reader & Notifications
         
@@ -886,9 +889,6 @@ NSString *const kSelectedSidebarIndexDictionary = @"kSelectedSidebarIndexDiction
                 }
                 return;
             }
-            case 5:
-                [self viewAdminForBlog:blog];
-                break;
             default:
                 controllerClass = [PostsViewController class];
                 break;    
