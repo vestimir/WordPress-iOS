@@ -111,8 +111,12 @@ static NSString *const GravatarBaseUrl = @"http://gravatar.com";
     NSParameterAssert(size.width > 0);
     NSParameterAssert(size.height > 0);
 
-    NSURL *url = [self URLWithHash:hash type:type];
+    CGSize downloadSize = size;
     CGSize maxSize = [self maxSizeForType:type];
+    if (maxSize.width > size.width) {
+        downloadSize = maxSize;
+    }
+    NSURL *url = [self URLWithHash:hash type:type size:downloadSize];
     [[WPImageSource sharedSource] downloadImageForURL:url
                                           withSuccess:^(UIImage *image) {
                                               [self setCachedImage:image forHash:hash type:type size:maxSize];
@@ -253,7 +257,10 @@ static NSString *const GravatarBaseUrl = @"http://gravatar.com";
 
 - (NSURL *)URLWithHash:(NSString *)hash type:(WPAvatarSourceType)type
 {
-    CGSize size = [self maxSizeForType:type];
+    return [self URLWithHash:hash type:type size:[self maxSizeForType:type]];
+}
+- (NSURL *)URLWithHash:(NSString *)hash type:(WPAvatarSourceType)type size:(CGSize)size
+{
     NSString *url = GravatarBaseUrl;
 
     switch (type) {

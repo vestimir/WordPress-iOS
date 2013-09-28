@@ -867,6 +867,8 @@
 		E125451812BF68F900D87A0A /* Page.m in Sources */ = {isa = PBXBuildFile; fileRef = E125451712BF68F900D87A0A /* Page.m */; };
 		E128566415103A3600406BC9 /* keyboardButtoniPad@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E128566215103A3600406BC9 /* keyboardButtoniPad@2x.png */; };
 		E128566515103A3600406BC9 /* keyboardButtoniPadHighlighted@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E128566315103A3600406BC9 /* keyboardButtoniPadHighlighted@2x.png */; };
+		E129DAFC17F781720093E68F /* GravatarCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E129DAFB17F781720093E68F /* GravatarCardViewController.m */; };
+		E129DAFF17F787C40093E68F /* GravatarCardView.m in Sources */ = {isa = PBXBuildFile; fileRef = E129DAFE17F787C40093E68F /* GravatarCardView.m */; };
 		E12A08E316C9706200E3DDF6 /* clouds_header.png in Resources */ = {isa = PBXBuildFile; fileRef = E12A08E116C9706200E3DDF6 /* clouds_header.png */; };
 		E12A08E416C9706200E3DDF6 /* clouds_header@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E12A08E216C9706200E3DDF6 /* clouds_header@2x.png */; };
 		E12F95B9155820A40067A653 /* NSObject+BlockObservation.m in Sources */ = {isa = PBXBuildFile; fileRef = E12F95B8155820A40067A653 /* NSObject+BlockObservation.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -2084,6 +2086,10 @@
 		E128566215103A3600406BC9 /* keyboardButtoniPad@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "keyboardButtoniPad@2x.png"; path = "Resources/Images/keyboardButtoniPad@2x.png"; sourceTree = "<group>"; };
 		E128566315103A3600406BC9 /* keyboardButtoniPadHighlighted@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "keyboardButtoniPadHighlighted@2x.png"; path = "Resources/Images/keyboardButtoniPadHighlighted@2x.png"; sourceTree = "<group>"; };
 		E12963A8174654B2002E7744 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/Localizable.strings; sourceTree = "<group>"; };
+		E129DAFA17F781720093E68F /* GravatarCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GravatarCardViewController.h; sourceTree = "<group>"; };
+		E129DAFB17F781720093E68F /* GravatarCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GravatarCardViewController.m; sourceTree = "<group>"; };
+		E129DAFD17F787C40093E68F /* GravatarCardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GravatarCardView.h; sourceTree = "<group>"; };
+		E129DAFE17F787C40093E68F /* GravatarCardView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GravatarCardView.m; sourceTree = "<group>"; };
 		E12A08E116C9706200E3DDF6 /* clouds_header.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = clouds_header.png; path = Resources/Images/clouds_header.png; sourceTree = "<group>"; };
 		E12A08E216C9706200E3DDF6 /* clouds_header@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "clouds_header@2x.png"; path = "Resources/Images/clouds_header@2x.png"; sourceTree = "<group>"; };
 		E12F95A51557C9C20067A653 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
@@ -2425,6 +2431,8 @@
 				5DEB6EF415B471B3004E81F3 /* WPPopoverBackgroundView.m */,
 				5DEB61B2156FCD3400242C35 /* WPWebView.h */,
 				5DEB61B3156FCD3400242C35 /* WPWebView.m */,
+				E129DAFD17F787C40093E68F /* GravatarCardView.h */,
+				E129DAFE17F787C40093E68F /* GravatarCardView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -3784,6 +3792,8 @@
 				E1921F5917733C3E000F4079 /* WPImageSource.m */,
 				E1E4CE091773C59B00430844 /* WPAvatarSource.h */,
 				E1E4CE0A1773C59B00430844 /* WPAvatarSource.m */,
+				E129DAFA17F781720093E68F /* GravatarCardViewController.h */,
+				E129DAFB17F781720093E68F /* GravatarCardViewController.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -5256,6 +5266,7 @@
 				834CAE7C122D528A003DDF49 /* UIImage+Resize.m in Sources */,
 				834CAE9F122D56B1003DDF49 /* UIImage+Alpha.m in Sources */,
 				834CAEA0122D56B1003DDF49 /* UIImage+RoundedCorner.m in Sources */,
+				E129DAFC17F781720093E68F /* GravatarCardViewController.m in Sources */,
 				83D180FA12329B1A002DCCB0 /* EditPageViewController.m in Sources */,
 				83CAD41D1235F854003DFA20 /* MediaObjectViewController.m in Sources */,
 				E125445612BF5B3900D87A0A /* Category.m in Sources */,
@@ -5322,6 +5333,7 @@
 				5D1EE80215E7AF3E007F1F02 /* JetpackSettingsViewController.m in Sources */,
 				5D3E334E15EEBB6B005FC6F2 /* ReachabilityUtils.m in Sources */,
 				5D87E10C15F5120C0012C595 /* SettingsPageViewController.m in Sources */,
+				E129DAFF17F787C40093E68F /* GravatarCardView.m in Sources */,
 				85F2C4C017B9F6E600A303E0 /* GeneralWalkthroughPage3ViewController.m in Sources */,
 				5DC3A44D1610B9BC00A890BE /* UINavigationController+Rotation.m in Sources */,
 				E1A0FAE7162F11CF0063B098 /* UIDevice+WordPressIdentifier.m in Sources */,

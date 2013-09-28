@@ -9,13 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "ReaderPost.h"
 
+extern const NSUInteger ReaderPostDetailViewEventGravatarTouched;
+
 @protocol ReaderPostDetailViewDelegate <NSObject>
 
 - (void)readerPostDetailViewLayoutChanged;
 
 @end
 
-@interface ReaderPostDetailView : UIView
+@interface ReaderPostDetailView : UIControl
 
 - (id)initWithFrame:(CGRect)frame post:(ReaderPost *)post delegate:(id<ReaderPostDetailViewDelegate>)delegate;
 - (void)updateLayout;

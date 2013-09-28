@@ -21,6 +21,8 @@
 #import "UIImageView+Gravatar.h"
 #import "UILabel+SuggestSize.h"
 
+const NSUInteger ReaderPostDetailViewEventGravatarTouched = UIControlEventApplicationReserved | 1;
+
 #define ContentTextViewYOffset -32
 
 @interface ReaderPostDetailView()<DTAttributedTextContentViewDelegate> {
@@ -81,16 +83,18 @@
 		[self addSubview:_authorView];
 		
 		
-		UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-		button.frame = _authorView.frame;
-		[button addTarget:self action:@selector(handleAuthorViewTapped:) forControlEvents:UIControlEventTouchUpInside];
-		[_authorView addSubview:button];
-		
+        UITapGestureRecognizer *authorGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAuthorViewTapped:)];
+        [_authorView addGestureRecognizer:authorGestureRecognizer];
+
 		self.avatarImageView = [[UIImageView alloc] initWithFrame:CGRectMake(padding, padding, avatarSize, avatarSize)];
 		_avatarImageView.autoresizingMask = UIViewAutoresizingFlexibleRightMargin;
 				
 		if ([post avatar] != nil) {
 			[self.avatarImageView setImageWithURL:[NSURL URLWithString:[post avatar]] placeholderImage:[UIImage imageNamed:@"gravatar.jpg"]];
+            UITapGestureRecognizer *avatarGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleAvatarTapped:)];
+            [self.avatarImageView addGestureRecognizer:avatarGestureRecognizer];
+            self.avatarImageView.userInteractionEnabled = YES;
+            [authorGestureRecognizer requireGestureRecognizerToFail:avatarGestureRecognizer];
 		} else {
 			NSString *img = ([post isWPCom]) ? @"wpcom_blavatar.png" : @"wporg_blavatar.png";
 			[self.avatarImageView setImageWithURL:[self.avatarImageView blavatarURLForHost:[[NSURL URLWithString:post.blogURL] host]] placeholderImage:[UIImage imageNamed:img]];
@@ -313,6 +317,10 @@
 	return ([[url absoluteString] rangeOfString:@"wp.com/wp-includes/images/smilies"].location != NSNotFound);
 }
 
+- (void)handleAvatarTapped:(UITapGestureRecognizer *)gestureRecognizer
+{
+    [self sendActionsForControlEvents:ReaderPostDetailViewEventGravatarTouched];
+}
 
 - (void)handleFollowButtonInteraction:(id)sender {
 	[self setNeedsLayout];

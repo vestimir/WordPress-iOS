@@ -21,6 +21,8 @@
 #import "ReaderPostDetailView.h"
 #import "ReaderCommentFormView.h"
 #import "ReaderReblogFormView.h"
+#import "GravatarCardViewController.h"
+#import "WPAvatarSource.h"
 
 NSInteger const ReaderCommentsToSync = 100;
 NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 minutes
@@ -259,6 +261,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 	self.headerView = [[ReaderPostDetailView alloc] initWithFrame:CGRectMake(0.0f, 0.0f, self.tableView.frame.size.width, 190.0f) post:self.post delegate:self];
 	_headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	_headerView.backgroundColor = [UIColor whiteColor];
+    [_headerView addTarget:self action:@selector(handleAvatarTapped:) forControlEvents:ReaderPostDetailViewEventGravatarTouched];
 	[self.tableView setTableHeaderView:_headerView];
 	
 	UITapGestureRecognizer *tgr = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleDismissForm:)];
@@ -655,6 +658,28 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 	[self.navigationController setToolbarHidden:NO animated:YES];
 }
 
+- (void)handleAvatarTapped:(id)sender
+{
+    NSAssert([self.post avatar], @"Post should have an avatar set");
+    if (![self.post avatar]) {
+        return;
+    }
+
+    NSString *hash;
+    NSURL *avatarURL = [NSURL URLWithString:[self.post avatar]];
+
+    if (!avatarURL) {
+        WPFLog(@"Couldn't parse avatar url: %@", [self.post avatar]);
+        return;
+    }
+    WPAvatarSourceType avatarType = [[WPAvatarSource sharedSource] parseURL:avatarURL forAvatarHash:&hash];
+    if (avatarType != WPAvatarSourceTypeGravatar) {
+        WPFLog(@"Wrong avatar type for Gravatar cards");
+        return;
+    }
+    GravatarCardViewController *gravatarCardController = [[GravatarCardViewController alloc] initWithAvatarHash:hash placeholder:nil];
+    [self presentViewController:gravatarCardController animated:YES completion:nil];
+}
 
 - (void)setCanUseFullScreen:(BOOL)canUseFullScreen{
 	_canUseFullScreen = canUseFullScreen;
