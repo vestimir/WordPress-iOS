@@ -56,6 +56,7 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
 @property (nonatomic) BOOL isShowingCommentForm;
 @property (nonatomic) BOOL isShowingReblogForm;
 @property (nonatomic) BOOL canUseFullScreen;
+@property (nonatomic, strong) UIPopoverController *popover;
 
 - (void)buildHeader;
 - (void)buildTopToolbar;
@@ -678,7 +679,12 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
         return;
     }
     GravatarCardViewController *gravatarCardController = [[GravatarCardViewController alloc] initWithAvatarHash:hash placeholder:nil];
-    [self presentViewController:gravatarCardController animated:YES completion:nil];
+    if (IS_IPHONE) {
+        [self presentViewController:gravatarCardController animated:YES completion:nil];
+    } else {
+        self.popover = [[UIPopoverController alloc] initWithContentViewController:gravatarCardController];
+        [self.popover presentPopoverFromRect:_headerView.avatarImageView.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    }
 }
 
 - (void)setCanUseFullScreen:(BOOL)canUseFullScreen{

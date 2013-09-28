@@ -19,6 +19,8 @@ extern const NSUInteger ReaderPostDetailViewEventGravatarTouched;
 
 @interface ReaderPostDetailView : UIControl
 
+@property (nonatomic, strong) UIImageView *avatarImageView;
+
 - (id)initWithFrame:(CGRect)frame post:(ReaderPost *)post delegate:(id<ReaderPostDetailViewDelegate>)delegate;
 - (void)updateLayout;
 

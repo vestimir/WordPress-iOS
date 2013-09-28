@@ -31,7 +31,6 @@ const NSUInteger ReaderPostDetailViewEventGravatarTouched = UIControlEventApplic
 
 @property (nonatomic, strong) ReaderPost *post;
 @property (nonatomic, strong) UIView *authorView;
-@property (nonatomic, strong) UIImageView *avatarImageView;
 @property (nonatomic, strong) UILabel *authorLabel;
 @property (nonatomic, strong) UILabel *dateLabel;
 @property (nonatomic, strong) UILabel *blogLabel;

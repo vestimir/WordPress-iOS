@@ -38,8 +38,10 @@
 {
     _cardView = [[GravatarCardView alloc] init];
     _cardView.avatarImageView.image = _placeholderImage;
-    UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cardViewTapped:)];
-    [_cardView addGestureRecognizer:recognizer];
+    if (IS_IPHONE) {
+        UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cardViewTapped:)];
+        [_cardView addGestureRecognizer:recognizer];
+    }
     self.view = _cardView;
 }
 
@@ -48,13 +50,17 @@
     [super viewWillAppear:animated];
     _cardView.avatarLoading = YES;
     _cardView.profileLoading = YES;
-    [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    if (IS_IPHONE) {
+        [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    if (IS_IPHONE) {
+        [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationFade];
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
