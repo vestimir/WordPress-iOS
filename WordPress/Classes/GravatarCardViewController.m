@@ -37,7 +37,8 @@
 - (void)loadView
 {
     _cardView = [[GravatarCardView alloc] init];
-    _cardView.avatarImageView.image = _placeholderImage;
+    UIImage *image = _placeholderImage;
+    _cardView.avatarImageView.image = image;
     if (IS_IPHONE) {
         UITapGestureRecognizer *recognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(cardViewTapped:)];
         [_cardView addGestureRecognizer:recognizer];
@@ -48,7 +49,9 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    _cardView.avatarLoading = YES;
+    if (!_placeholderImage) {
+        _cardView.avatarLoading = YES;
+    }
     _cardView.profileLoading = YES;
     if (IS_IPHONE) {
         [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationFade];
@@ -75,7 +78,8 @@
                                                        _cardView.avatarLoading = NO;
                                                    }];
     NSString *profileUrl = [NSString stringWithFormat:@"https://en.gravatar.com/%@.json", _avatarHash];
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:profileUrl]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:profileUrl]];
+    request.cachePolicy = NSURLRequestReturnCacheDataElseLoad;
     AFJSONRequestOperation *operation = [AFJSONRequestOperation JSONRequestOperationWithRequest:request
                                                                                         success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
                                                                                             _profile = JSON;

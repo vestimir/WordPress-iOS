@@ -673,12 +673,14 @@ NSTimeInterval const ReaderPostDetailViewControllerRefreshTimeout = 300; // 5 mi
         WPFLog(@"Couldn't parse avatar url: %@", [self.post avatar]);
         return;
     }
-    WPAvatarSourceType avatarType = [[WPAvatarSource sharedSource] parseURL:avatarURL forAvatarHash:&hash];
+    WPAvatarSource *avatarSource = [WPAvatarSource sharedSource];
+    WPAvatarSourceType avatarType = [avatarSource parseURL:avatarURL forAvatarHash:&hash];
     if (avatarType != WPAvatarSourceTypeGravatar) {
         WPFLog(@"Wrong avatar type for Gravatar cards");
         return;
     }
-    GravatarCardViewController *gravatarCardController = [[GravatarCardViewController alloc] initWithAvatarHash:hash placeholder:nil];
+    UIImage *cachedGravatar = [avatarSource cachedImageForAvatarHash:hash ofType:WPAvatarSourceTypeGravatar withSize:CGSizeMake(avatarSource.maxGravatarSize, avatarSource.maxGravatarSize)];
+    GravatarCardViewController *gravatarCardController = [[GravatarCardViewController alloc] initWithAvatarHash:hash placeholder:cachedGravatar];
     if (IS_IPHONE) {
         [self presentViewController:gravatarCardController animated:YES completion:nil];
     } else {
