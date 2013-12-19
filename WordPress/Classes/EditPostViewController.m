@@ -96,6 +96,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     WPFLogMethod();
     [super viewDidLoad];
     
+    // Focus on Navbar New Post/Select button for voiceover users
+    // TODO: focus on Navbar item only when the view has first loaded
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                        _titleTextField);
+    
     // For the iPhone, let's let the overscroll background color be white to
     // match the editor.
     if (IS_IPAD) {
@@ -171,7 +176,9 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     self.navigationController.navigationBar.translucent = NO;
     
     if (self.navigationItem.leftBarButtonItem == nil) {
-        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelEditing)];
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Close", @"Close button in the Post Editor") style:UIBarButtonItemStylePlain target:self action:@selector(cancelEditing)];
+        cancelButton.accessibilityLabel = NSLocalizedString(@"Close editor", @"Label for the close button in the Post Editor (only in VoiceOver)");
+        cancelButton.accessibilityHint = NSLocalizedString(@"Tap to close the post editor and save or discard any changes.", @"Hint for the cancel button in the Post Editor (only in VoiceOver)");
         self.navigationItem.leftBarButtonItem = cancelButton;
     }
     self.navigationItem.backBarButtonItem.title = [self editorTitle];
@@ -190,8 +197,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
                                                                                       attributes:@{ NSFontAttributeName : [UIFont fontWithName:@"OpenSans-Bold" size:14.0] }];
         NSMutableAttributedString *titleSubtext = [[NSMutableAttributedString alloc] initWithString:self.post.blog.blogName
                                                                                          attributes:@{ NSFontAttributeName : [UIFont fontWithName:@"OpenSans" size:10.0] }];
+        NSString *currentBlogTitle = self.post.blog.blogName;
+        titleButton.accessibilityLabel = [NSString stringWithFormat:NSLocalizedString(@"New post on %@", @"Accessibility label for the New Post heading in the Post editor"), currentBlogTitle];
+        titleButton.accessibilityHint = [NSString stringWithFormat:NSLocalizedString(@"Tap to select another blog to post to. Current blog is %@.", @"Accessibility hint for the post selector in the Post Editor navigation header if the user has more than one blog (only for VoiceOver users)"), currentBlogTitle];
+        titleButton.accessibilityTraits = UIAccessibilityTraitHeader;
         [titleText appendAttributedString:titleSubtext];
-        
         [titleButton setAttributedTitle:titleText forState:UIControlStateNormal];
     }
 }
@@ -207,7 +217,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
     
     UIBarButtonItem *previewButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-preview"] style:UIBarButtonItemStylePlain target:self action:@selector(showPreview)];
+    previewButton.accessibilityLabel = NSLocalizedString(@"Preview Post", @"Label for Preview Post button in post editor (only in VoiceOver)");
+    previewButton.accessibilityHint = NSLocalizedString(@"Preview what the post will look like live.", @"Hint for Preview Post button in post editor (only in VoiceOver)");
     UIBarButtonItem *photoButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"icon-posts-editor-media"] style:UIBarButtonItemStylePlain target:self action:@selector(showMediaOptions)];
+    photoButton.accessibilityLabel = NSLocalizedString(@"Add Media", @"Label for Add Media button in post editor (only in VoiceOver)");
+    photoButton.accessibilityHint = NSLocalizedString(@"Add photos and video to the post", @"Hint for Add Media button in post editor (only in VoiceOver)");
     
     previewButton.tintColor = [WPStyleGuide readGrey];
     photoButton.tintColor = [WPStyleGuide readGrey];
@@ -267,8 +281,8 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         _titleTextField.font = [WPStyleGuide postTitleFont];
         _titleTextField.textColor = [WPStyleGuide darkAsNightGrey];
         _titleTextField.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        //_titleTextField.placeholder = NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.");
         _titleTextField.attributedPlaceholder = [[NSAttributedString alloc] initWithString:(NSLocalizedString(@"Enter title here", @"Label for the title of the post field. Should be the same as WP core.")) attributes:(@{NSForegroundColorAttributeName: [WPStyleGuide textFieldPlaceholderGrey]})];
+        _titleTextField.accessibilityLabel = NSLocalizedString(@"Title", @"Label for Title field in post editor (only in VoiceOver)");
         
         _titleTextField.returnKeyType = UIReturnKeyNext;
     }
@@ -316,6 +330,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         _textView.font = [WPStyleGuide regularTextFont];
         _textView.textColor = [WPStyleGuide darkAsNightGrey];
         _textView.textContainerInset = UIEdgeInsetsMake(0.0f, EPVCTextViewOffset, 0.0f, EPVCTextViewOffset);
+        _textView.accessibilityLabel = NSLocalizedString(@"Post content", @"Label for the main body text. Should hint at tapping to enter text (not specifying body text). (only for VoiceOver)");
     }
     [_tableHeaderViewContentView addSubview:_textView];
     
@@ -459,8 +474,10 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     }
     
     if (indexPath.row == 0) {
-        // Settings Cell
+        // Options Cell
         cell.textLabel.text = NSLocalizedString(@"Options", @"Title of the Post Settings tableview cell in the Post Editor. Tapping shows settings and options related to the post being edited.");
+        cell.accessibilityLabel = NSLocalizedString(@"Post Options", @"Label for Options button in post editor (only in VoiceOver)");
+        cell.accessibilityHint = NSLocalizedString(@"Tap to edit tags, categories, visibility, status, et cetera.", @"Hint for Options button in post editor (only in VoiceOver)");
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
@@ -574,7 +591,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 		actionSheet = [[UIActionSheet alloc] initWithTitle:NSLocalizedString(@"You have unsaved changes.", @"Title of message with options that shown when there are unsaved changes and the author is trying to move away from the post.")
 												  delegate:self
                                          cancelButtonTitle:NSLocalizedString(@"Keep Editing", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
-                                    destructiveButtonTitle:NSLocalizedString(@"Discard", @"Button shown if there are unsaved changes and the author is trying to move away from the post.")
+                                    destructiveButtonTitle:NSLocalizedString(@"Discard Changes", @"Button shown if there are unsaved changes and the author is trying to move away from the post, important to use a clear label for VoiceOver users since this is the only way to describe the interface for them.")
 										 otherButtonTitles:nil];
     } else if (self.editMode == EditPostViewControllerModeNewPost) {
         // The post is a local draft or an autosaved draft: Discard or Save
@@ -640,25 +657,38 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
 
 - (void)refreshButtons {
     // Left nav button: Cancel Button
+    // TODO: I'm not sure when this code is ever used, can we remove? Button should already be set up. --Isaac
     if (self.navigationItem.leftBarButtonItem == nil) {
-        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Cancel", nil) style:UIBarButtonItemStylePlain target:self action:@selector(cancelEditing)];
+        UIBarButtonItem *cancelButton = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Close", @"Close button in the Post Editor") style:UIBarButtonItemStylePlain target:self action:@selector(cancelEditing)];
+        cancelButton.accessibilityLabel = NSLocalizedString(@"Close editor", @"Label for the close button in the Post Editor (only in VoiceOver)");
+        cancelButton.accessibilityHint = NSLocalizedString(@"Tap to close the post editor and save or discard any changes.", @"Hint for the cancel button in the Post Editor (only in VoiceOver)");
         self.navigationItem.leftBarButtonItem = cancelButton;
     }
     
     // Right nav button: Publish Button
     NSString *buttonTitle;
+    NSString *accessibilityLabel;
+    NSString *accessibilityHint;
     if(![self.post hasRemote] || ![self.post.status isEqualToString:self.post.original.status]) {
         if ([self.post.status isEqualToString:@"publish"] && ([self.post.dateCreated compare:[NSDate date]] == NSOrderedDescending)) {
             buttonTitle = NSLocalizedString(@"Schedule", @"Schedule button, this is what the Publish button changes to in the Post Editor if the post has been scheduled for posting later.");
+            accessibilityLabel = NSLocalizedString(@"Schedule post", @"Label for the schedule button in the Post Editor (only in VoiceOver)");
+            accessibilityHint = NSLocalizedString(@"Tap to schedule post", @"Hint for the schedule post button in the Post Editor  (only in VoiceOver)");
             
 		} else if ([self.post.status isEqualToString:@"publish"]){
-            buttonTitle = NSLocalizedString(@"Publish", @"Publish button label.");
-            
-		} else {
+            buttonTitle = NSLocalizedString(@"Publish", @"Publish button label in Post Editor.");
+            accessibilityLabel = NSLocalizedString(@"Publish post", @"Label for the publish button in the Post Editor (only in VoiceOver)");
+            accessibilityHint = NSLocalizedString(@"Tap to publish post", @"Hint for the publish button in the Post Editor (only in VoiceOver)");
+		}
+        else {
             buttonTitle = NSLocalizedString(@"Save", @"Save button label (saving content, ex: Post, Page, Comment).");
+            accessibilityLabel = NSLocalizedString(@"Save post", @"Label the save button in the Post Editor (only in VoiceOver)");
+            accessibilityHint = NSLocalizedString(@"Tap to save the post as a draft", @"Hint for the save button in the Post Editor (only in VoiceOver)");
         }
     } else {
         buttonTitle = NSLocalizedString(@"Update", @"Update button label (saving content, ex: Post, Page, Comment).");
+        accessibilityLabel = NSLocalizedString(@"Update post", @"Label for the update button in the Post Editor (only in VoiceOver)");
+        accessibilityHint = NSLocalizedString(@"Tap to update the published post", @"Hint for the update button in the Post Editor (only in VoiceOver)");
     }
     
     if (self.navigationItem.rightBarButtonItem == nil) {
@@ -667,8 +697,12 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
                                                                       target:self
                                                                       action:@selector(saveAction)];
         self.navigationItem.rightBarButtonItem = saveButton;
+        [saveButton setAccessibilityLabel:accessibilityLabel];
+        [saveButton setAccessibilityHint:accessibilityHint];
     } else {
         self.navigationItem.rightBarButtonItem.title = buttonTitle;
+        self.navigationItem.rightBarButtonItem.accessibilityLabel = accessibilityLabel;
+        self.navigationItem.rightBarButtonItem.accessibilityHint = accessibilityHint;
     }
     
     BOOL updateEnabled = self.hasChanges || self.post.remoteStatus == AbstractPostRemoteStatusFailed;
@@ -679,6 +713,11 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
     UIColor *color = updateEnabled ? [UIColor whiteColor] : [UIColor lightGrayColor];
     titleTextAttributes = @{NSFontAttributeName: [WPStyleGuide regularTextFont], NSForegroundColorAttributeName : color};
     [self.navigationItem.rightBarButtonItem setTitleTextAttributes:titleTextAttributes forState:UIControlStateNormal];
+    if (updateEnabled == 0) {
+        self.navigationItem.rightBarButtonItem.accessibilityTraits = UIAccessibilityTraitNotEnabled;
+    } else {
+        self.navigationItem.rightBarButtonItem.accessibilityTraits = UIAccessibilityTraitButton;
+    }
 }
 
 - (void)refreshUIForCurrentPost {
@@ -901,6 +940,7 @@ CGFloat const EPVCTextViewTopPadding = 7.0f;
         infoText = [_textView.text substringWithRange:range];
     
     _linkHelperAlertView = [[WPAlertView alloc] initWithFrame:self.view.bounds andOverlayMode:WPAlertViewOverlayModeTwoTextFieldsTwoButtonMode];
+    _linkHelperAlertView.accessibilityViewIsModal = TRUE;
     
     NSString *title = NSLocalizedString(@"Make a Link\n\n\n\n", @"Title of the Link Helper popup to aid in creating a Link in the Post Editor.\n\n\n\n");
     NSCharacterSet *charSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];

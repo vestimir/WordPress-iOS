@@ -39,7 +39,6 @@ CGFloat const WPAlertViewStandardOffset = 16.0;
 - (id)initWithFrame:(CGRect)frame
 {
     self = [self initWithFrame:frame andOverlayMode:WPAlertViewOverlayModeTwoTextFieldsTwoButtonMode];
-    
     return self;
 }
 
@@ -90,6 +89,8 @@ CGFloat const WPAlertViewStandardOffset = 16.0;
         [self configureButtonVisibility];
         [self configureTextFieldVisibility];
         [self setNeedsUpdateConstraints];
+        [_button1CompletionBlock setAccessibilityViewIsModal:TRUE];
+        [_button2CompletionBlock setAccessibilityViewIsModal:TRUE];
     }
 }
 

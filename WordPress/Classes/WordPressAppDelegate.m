@@ -411,7 +411,11 @@ NSString * const WPNotificationsNavigationRestorationID = @"WPNotificationsNavig
     UIImage *image = [UIImage imageNamed:@"icon-tab-newpost"];
     image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
     UIViewController *postsViewController = [[UIViewController alloc] init];
+    //postsViewController.tabBarItem.title = NSLocalizedString(@"New Post", @"New Post button label in the main tab bar.");
+    postsViewController.tabBarItem.accessibilityTraits = UIAccessibilityTraitButton;
     postsViewController.tabBarItem.image = image;
+    postsViewController.tabBarItem.accessibilityLabel = NSLocalizedString(@"New Post", @"Label for New Post button in main tab bar (only for VoiceOver).");
+    postsViewController.tabBarItem.accessibilityHint = NSLocalizedString(@"Write a new post", @"Hint for New Post button in main tab bar (only for VoiceOver).");
     postsViewController.tabBarItem.imageInsets = UIEdgeInsetsMake(5.0, 0, -5, 0);
     if (IS_IPAD) {
         postsViewController.tabBarItem.imageInsets = UIEdgeInsetsMake(7.0, 0, -7, 0);
