@@ -2,8 +2,9 @@
 # encoding: utf-8
 
 # Supported languages:
-# ar,ca,cs,da,de,el,en,en-GB,es,fi,fr,he,hr,hu,id,it,ja,ko,ms,nb,nl,pl,pt,pt-PT,ro,ru,sk,sv,th,tr,uk,vi,zh-Hans,zh-Hant
+# ar,bg,ca,cs,da,de,el,en,en-GB,es,fi,fr,he,hr,hu,id,it,ja,ko,ms,nb,nl,pl,pt,pt-PT,ro,ru,sk,sv,th,tr,uk,vi,zh-Hans,zh-Hant
 # * Arabic
+# * Bulgarian
 # * Catalan
 # * Czech
 # * Danish
@@ -39,6 +40,7 @@
 # * Chinese (Taiwan) [zh-Hant]
 
 LANGS={
+  'bg' => 'bg', # Bulgarian
   'da' => 'da', # Danish
   'de' => 'de', # German
   'es' => 'es', # Spanish
